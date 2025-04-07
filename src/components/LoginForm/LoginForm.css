@@ -74,3 +74,19 @@
     0 0 15px #f0f,
     0 0 30px #f0f;
 }   
+
+@media only screen and (max-width: 768px) {
+    body {
+      background-size: 200%;
+    }
+    .links-group{
+        flex-direction: column;
+    }
+  }
+  
+  @media only screen and (max-width: 400px) {
+    body {
+      background-size: 300%;
+    }
+   
+  }

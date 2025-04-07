@@ -1,6 +1,7 @@
 
 import {useState} from "react";
 
+import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
 import FormField from "../base-components/FormField/FormField";
 import "./CardForm.css";
 
@@ -35,7 +36,8 @@ export default function CardForm(props){
 
     }
     return(
-        <div>
+        <div className = "card-form-container">
+            <ScreenTitle title="Add your own actor" design_id="card-form-title"/>
             <form onSubmit={SubmitHandler} className = {`${props.styleClass}`}>
                 <div>
                     <FormField 
@@ -46,7 +48,7 @@ export default function CardForm(props){
                         onChange={titleHandler}/>
                 </div>
                 <div className="image-selection">
-                    <label htmlFor="file-input" className="choose-file-label">Choose actor image...</label>
+                    <label htmlFor="file-input" className="choose-file-label">{(imagePath==="")? "Choose actor image...":"Image selected."}</label>
                     <input 
                         id="file-input"
                         type="file" 

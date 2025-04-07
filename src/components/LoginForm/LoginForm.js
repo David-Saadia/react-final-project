@@ -13,10 +13,10 @@ export default function LoginForm() {
 
     useEffect(() => {
         document.title = "Login";
-        document.body.style.backgroundImage = `url(${bg})`; ;
-        document.body.style.backroundSize= "cover";
+        document.body.style.backgroundImage = `url(${bg})`; 
         document.body.style.backgroundPosition = "center";
         document.body.style.backgroundRepeat = "no-repeat";
+        document.body.style.transition = "background-image 0.5s ease-in-out";	
         
     }, []);
     

@@ -14,6 +14,7 @@ export default function Home(props) {
     const [loading, setLoading] = useState(true);
 
 
+
     useEffect(() => { 
         const fetchUsers = async () => {
             try {
@@ -46,6 +47,10 @@ export default function Home(props) {
         document.body.style.backgroundImage = `url(${bg})`; ;
         document.body.style.backgroundSize= "100% auto";
         document.body.style.backgroundPosition = "top center";
+        // document.body.style.backgroundSize = "cover"; // This fills the entire screen
+        // document.body.style.backgroundPosition = "center";
+        // document.body.style.backgroundRepeat = "repeat";
+        // document.body.style.backgroundAttachment = "fixed";
         document.body.style.backgroundRepeat = "repeat-y";
         document.body.style.backgroundAttachment = "scroll";
         document.body.style.margin= "0";

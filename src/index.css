@@ -4,6 +4,6 @@ body{
   font-family: 'Poppins', sans-serif, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue";
   background-color: #1C1C1C;
   color: #F5F7FA;
-  min-height: 100vh;
+  min-height: 100%;
 }
 

@@ -31,4 +31,25 @@
     margin-top:0vh;
 }
 
+.card-form-container{
+    background: rgba(000, 000, 000, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+    box-sizing: border-box;
+    backdrop-filter: blur(10px);
+    padding-bottom:20vh;
+    margin-bottom:0;
+    height: 12vh;
+    margin-top:0vh;
+    padding-right: 1vw;
+    padding-top: 2vh;
+    padding-left: 1vw;
+    margin-bottom: 5vh;
+}
+
+h2#card-form-title.screen-title{
+    margin-top: 0vh;
+    margin-bottom: 2vh;
+    padding:0;
+}
+
 
