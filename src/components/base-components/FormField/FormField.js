@@ -3,9 +3,9 @@ import "./FormField.css";
 export default function FormField(props){
 
     return(
-        <div class="form-field">
+        <div className={`form-field ${props.styleClass}`} >
             <input type={props.type} title= {props.type} value={props.value} onChange={props.onChange} required/>
-            <span class="popup_text">{props.prompt}</span>
+            <span className="popup_text">{props.prompt}</span>
         </div>
     );
 }

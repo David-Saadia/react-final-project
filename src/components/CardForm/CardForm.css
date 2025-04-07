@@ -1,0 +1,34 @@
+.image-selection{
+    position: relative;
+}
+
+
+.choose-file-label{
+    border: 1px solid #ccc;
+    display: inline-block;
+    margin-bottom:0;
+    padding:3vh 1vw;
+    cursor: pointer;
+    background: #222;
+    border-radius: 5px;
+    border: #000 0.4px solid;
+
+}
+
+.image-selection input[type="file"]{
+   display:none;
+}
+
+.submit-button#add-item-btn, .submit-button#date-btn {
+    margin-top: 0px;
+    padding:3vh 1vw;
+    width: 100%;
+    font-size: 1em;
+    font-weight: 400;
+}
+
+.card-form-field{
+    margin-top:0vh;
+}
+
+

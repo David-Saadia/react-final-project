@@ -2,6 +2,7 @@
 import {useState} from "react";
 
 import FormField from "../base-components/FormField/FormField";
+import "./CardForm.css";
 
 export default function CardForm(props){
 
@@ -35,24 +36,29 @@ export default function CardForm(props){
     }
     return(
         <div>
-            <form onSubmit={SubmitHandler} class = {props.styleClass}>
+            <form onSubmit={SubmitHandler} className = {`${props.styleClass}`}>
                 <div>
-                    <FormField type="text" value={title} prompt="New Actor" onChange={titleHandler}/>
+                    <FormField 
+                        type="text"
+                        prompt="New Actor" 
+                        styleClass="card-form-field" 
+                        value={title} 
+                        onChange={titleHandler}/>
                 </div>
-                <div>
-                    <label>Image</label>
+                <div className="image-selection">
+                    <label htmlFor="file-input" className="choose-file-label">Choose actor image...</label>
                     <input 
+                        id="file-input"
                         type="file" 
                         value={imagePath}
                         accept="image/*" 
                         onChange={imageHandler}/>
                 </div>
                 <div>
-                    <label>Date</label>
-                    <input type="date" min="2019-01-01" max="2022-12-31" value={date} onChange={dateHandler}/>
+                    <input type="date" min="1960-01-01" max="2025-04-07"  className= "submit-button" id= "date-btn" value={date} onChange={dateHandler}/>
                 </div>
                 <div>
-                    <button type="submit">Add Expense</button>
+                    <button type="submit" className= "submit-button" id= "add-item-btn">Add Actor</button>
                 
                 </div>
 

@@ -7,7 +7,7 @@ import RegisterForm from './components/RegisterForm/RegisterForm';
 export default function Main(){
 
     return (
-        <BrowserRouter>
+        <BrowserRouter basename="/react-assignment1">
             <Routes>
                 <Route path="/" element={<Dashboard/>} />
                 <Route path="/signup" element={<RegisterForm/>} />

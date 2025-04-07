@@ -5,7 +5,7 @@ export default function CardItem(props){
 
 
     return(
-        <div class="card-item {props.extraStyleClass}" >
+        <div className="card-item {props.extraStyleClass}" >
             <img 
             src={props.avatar} 
             alt={props.name}

@@ -34,7 +34,7 @@ function Dashboard() {
                 </div>
             ):
              (   
-                <div class="center-container">
+                <div className="center-container">
                     <LoginForm/>
                 </div>
                 )

@@ -1,13 +1,47 @@
 .card-item {
+    position: relative;
     width: 100%;
     height: 100%;
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border: 1px solid #ccc;
+
+    min-width: 50px;
 }
 
 .card-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 10px;
+}
+
+.card-item span {
+    position: absolute;
+    color: transparent;
+    border-radius: 10px;
+    width:100%;
+    height:100%;
+    left:0;
+    top:0;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+
+    transition: 1s;
+}
+
+.card-item:hover{
+    cursor: pointer;
+    
+}
+
+.card-item:hover span{
+   
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+    border: 1px solid #000;
+    backdrop-filter: blur(5px);
+    color: #f99c37;
+    text-shadow: #000000 1px 1px 5px;
+    
 }

@@ -58,12 +58,12 @@ export default function Home(props) {
 
 
     return (
-        <div class="home">
-            <div class="docked-container welcome-docker">
+        <div className="home">
+            <div className="docked-container welcome-docker">
                 <ScreenTitle design_id="welcome-title" title={`Welcome ${splitAndCapitalizeEmail(props.user.email)}`}/>
-                <button class="log-out-button" onClick={props.signOut} aria-label="Sign Out"></button>
+                <button className="log-out-button" onClick={props.signOut} aria-label="Sign Out"></button>
             </div>
-            <div class="page-container">
+            <div className="page-container">
                 <CardForm styleClass="card-form" addRow={(name, avatar) =>{
                     const newRow = { name: name, avatar: avatar };
                     setDummyUsers(prev => [...prev, newRow]);

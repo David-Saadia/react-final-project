@@ -6,8 +6,8 @@ export default function CardTable(props){
     
     return(
         
-            <div class='center-container'>
-                <div class ="{props.styleClass} expense-grid ">
+            <div className='center-container'>
+                <div className ="{props.styleClass} expense-grid ">
                     {props.rows.map((item , index) => (
                         <CardItem 
                             key={index} 

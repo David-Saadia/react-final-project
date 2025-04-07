@@ -1,5 +1,5 @@
 {
-  "homepage": "https://David-Saadia.github.io/react-assignment1",
+  "homepage": "https://David-Saadia.github.io/react-assignment1/",
   "name": "react-assignment1",
   "version": "0.1.0",
   "private": true,
@@ -14,6 +14,7 @@
     "react-router-dom": "^6.30.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
+  
   },
   "scripts": {
     "start": "react-scripts start",
@@ -40,5 +41,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
   }
+  
 }
