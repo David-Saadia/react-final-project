@@ -1,0 +1,50 @@
+.welcome-docker{
+    height: 10vh;
+    width: 100vw;
+    font-size: 2em;
+    margin-bottom: 5vh;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    padding: 10px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+    border-bottom: 1px solid #000;
+    backdrop-filter: blur(10px);
+  
+}
+
+.welcome-docker #welcome-title{
+    margin-right: 20vw;
+    font-size: 1em;
+}
+
+.welcome-docker button{
+    background-color: transparent;
+    padding-left: 50px;
+    padding-right: 50px;
+    cursor: pointer;
+    background-image: url(../../assets/images/logout_icon.png);
+    background-size: contain;      
+    background-position: center;   
+    background-repeat: no-repeat;  
+    border: none;
+    width:32px;
+    height:32px;
+}
+
+.page-container{
+    margin-top:14vh;
+}
+
+.card-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+}
+

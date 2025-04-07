@@ -1,0 +1,10 @@
+.screen-title {
+    font-size: 2em;
+    margin-bottom: 5vh;
+    text-align: center;
+    font-weight: 800;
+    text-shadow: #000000 1px 1px 5px;
+    text-decoration: bold;
+    letter-spacing: 0.01em;
+    position: relative;
+}
