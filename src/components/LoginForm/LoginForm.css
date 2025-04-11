@@ -1,7 +1,5 @@
-
-
 .login{
-    width: 35vw;
+
 }
 
 .submit-button{
@@ -84,7 +82,7 @@
     }
   }
   
-  @media only screen and (max-width: 400px) {
+  @media only screen and (max-width: 460px) {
     body {
       background-size: 300%;
     }

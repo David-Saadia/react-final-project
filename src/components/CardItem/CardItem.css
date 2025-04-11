@@ -27,7 +27,7 @@
     justify-content: center;
     font-weight: 800;
 
-    transition: 1s;
+    transition: 1s ease;
 }
 
 .card-item:hover{

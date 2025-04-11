@@ -7,7 +7,7 @@
     border: 1px solid #ccc;
     display: inline-block;
     margin-bottom:0;
-    padding:3vh 1vw;
+    padding:3vh 0;
     cursor: pointer;
     background: #222;
     border-radius: 5px;
@@ -33,12 +33,13 @@
 
 .card-form-container{
     background: rgba(000, 000, 000, 0.3);
+    min-height: 12vh;
+    max-height: 70vh;
+    box-sizing:content-box;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
-    box-sizing: border-box;
     backdrop-filter: blur(10px);
-    padding-bottom:20vh;
+    padding-bottom:2vh;
     margin-bottom:0;
-    height: 12vh;
     margin-top:0vh;
     padding-right: 1vw;
     padding-top: 2vh;
@@ -51,5 +52,3 @@ h2#card-form-title.screen-title{
     margin-bottom: 2vh;
     padding:0;
 }
-
-

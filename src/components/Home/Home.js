@@ -1,14 +1,15 @@
 import {useEffect, useState} from "react";	
 
-import { splitAndCapitalizeEmail } from "../utils";
+
 import CardForm from "../CardForm/CardForm";
 import CardTable from "../CardTable/CardTable";
-import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
+
 import "../utils.css";
 import "./Home.css";
 import bg from "../../assets/images/scrollableBackground.png";
+import NavigationBar from "../base-components/NavigationBar/NavigationBar";
 
-export default function Home(props) {
+export default function Home() {
 
     const [dummyUsers, setDummyUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -32,7 +33,7 @@ export default function Home(props) {
                         avatar: user.avatar
                     }))
                 ));
-                console.log("Users added....!!!");
+                console.log("Actors added....!!!");
                 setLoading(false);
 
             } catch (error) {
@@ -45,12 +46,9 @@ export default function Home(props) {
         //Setting page general attributes
         document.title = "Home Page";
         document.body.style.backgroundImage = `url(${bg})`; ;
-        document.body.style.backgroundSize= "100% auto";
+        
         document.body.style.backgroundPosition = "top center";
-        // document.body.style.backgroundSize = "cover"; // This fills the entire screen
-        // document.body.style.backgroundPosition = "center";
-        // document.body.style.backgroundRepeat = "repeat";
-        // document.body.style.backgroundAttachment = "fixed";
+        document.body.style.backgroundSize = "cover"; // This fills the entire screen
         document.body.style.backgroundRepeat = "repeat-y";
         document.body.style.backgroundAttachment = "scroll";
         document.body.style.margin= "0";
@@ -64,16 +62,13 @@ export default function Home(props) {
 
     return (
         <div className="home">
-            <div className="docked-container welcome-docker">
-                <ScreenTitle design_id="welcome-title" title={`Welcome ${splitAndCapitalizeEmail(props.user.email)}`}/>
-                <button className="log-out-button" onClick={props.signOut} aria-label="Sign Out"></button>
-            </div>
+            <NavigationBar/>
             <div className="page-container">
                 <CardForm styleClass="card-form" addRow={(name, avatar) =>{
                     const newRow = { name: name, avatar: avatar };
                     setDummyUsers(prev => [...prev, newRow]);
                     } }/>
-                <CardTable styleClass="card-table" rows={dummyUsers}/> 
+                <CardTable tableTitle= "Our Team" styleClass="card-table" rows={dummyUsers}/> 
             </div>
         </div>
     );

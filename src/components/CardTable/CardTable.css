@@ -1,8 +1,18 @@
 .expense-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem 5rem ;
-    margin: 1rem 0;
-    height: 100vh;
-    width: 70vw;
+    gap: 7rem 7rem ;
+    padding: 1rem 0;
+    max-width: 80vw;
+    width: 85vw;
+    height: 100%;
+}
+
+@media screen and (max-width: 768px) {
+    .expense-grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
 }

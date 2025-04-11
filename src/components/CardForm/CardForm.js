@@ -1,8 +1,12 @@
 
 import {useState} from "react";
+import {ref, set, get} from "firebase/database";
+import {auth} from "../FireBase";
+import database from "../FireBase";
 
 import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
 import FormField from "../base-components/FormField/FormField";
+import {splitAndCapitalizeEmail} from "../utils";
 import "./CardForm.css";
 
 export default function CardForm(props){
@@ -20,25 +24,51 @@ export default function CardForm(props){
     const imageHandler = (e) => {
         setImagePath(e.target.value);
         const reader = new FileReader();
-        reader.onload = (event) => setImage(event.target.result);
-        reader.readAsDataURL(e.target.files[0]);
+
+        try{
+            reader.onload = (event) => setImage(event.target.result);
+            reader.readAsDataURL(e.target.files[0]);
+        }
+        catch(error){
+            console.log(error);
+            alert("Image not selected");
+            setImage(null);
+            setImagePath("");
+        }
     }
 
     const dateHandler = (e) => {
         setDate(e.target.value);
     }
 
-    const SubmitHandler = (e) => {
+    const SubmitHandler = async (e) => {
         e.preventDefault();
         console.log(title  , date);
-    
+        
+        //Add new card to displayed cards on table
         props.addRow(title , image , date);
+
+        //Add new actor to Firebase/user/actors
+        const refernceURL = `/users/${auth.currentUser.uid}/`;
+        console.log(refernceURL);
+        const dbRef = ref(database, refernceURL);
+        console.log(dbRef);
+        const userSnapshot  = await get(dbRef);
+        const currentUser = userSnapshot.exists()? userSnapshot.val() : {name: splitAndCapitalizeEmail(auth.currentUser.email), actors: []};
+        try{
+            currentUser.actors.push({ name: title, avatar: image });
+            await set(dbRef, currentUser);
+        }
+        catch (error){
+            console.error("Error adding actor to database: ", error);
+        }
+
 
     }
     return(
         <div className = "card-form-container">
             <ScreenTitle title="Add your own actor" design_id="card-form-title"/>
-            <form onSubmit={SubmitHandler} className = {`${props.styleClass}`}>
+            <form onSubmit={SubmitHandler} className = {`${props.styleClass} `}>
                 <div>
                     <FormField 
                         type="text"
