@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import {ref, get} from "firebase/database";	
+// import {ref, get} from "firebase/database";	
+// import database from "../FireBase";
 
 import NavigationBar from "../base-components/NavigationBar/NavigationBar";
-import database from "../FireBase";
 import {auth} from "../FireBase";
 import CardTable from "../CardTable/CardTable";
+import {searchDB} from "../SearchDB";
 
 export default function Profile() {
     
@@ -13,23 +14,9 @@ export default function Profile() {
     useEffect(() =>{
             const fetchActors = async () => {
                 const refernceURL = `/users/${auth.currentUser.uid}/actors`;
-                const dbRef = ref(database, refernceURL);
-
-                try{
-                    const snapshot = await get(dbRef);
-                    if(snapshot.exists()){
-                        console.log(`Data recieved from firebase ${snapshot.val()}`);
-                        setActors(snapshot.val());
-                    }
-                    else{
-                        console.log("No data available on database.");
-                    }
-                }
-
-                catch (error){
-                    console.error("Error fetching data from database: ", error);
-                }
-                
+                const results = await searchDB(refernceURL);
+                console.log("The results are", results);
+                setActors(results);
             }
             fetchActors();
     } , []);
@@ -37,7 +24,7 @@ export default function Profile() {
 
     return (
         <div className ="profile">
-            <NavigationBar/>
+            <NavigationBar currentPage="profile"/>
             <div className="page-container">
                 <section id="user-actors">
                     <CardTable  tableTitle= "Your added Actors" styleClass="card-table" rows={actors}/>

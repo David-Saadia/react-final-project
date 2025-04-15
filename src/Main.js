@@ -6,6 +6,12 @@ import Profile from './components/Profile/Profile';
 import {UserProvider} from './UserProvider';
 
 
+/**
+ * The main function of the app. It wraps the entire app in UserProvider 
+ * and BrowserRouter and sets the basename to "/react-assignment1". 
+ * It defines three routes: "/" that renders Dashboard, "/signup" that renders
+ * RegisterForm, and "/profile" that renders Profile.
+ */
 export default function Main(){
 
 
