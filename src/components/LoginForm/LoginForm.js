@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { useState, useEffect, startTransition } from "react";
+import { useNavigate } from 'react-router-dom';
 import {auth} from "../FireBase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
@@ -22,6 +22,7 @@ export default function LoginForm() {
     
     const [email , setEmail] = useState("");
     const [password , setPassword] = useState("");
+    const navigation = useNavigate();
 
     const handleSignIn = async (e) => {
         e.preventDefault();
@@ -31,8 +32,15 @@ export default function LoginForm() {
         }
         catch(error){
             alert(error.message);
+            console.log(error);}
     }
+
+    const goTo = (path) => {
+        startTransition(() => {
+            navigation(path);
+        });
     }
+
 
     return (
         <div className="login auth-form-container">
@@ -41,8 +49,8 @@ export default function LoginForm() {
             <FormField type="password" value={password} prompt="Password" onChange={(e) => setPassword(e.target.value)}/>
             <input className="submit-button" onClick={handleSignIn} type="submit" value="Sign in"/>
             <div className="links-group">
-                <Link to="/">Forgot Password</Link>
-                <Link to="/signup">Sign Up</Link>
+                <button onClick={() => goTo("/")}>Forgot Password</button>
+                <button onClick={() => goTo("/signup")}>Sign Up</button>
             </div>
         </div>
     );
