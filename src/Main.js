@@ -1,9 +1,13 @@
 "use client";
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import Dashboard from './components/Dashboard';
-import RegisterForm from './components/RegisterForm/RegisterForm';
-import Profile from './components/Profile/Profile';
+import {lazy} from 'react';
 import {UserProvider} from './UserProvider';
+// import Dashboard from './components/Dashboard';
+// import RegisterForm from './components/RegisterForm/RegisterForm';
+// import Profile from './components/Profile/Profile';
+const Profile = lazy(() => import('./components/Profile/Profile'));
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const RegisterForm = lazy(() => import('./components/RegisterForm/RegisterForm'));
 
 
 /**

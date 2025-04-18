@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useContext, startTransition } from 'react';
 
 
 import { splitAndCapitalizeEmail } from "../../utils";
@@ -24,17 +24,25 @@ import "./NavigationBar.css";
 export default function NavigationBar(props) {
 
     const {user, signOut} = useContext(userContext);
+    const navigation = useNavigate();
 
+    const goTo = (path) => {
+        startTransition(() => {
+            navigation(path);
+        });
+    }
 
     return(
+
         <div className="docked-container welcome-docker">
                         <ScreenTitle design_id="welcome-title" title={user? `Welcome ${splitAndCapitalizeEmail(user.email)}`:`Welcome Guest`}/>
                         <button className="log-out-button" onClick={signOut} aria-label="Sign Out"></button>
                         <menu className="menu-container">
-                            <Link to="/" className={`menu-item ${props.currentPage === "home"? "active" : ""}`}>Home</Link>
-                            <Link to="/profile" className={`menu-item ${props.currentPage === "profile"? "active" : ""}`} >Profile</Link>
+                            <button onClick={() => goTo("/")}  className={`menu-item ${props.currentPage === "home"? "active" : ""}`}>Home</button>
+                            <button onClick={() => goTo("/profile")} className={`menu-item ${props.currentPage === "profile"? "active" : ""}`} >Profile</button>
                         </menu>
-                     
+                        
+            <span id="menu-backgroundEffect"></span>        
         </div>
         
 

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from "react";
+import { useState, startTransition } from "react";
 import {auth} from "../FireBase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
@@ -21,7 +21,7 @@ export default function RegisterForm() {
         try {
             await createUserWithEmailAndPassword(auth, email , password);
             alert("Signed Up Successfully");
-            navigation("/");
+            startTransition(() => navigation("/"));
         }
         catch(error) {
             alert(error.message);

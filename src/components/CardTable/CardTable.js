@@ -11,13 +11,13 @@ export default function CardTable(props){
             <div className='center-container'>
                 
                 <div className ="{props.styleClass} expense-grid ">
-                    {props.rows.map((item , index) => (
+                    {props.rows? props.rows.map((item , index) => (
                         <CardItem 
                             key={index} 
                             name={item.name} 
                             avatar={item.avatar}
                             extraStyleClass="" /> 
-                        ))}
+                        )): <></>}
                 </div>
             </div>
 
