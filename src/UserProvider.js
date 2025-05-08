@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import { auth } from "./components/FireBase";
 import { onAuthStateChanged } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 
 export const userContext = createContext(null);
@@ -23,12 +24,13 @@ export const userContext = createContext(null);
 export const UserProvider = ({ children }) => {
     
     const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() =>{
         const unsub = onAuthStateChanged (auth, (currentUser) => {
             setUser(currentUser);
             if (!currentUser && window.location.pathname !== process.env.PUBLIC_URL) {
-                window.location.href = process.env.PUBLIC_URL;
+                navigate( process.env.PUBLIC_URL);
               }
         });
 
