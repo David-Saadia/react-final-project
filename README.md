@@ -2,4 +2,4 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-[Demo Website](https://David-Saadia.github.io/final-project/)
+[Demo Website](https://David-Saadia.github.io/react-final-project/)
