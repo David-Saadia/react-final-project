@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/react-final-project/static/css/main.8bd248b0.css",
-    "main.js": "/react-final-project/static/js/main.8420007f.js",
+    "main.js": "/react-final-project/static/js/main.366491dc.js",
     "static/css/908.83d48546.chunk.css": "/react-final-project/static/css/908.83d48546.chunk.css",
     "static/js/908.f93255f9.chunk.js": "/react-final-project/static/js/908.f93255f9.chunk.js",
     "static/css/362.224ac0a2.chunk.css": "/react-final-project/static/css/362.224ac0a2.chunk.css",
@@ -13,7 +13,7 @@
     "static/media/Fox_in_forest_background.png": "/react-final-project/static/media/Fox_in_forest_background.e8effee3d898c5f4be05.png",
     "index.html": "/react-final-project/index.html",
     "main.8bd248b0.css.map": "/react-final-project/static/css/main.8bd248b0.css.map",
-    "main.8420007f.js.map": "/react-final-project/static/js/main.8420007f.js.map",
+    "main.366491dc.js.map": "/react-final-project/static/js/main.366491dc.js.map",
     "908.83d48546.chunk.css.map": "/react-final-project/static/css/908.83d48546.chunk.css.map",
     "908.f93255f9.chunk.js.map": "/react-final-project/static/js/908.f93255f9.chunk.js.map",
     "362.224ac0a2.chunk.css.map": "/react-final-project/static/css/362.224ac0a2.chunk.css.map",
@@ -24,6 +24,6 @@
   },
   "entrypoints": [
     "static/css/main.8bd248b0.css",
-    "static/js/main.8420007f.js"
+    "static/js/main.366491dc.js"
   ]
 }
