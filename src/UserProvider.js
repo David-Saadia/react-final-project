@@ -27,8 +27,8 @@ export const UserProvider = ({ children }) => {
     useEffect(() =>{
         const unsub = onAuthStateChanged (auth, (currentUser) => {
             setUser(currentUser);
-            if (!currentUser && window.location.pathname !== "/react-assignment1/") {
-                window.location.href = "/react-assignment1/";
+            if (!currentUser && window.location.pathname !== process.env.PUBLIC_URL) {
+                window.location.href = process.env.PUBLIC_URL;
               }
         });
 
