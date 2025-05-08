@@ -22,7 +22,7 @@ export default function Main(){
 
     return (
             <UserProvider>
-                <BrowserRouter basename="/react-assignment1">
+                <BrowserRouter basename="/react-final-project">
                         <Routes>
                             <Route path="/" element={<Dashboard/>} />
                             <Route path="/signup" element={<RegisterForm/>} />
