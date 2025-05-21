@@ -1,17 +1,18 @@
 
 import {useState} from "react";
 import {ref, set, get} from "firebase/database";
-import {auth} from "../FireBase";
-import database from "../FireBase";
+import {auth} from "../../firebase/FireBase";
+import database from "../../firebase/FireBase";
 
 import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
 import FormField from "../base-components/FormField/FormField";
-import {splitAndCapitalizeEmail} from "../utils";
+import {splitAndCapitalizeEmail} from "../../utils";
 import "./CardForm.css";
 
 export default function CardForm(props){
 
     const [title , setTitle] = useState("");
+    //Image path is to show that image has been selected
     const [imagePath , setImagePath] = useState("");
     const [date , setDate] = useState("");
     const [image, setImage] = useState(null);
@@ -45,7 +46,7 @@ export default function CardForm(props){
         e.preventDefault();
         console.log(title  , date);
         
-        //Add new card to displayed cards on table
+        //Add new card to display cards on table
         props.addRow(title , image , date);
 
         //Add new actor to Firebase/user/actors
@@ -54,10 +55,10 @@ export default function CardForm(props){
         const dbRef = ref(database, refernceURL);
         console.log(dbRef);
         const userSnapshot  = await get(dbRef);
-        const currentUser = userSnapshot.exists()? userSnapshot.val() : {name: splitAndCapitalizeEmail(auth.currentUser.email), actors: []};
+        const currentUserName = userSnapshot.exists()? userSnapshot.val() : {name: splitAndCapitalizeEmail(auth.currentUser.email), actors: []};
         try{
-            currentUser.actors.push({ name: title, avatar: image });
-            await set(dbRef, currentUser);
+            currentUserName.actors.push({ name: title, avatar: image });
+            await set(dbRef, currentUserName);
         }
         catch (error){
             console.error("Error adding actor to database: ", error);

@@ -33,7 +33,7 @@
 }
 
 .form-field input:focus ~ .popup_text,
-.form-field input:valid ~ .popup_text{
+.form-field .popup_text.has-content{
     transform: translate(15px,-10px);
     font-size: 0.75em;
     background: #FF6B00;
@@ -41,5 +41,15 @@
     padding: 2px 5px;
     border: 1px solid rgba(0, 0, 0, 0.75);
     font-weight: bolder;
-
 }
+
+.toggle-password{
+    position: absolute;
+    right: 1vw;
+    top: 2.5vh;
+    cursor: pointer;
+}   
+
+
+/* Hide the default password reveal button - we will use our own */
+input[type="password"]::-ms-reveal, input[type="password"]::-ms-clear { display: none; }

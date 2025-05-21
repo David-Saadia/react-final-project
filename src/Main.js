@@ -1,13 +1,14 @@
 "use client";
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import {lazy} from 'react';
+import {lazy, Suspense} from 'react';
+
+// Context and tools
 import {UserProvider} from './UserProvider';
-// import Dashboard from './components/Dashboard';
-// import RegisterForm from './components/RegisterForm/RegisterForm';
-// import Profile from './components/Profile/Profile';
-const Profile = lazy(() => import('./components/Profile/Profile'));
+
+// Page components (lazy loading to avoid loading overhead, initial bundle size and improve performance)
+const Profile = lazy(() => import('./pages/Profile/Profile'));
 const Dashboard = lazy(() => import('./components/Dashboard'));
-const RegisterForm = lazy(() => import('./components/RegisterForm/RegisterForm'));
+const RegisterForm = lazy(() => import('./pages/RegisterForm/RegisterForm'));
 
 
 /**
@@ -18,17 +19,17 @@ const RegisterForm = lazy(() => import('./components/RegisterForm/RegisterForm')
  */
 export default function Main(){
 
-
-
     return (
             <UserProvider>
-                <BrowserRouter basename={process.env.PUBLIC_URL}>
-                        <Routes>
-                            <Route path="/" element={<Dashboard/>} />
-                            <Route path="/signup" element={<RegisterForm/>} />
-                            <Route path="/profile" element={<Profile/>} />
-                        </Routes>
-                </BrowserRouter>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <BrowserRouter basename={process.env.PUBLIC_URL}>
+                            <Routes>
+                                <Route path="/" element={<Dashboard/>} />
+                                <Route path="/signup" element={<RegisterForm/>} />
+                                <Route path="/profile" element={<Profile/>} />
+                            </Routes>
+                    </BrowserRouter>
+                </Suspense>
             </UserProvider>
         
     );

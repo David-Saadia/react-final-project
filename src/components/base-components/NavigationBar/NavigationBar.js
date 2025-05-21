@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useContext, startTransition } from 'react';
 
 
-import { splitAndCapitalizeEmail } from "../../utils";
+import { splitAndCapitalizeEmail } from "../../../utils";
 import ScreenTitle from "../ScreenTitle/ScreenTitle";
 import { userContext } from "../../../UserProvider";
 

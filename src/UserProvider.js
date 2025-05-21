@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from "react";
-import { auth } from "./components/FireBase";
+import { auth } from "./firebase/FireBase";
 import { onAuthStateChanged } from "firebase/auth";
+import { removeFromListDB } from "./firebase/ReadWriteDB";
 
 
 export const userContext = createContext(null);
@@ -23,26 +24,33 @@ export const userContext = createContext(null);
 export const UserProvider = ({ children }) => {
     
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true); //Ensures that the user is loaded before anything else is rendered.
+    // const [token, setToken] = useState(null);
 
     useEffect(() =>{
         const unsub = onAuthStateChanged (auth, (currentUser) => {
             setUser(currentUser);
-            if (!currentUser && window.location.pathname !== "/react-final-project/") {
-                window.location.href = "/react-final-project/";
-              }
+            setLoading(false);
+            // currentUser?.getIdToken().then((token) => { //If the user is signed in, get their token
+            //     setToken(token);
+            // });
+            
         });
 
         return () => unsub
     }, []);
 
     const signOut = async () => {
+        //We must await removing the user from the presence list before signing them out due to firebase write rules.
+        await removeFromListDB(`/presence/`, auth.currentUser.uid);
         await auth.signOut();
         setUser(null);
     };
 
+
     return (
-        <userContext.Provider value={{ user, signOut }}>
-            {children}
+        <userContext.Provider value={{ user, loading,  signOut }}>
+            {!loading? children :<div>Loading...</div>}
         </userContext.Provider>
     );
 

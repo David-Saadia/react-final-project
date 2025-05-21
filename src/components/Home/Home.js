@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import CardForm from "../CardForm/CardForm";
 import CardTable from "../CardTable/CardTable";
 
-import "../utils.css";
+import "../../utils.css";
 import "./Home.css";
 import bg from "../../assets/images/scrollableBackground.png";
 import NavigationBar from "../base-components/NavigationBar/NavigationBar";

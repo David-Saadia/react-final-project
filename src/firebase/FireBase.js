@@ -19,5 +19,6 @@ const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
 const database = getDatabase(app);
 const auth = getAuth(app);
+
 export {auth}
 export default database;

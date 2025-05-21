@@ -1,9 +1,12 @@
 "use client";
 import { useContext } from "react";
-import Home from "./Home/Home";
-import { userContext } from "../UserProvider";
-import "./utils.css";
 
+// Context and tools
+import { userContext } from "../UserProvider";
+import "../utils.css";
+
+// Components  
+import Home from "./Home/Home";
 import LoginForm from "./LoginForm/LoginForm";
 
 
@@ -20,17 +23,8 @@ function Dashboard() {
     const { user } = useContext(userContext);
 
     return (
-        <div >
-            { user ? (
-                <div>
-                    <Home/>
-                </div>
-            ):
-             (   
-                <div className="center-container">
-                    <LoginForm/>
-                </div>
-                )
+        <div>
+            { user ? (<Home/>):(<LoginForm/>)
             }
         </div>
     );
