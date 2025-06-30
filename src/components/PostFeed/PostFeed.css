@@ -1,0 +1,37 @@
+#post-feed{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1vh;
+    box-sizing: border-box;
+    width: 50%;
+    max-width: 50vw;
+    height:100%; 
+}
+
+#new-post-form{
+    width:100%;
+    display:flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 0;
+}
+
+#submit-post-button{
+    
+    width:15%;
+    height:1vh;
+    font-size: 1em;
+    margin-top: 0.5vh;
+    padding: 5px 0px 22px 0px;
+}   
+
+#new-post-field{
+    field-sizing: content;
+    max-height: 35vh;
+}
+
+#posts{
+    width:100%;
+}

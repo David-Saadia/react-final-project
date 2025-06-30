@@ -7,6 +7,7 @@
 .form-field input{
     width: 100%;
     padding: 3vh 1vw;
+    padding-right: 4vw; 
     outline: none;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.1);
@@ -46,8 +47,10 @@
 .toggle-password{
     position: absolute;
     right: 1vw;
-    top: 2.5vh;
+    top: 2vh;
     cursor: pointer;
+    width: 40px;
+    height: 40px;
 }   
 
 

@@ -1,30 +1,31 @@
 import { useNavigate } from 'react-router-dom';
-import { useContext, startTransition } from 'react';
+import { useContext, startTransition  } from 'react';
 
 
-import { splitAndCapitalizeEmail } from "../../../utils";
-import ScreenTitle from "../ScreenTitle/ScreenTitle";
+// Context and tools
 import { userContext } from "../../../UserProvider";
 
+
+// Compononets and styles
+import logo from "../../../assets/images/logo.png";
+import Field from "../Field/Field";
 import "./NavigationBar.css";
 
 
-/**
- * A NavigationBar component that renders a menu with options for the 
- * main pages of the application. The component uses the userContext 
- * to determine if the user is signed in and if so, displays the user's 
- * name and a log out button. The component also takes a currentPage 
- * prop which determines which menu item is active.
- * 
- * @param {object} props - An object containing the currentPage prop.
- * @param {string} props.currentPage - The current page of the application.
- * 
- * @returns A JSX element representing the NavigationBar component.
- */
-export default function NavigationBar(props) {
 
-    const {user, signOut} = useContext(userContext);
+/**
+ * The NavigationBar component renders a docked navigation bar at the top of the page.
+ * The NavigationBar contains the app's logo, a search bar, a settings menu, and a button to sign out.
+ * The NavigationBar is rendered on every page, and links to the home page.
+ * The NavigationBar also displays the user's status and profile picture.
+ * @function
+ * @returns {ReactElement} - The rendered NavigationBar component.
+ */
+export default function NavigationBar() {
+
+    const {signOut, avatar} = useContext(userContext);
     const navigation = useNavigate();
+
 
     const goTo = (path) => {
         startTransition(() => {
@@ -32,19 +33,27 @@ export default function NavigationBar(props) {
         });
     }
 
+    
+
     return(
 
-        <div className="docked-container welcome-docker">
-                        <ScreenTitle design_id="welcome-title" title={user? `Welcome ${splitAndCapitalizeEmail(user.email)}`:`Welcome Guest`}/>
-                        <button className="log-out-button" onClick={signOut} aria-label="Sign Out"></button>
-                        <menu className="menu-container">
-                            <button onClick={() => goTo("/")}  className={`menu-item ${props.currentPage === "home"? "active" : ""}`}>Home</button>
-                            <button onClick={() => goTo("/profile")} className={`menu-item ${props.currentPage === "profile"? "active" : ""}`} >Profile</button>
+        <div className="docked-container" id="navigation-docker">
+                        <img id ="logo" alt="logo" src={logo}/>
+                        <div id = "home-search">
+                            <button onClick={() => goTo("/")} id="home-button"></button>
+                            <Field type="text" prompt="Search..." styleClass="search-bar" styleId="nav-search"/>
+                        </div>
+                        <menu id ="settings-menu">
+                            <button id="settings-button" onClick={signOut} aria-label="Settings"/>
+                            <button id="notifications-button" onClick={signOut} aria-label="Notifications"/>
+                            <img id="profile-picture" alt="pfp" src={avatar}/>
+                            <button id="log-out-button" onClick={signOut} aria-label="Sign Out"></button>
+
                         </menu>
                         
             <span id="menu-backgroundEffect"></span>        
         </div>
         
 
-    )
+    );
 }

@@ -18,7 +18,7 @@ const axiosInstance = axios.create({
  */
 
 axiosInstance.interceptors.request.use(
-    //Use this promise to add token to requests
+    //Use this middleware promise to add token to requests
     async (config) => {
         const user = auth.currentUser;
         if (user) {

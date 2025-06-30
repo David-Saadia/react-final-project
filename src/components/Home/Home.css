@@ -1,8 +1,15 @@
 
 
 .page-container{
+    display: flex;
+    padding: 1vh 1vw;
     margin-top:13vh;
+    flex-direction: row;
     width:100vw;
+    height: 100%;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center
 }
 
 .card-form {

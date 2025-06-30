@@ -106,3 +106,7 @@ export const removeFromListDB = async (path, data) => {
         console.error("Error removing data from database: ", error); 
     }
 }
+
+export const findUserNameDB = async (userId)=>{
+    return searchDB(`/users/${userId}/username`);
+}

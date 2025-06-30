@@ -1,0 +1,29 @@
+#popup-backdrop{
+    position: fixed;
+    /*Centeralize*/
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#popup-content{
+    background: #fd8d5db0;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+    z-index: 1001;
+}
+
+#close-button{
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}

@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import { auth } from "./firebase/FireBase";
 import { onAuthStateChanged } from "firebase/auth";
-import { removeFromListDB } from "./firebase/ReadWriteDB";
+import { removeFromListDB, searchDB } from "./firebase/ReadWriteDB";
 
 
 export const userContext = createContext(null);
@@ -24,20 +24,20 @@ export const userContext = createContext(null);
 export const UserProvider = ({ children }) => {
     
     const [user, setUser] = useState(null);
+    const [avatar, setAvatar] = useState("");
     const [loading, setLoading] = useState(true); //Ensures that the user is loaded before anything else is rendered.
-    // const [token, setToken] = useState(null);
 
     useEffect(() =>{
+        
         const unsub = onAuthStateChanged (auth, (currentUser) => {
             setUser(currentUser);
             setLoading(false);
-            // currentUser?.getIdToken().then((token) => { //If the user is signed in, get their token
-            //     setToken(token);
-            // });
-            
+            if(currentUser && currentUser.uid) {
+                fetchUserPFP(currentUser);}
+            else setAvatar("");
         });
 
-        return () => unsub
+        return () => unsub();
     }, []);
 
     const signOut = async () => {
@@ -47,9 +47,31 @@ export const UserProvider = ({ children }) => {
         setUser(null);
     };
 
+     const fetchUserPFP = async (userObj) => {
+            
+            try{
+                //console.trace("fetchUserPFP called with:", userObj);
+                //console.log("userObj = " ,userObj);
+                if (!userObj || typeof userObj !== "object" || !userObj.uid){
+                    //console.warn("fetchUserPFP called with invalid userObj:", userObj);
+                    return;
+                }
+            
+                const refernceURL = `/users/${userObj.uid}/settings/avatar`;
+                const results = userObj.uid? await searchDB(refernceURL): null;
+                console.log("The results are", results);
+                setAvatar(results);
+            }
+            catch(err){
+                console.log(err);
+                console.log("Cannot fetch userPFP.");
+            }
+        }
+  
+
 
     return (
-        <userContext.Provider value={{ user, loading,  signOut }}>
+        <userContext.Provider value={{ user, loading, avatar,  signOut }}>
             {!loading? children :<div>Loading...</div>}
         </userContext.Provider>
     );

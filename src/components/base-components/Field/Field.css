@@ -1,0 +1,24 @@
+.field{
+    position: relative;
+    width: 100%;
+    
+}
+
+.field input{
+    width: 100%;
+    padding: 1vh 1vw;
+    outline: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
+    border: 1px solid #000;
+    backdrop-filter: blur(10px);
+    color: #fff;
+    font-size: 1em;
+    letter-spacing: 0.1em;
+    
+}
+
+
+

@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import "./FormField.css";
-import show from "../../../assets/images/icons/show_password_icon.png";
-import hide from "../../../assets/images/icons/hide_password_icon.png";
+import show from "../../../assets/images/icons/show-password-icon.png";
+import hide from "../../../assets/images/icons/hide-password-icon.png";
 
 
 /**
@@ -30,8 +30,8 @@ export default function FormField(props){
                     onChange={props.onChange} required/>
             <span className={`popup_text ${hasContent ? "has-content" : ""}`}>{props.prompt}</span>
             {isPassword && 
-                <span className="toggle-password" onClick={() => setShowPassword(prev => !prev)}>
-                        {showPassword ? <img src={hide} alt="hide password"/> : <img src={show} alt="show password"/>}</span>
+                <span onClick={() => setShowPassword(prev => !prev)}>
+                        <img  className="toggle-password" src={showPassword ?hide:show} alt="password toggle"/> </span>
             }
         </div>
     );
