@@ -29,7 +29,7 @@ export default function PostFeed(props){
      const fetchPosts = async () =>{
             try{
                 const response = await axiosInstance.get('/posts/?limit=100');
-                console.log(response.data.message)
+                console.log(response.data.message);
                 
                 if (response.status===200){
                     const fetchedPosts = await Promise.all(

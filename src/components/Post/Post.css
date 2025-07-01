@@ -46,6 +46,45 @@
     align-items: center;
 }
 
+#post-add-comment{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width:100%;
+}
+
+#commment-header{
+    display: flex;
+    justify-content: space-between;
+}
+
+#post-username{
+    font-size: 1.3em;
+    margin: 0;
+    margin-bottom:5px;
+}
+
+#comment-button{
+    font-size: 0.8em;
+    align-items: center;
+    margin-top:0;
+    padding-top: 3px;
+    padding-bottom: 2px;
+    padding-inline: 5px;
+    width:110px;
+    height: 32px;
+}
+
+#comment-item{
+    margin-bottom: 1vh;
+}
+
 .timestamp{
     margin-left:auto;
+}
+
+
+.popup-list{
+    list-style-type: none;
 }

@@ -20,12 +20,12 @@ import database from "./FireBase";
 export const searchDB = async (path, field = null, value = null , limit = 1) =>{
     
     // Create a reference to the database at the specified path i.e. "database/users"
-    console.log("The path is" , path);
+    // DEBUG: console.log("The path is" , path);
     let queryRef = ref(database, path); 
     if (field && value) { 
         // If field and value are provided, we use them to speed up the search by ordering the query by the field,
         // and matching the value. Otherwise, we bring the entire list of values.
-        console.log("Received a field. The field is: " , field);
+        // DEBUG: console.log("Received a field. The field is: " , field);
         queryRef = query(
             queryRef, 
             orderByChild(field), // This will order the results by the specified field to speed up the search
@@ -37,7 +37,7 @@ export const searchDB = async (path, field = null, value = null , limit = 1) =>{
     try{ 
         const snapshot = await get(queryRef); 
         if(snapshot.exists()){
-            console.log("Data recieved from firebase: ", snapshot.val());
+            // DEBUG: console.log("Data recieved from firebase: ", snapshot.val());
             const data = snapshot.val();
             return data;
         }
