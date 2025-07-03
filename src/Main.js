@@ -4,6 +4,7 @@ import {lazy, Suspense} from 'react';
 
 // Context and tools
 import {UserProvider} from './UserProvider';
+import useHearbeat from './hooks/useHeartbeat';
 
 // Page components (lazy loading to avoid loading overhead, initial bundle size and improve performance)
 const Profile = lazy(() => import('./pages/Profile/Profile'));
@@ -18,6 +19,8 @@ const RegisterForm = lazy(() => import('./pages/RegisterForm/RegisterForm'));
  * RegisterForm, and "/profile" that renders Profile.
  */
 export default function Main(){
+
+    useHearbeat();
 
     return (
             <UserProvider>

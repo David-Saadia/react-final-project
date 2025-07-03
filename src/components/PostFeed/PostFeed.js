@@ -68,7 +68,7 @@ export default function PostFeed(props){
                 const userName = await findUserNameDB(returnedPost.author);
                 const addedPost = {...returnedPost,userName }
                 setNewPostText("");
-                setPosts((prev)=> [...prev, addedPost]);
+                setPosts((prev)=> [addedPost , ...prev]);
             } 
 
         }catch(err){
@@ -108,6 +108,7 @@ export default function PostFeed(props){
 
                 {!loading && Array.isArray(posts) && posts.map((postItem, postIndex)=>(
                     <Post 
+                        key ={postItem._id}
                         postID={postItem._id}
                         name={postItem.userName}
                         content={postItem.content}

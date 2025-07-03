@@ -5,11 +5,13 @@ import {userContext} from "../../UserProvider"
 import axiosInstance from "../../axiosInstance";
 import { findUserNameDB } from "../../firebase/ReadWriteDB";
 
+// Components
 import PopupModal from "../base-components/PopupModal/PopupModal";
 import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
+import Field from "../base-components/Field/Field";
+import FieldArea from "../base-components/FieldArea/FieldArea";
 import defaultAvatar from "../../assets/images/avatars/avatar_default.png";
 import "./Post.css";
-import Field from "../base-components/Field/Field";
 /**
  * 
  * @param {object} props - props object to contain all parameters 
@@ -26,17 +28,24 @@ import Field from "../base-components/Field/Field";
 export default function Post(props){
 
     const [postTime, setPostTime] = useState(Date(props.timestamp));
-    const [likes, setLikes] = useState(props.likes);
-    const [likesUsernames, setLikesUsernames] = useState([]);
-    const [comments, setComments] = useState(props.comments);
-    const [commentsUsernames, setCommentsUsernames] = useState([]);
-    const [postLiked, setPostLiked] = useState(false);
-    const [commentContent, setCommentContent] = useState("");
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [popupContentType, setPopupContentType] = useState(""); // Can be popup for comments, or popup for likes.
     const postCreationTime = props.timestamp;
     const {user} = useContext(userContext);
     const {postID} = props;
+    const [postContent, setPostContent] = useState(props.content);
+    const [editContent, setEditContent] = useState(props.content);
+    
+
+    // Likes
+    const [likes, setLikes] = useState(props.likes);
+    const [likesUsernames, setLikesUsernames] = useState([]);
+    const [postLiked, setPostLiked] = useState(false);
+    // Comments
+    const [comments, setComments] = useState(props.comments);
+    const [commentsUsernames, setCommentsUsernames] = useState([]);
+    const [commentContent, setCommentContent] = useState("");
+    // Popup
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [popupContentType, setPopupContentType] = useState(""); //Can be popup for comments, likes, or edit post.
 
     useEffect(()=>{
         //Set post timestamp formatting..
@@ -148,6 +157,20 @@ export default function Post(props){
         }
     }
 
+    const editPost = async ()=> {
+        const payload = {content: editContent};
+
+        try{
+            const response = await axiosInstance.put(`/posts/${postID}`, payload);
+            if(response.status===200){
+                console.log(response.data.message);
+                setPostContent(editContent);
+                closePopup();
+            }
+
+        }catch(err){ console.log(err); console.log(err.response?.data?.message); }
+    }
+
     const openPopup = (type)=>{
         if(type === "likes" && (!likes || likes.length===0)) return;
         if(type === "comments" && (!comments || comments.length===0)) return;
@@ -169,7 +192,7 @@ export default function Post(props){
             <span className="timestamp">{postTime}</span>
         </div>
         <div id="post-body">
-            <p>{props.content? props.content : "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"}</p>
+            <p>{postContent? postContent : "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"}</p>
         </div>
         <div id="post-add-comment">
             <Field 
@@ -194,13 +217,13 @@ export default function Post(props){
                 <button onClick={() => openPopup("comments")}>{`${comments.length || 0} comments`}</button> 
             </div>
             <div id="settings">
-                <button>Edit</button>
+                <button onClick={() => openPopup("edit")}>Edit</button>
                 <button onClick = {props.onDelete}>Delete</button>
             </div>
         </div>
         <PopupModal isOpen={isPopupOpen} onClose={closePopup} >
-            <ScreenTitle title={popupContentType==="likes"? "Liked By" : "Comments"}/>
-            <ul className="popup-list">
+            <ScreenTitle title={popupContentType==='likes'? 'Liked By': popupContentType==='comments'? 'Comments':'Edit Post'}/>
+            {!popupContentType==='edit' && (<ul className="popup-list">
                     {/*Likes items section */}
                     {popupContentType==="likes" &&
                     likesUsernames.map( ({ uid, username }, index) => <ScreenTitle design_id="post-username" title={username}/>)}
@@ -209,7 +232,7 @@ export default function Post(props){
                     {popupContentType==="comments" &&
                         comments.map((comment, index) =>
 
-                            <li id="comment-item" key={comment.userId}>
+                            <li id="comment-item" key={index}>
                                 <div id="commment-header">
                                     <ScreenTitle title={commentsUsernames[index]} design_id="post-username"/>
                                     <span id="comment-timestamp">{timeSincePost(comment.timestamp)}</span>
@@ -220,7 +243,24 @@ export default function Post(props){
                             </li>
                          
                         )}
-            </ul>
+                </ul>)}
+                {/*Edit comment section */}
+                {popupContentType=== 'edit' && (
+                    <div>
+                        <FieldArea 
+                            prompt="Edit Post.." 
+                            styleId="new-post-field" value={editContent} 
+                            onChange={(e)=>setEditContent(e.target.value)}/>
+                        <button
+                            className="submit-button"
+                            id="submit-post-button"
+                            onClick={editPost}>
+                                Edit Post
+                        </button>
+                    </div>
+                )
+    
+                }
         </PopupModal>
     </div>
         </>);
