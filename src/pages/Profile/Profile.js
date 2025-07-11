@@ -1,36 +1,33 @@
-import { useState, useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 
 //Context and tools
-import {auth} from "../../firebase/FireBase";
 import { userContext } from "../../UserProvider";
-import {searchDB} from "../../firebase/ReadWriteDB";
-import axios from "../../axiosInstance";
+
 
 // Components
 import NavigationBar from "../../components/base-components/NavigationBar/NavigationBar";
-import CardTable from "../../components/CardTable/CardTable";
+//import CardTable from "../../components/CardTable/CardTable";
 import BackgroundWrapper from "../../components/base-components/BackgroundWrapper";
 
 import bg from "../../assets/images/scrollableBackground.png";
+import SideMenu from "../../components/SideMenu/SideMenu";
+import PostFeed from "../../components/PostFeed/PostFeed";
 
 export default function Profile() {
     
-    const [actors , setActors] = useState([]);
     const {user} = useContext(userContext);
     const navigation = useNavigate();
 
     useEffect(() =>{
             // Change this function to fetch the user's settings from the database
-            const fetchActors = async () => {
-                const refernceURL = `/users/${auth.currentUser?.uid}/actors`;
-                const results = await searchDB(refernceURL);
-                console.log("The results are", results);
-                setActors(results);
-            }
-            fetchActors();
-
-            //Add a function to fetch the user's posts from the backend
+            // const fetchActors = async () => {
+            //     const refernceURL = `/users/${auth.currentUser?.uid}/actors`;
+            //     const results = await searchDB(refernceURL);
+            //     console.log("The results are", results);
+            //     setActors(results);
+            // }
+            // fetchActors();
             
     } , []);
 
@@ -50,11 +47,10 @@ export default function Profile() {
         >
 
             <div className ="profile">
-                <NavigationBar currentPage="profile"/>
+                <NavigationBar/>
                 <div className="page-container">
-                    <section id="user-actors">
-                        <CardTable  tableTitle= "Your added Actors" styleClass="card-table" rows={actors}/>
-                    </section>
+                    <SideMenu/>
+                    <PostFeed type="profile"/>
 
                 </div>
             </div>

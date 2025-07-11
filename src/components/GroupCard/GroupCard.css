@@ -1,0 +1,109 @@
+.grouped, #group-card-header{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.grouped{
+  justify-content: right;
+}
+
+#group-card{
+    display:flex;
+    flex-direction: column;
+    width:100%;
+    background:rgb(255,255,255,0.1);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 5px 15px rgb(255,255,255,0.1);
+    padding:1rem;
+    border: 1px solid rgb(255,255,255,0.1);
+    border-radius:25px;
+}
+
+.grouped img{
+    height:10rem;
+    width: 10rem;
+}
+
+#remove-member-button, #promote-member-button{
+    width:5rem;
+    height:2rem;
+    margin:0;
+    line-height: 0;
+    padding:1em;
+    font-size:0.8em;
+}
+
+#rename-group-button, #decline-invite-button, #accept-invite-button{
+    width:10rem;
+    height:2rem;
+    margin:0;
+    line-height: 0;
+    padding:1em;
+    font-size:1em;
+}
+
+#accept-invite-button{
+  background:rgb(100,255,100,0.4);
+  width:6rem;
+}
+
+#accept-invite-button:hover{
+  background:rgb(100,255,100,0.6);
+  
+}
+#decline-invite-button{
+  background:rgb(255,100,100,0.4);
+  width:6rem;
+}
+
+#decline-invite-button:hover{
+  background:rgb(255,100,100,0.6);
+}
+
+
+#group-card-header button{
+    width:3rem;
+    height:3rem;
+}
+
+.card-carousel{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+}
+
+.card-carousel-item{
+  width: 5rem;
+  height: 5rem;
+  background-color: #3498db17;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
+  transition: all 0.3s ease;
+  margin-left: -1vw; /* Negative margin causes overlap */
+  margin-top: 0;
+  z-index: 1;
+
+}
+.card-carousel-item img{
+  width: 5rem;
+  height: 5rem;
+  padding:0;
+  margin:0;
+}
+
+.card-carousel-item:first-child {
+  margin-left: 0;
+}
+
+.card-carousel-item:hover {
+  transform: scale(1.2) translateY(-2vh);
+  z-index: 10;
+}
+
+/* Push siblings on hover */
+.card-carousel-item:hover ~ .card-carousel-item {
+  transform: translateX(3vw);
+}

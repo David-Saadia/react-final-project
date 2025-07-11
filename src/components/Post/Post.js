@@ -3,14 +3,13 @@ import {useState, useEffect, useContext} from "react";
 // Context and tools
 import {userContext} from "../../UserProvider"
 import axiosInstance from "../../axiosInstance";
-import { findUserNameDB } from "../../firebase/ReadWriteDB";
+import { findAvatarDB, findUserNameDB, searchDB } from "../../firebase/ReadWriteDB";
+import { timeSincePost } from "../../utils";
 
 // Components
-import PopupModal from "../base-components/PopupModal/PopupModal";
+import PopupModal, { CommentsListWindow, EditPostWindow, LikesListWindow } from "../base-components/PopupModal/PopupModal";
 import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
 import Field from "../base-components/Field/Field";
-import FieldArea from "../base-components/FieldArea/FieldArea";
-import defaultAvatar from "../../assets/images/avatars/avatar_default.png";
 import "./Post.css";
 /**
  * 
@@ -27,12 +26,13 @@ import "./Post.css";
  */
 export default function Post(props){
 
-    const [postTime, setPostTime] = useState(Date(props.timestamp));
-    const postCreationTime = props.timestamp;
     const {user} = useContext(userContext);
     const {postID} = props;
+    const postCreationTime = props.timestamp;
+    const [postTime, setPostTime] = useState(Date(props.timestamp));
     const [postContent, setPostContent] = useState(props.content);
-    const [editContent, setEditContent] = useState(props.content);
+    // const [editContent, setEditContent] = useState(props.content);
+    const [avatar, setAvatar] = useState("");
     
 
     // Likes
@@ -42,6 +42,7 @@ export default function Post(props){
     // Comments
     const [comments, setComments] = useState(props.comments);
     const [commentsUsernames, setCommentsUsernames] = useState([]);
+    const [commentsAvatars, setCommentsAvatars] = useState([]);
     const [commentContent, setCommentContent] = useState("");
     // Popup
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -76,7 +77,9 @@ export default function Post(props){
 
         const fetchCommentersUsernames = async () => {
             //Avoid refetching if we already have the data, or avoid fetching if we have no comments.
-            if(popupContentType !=="comments" || !comments || (comments.length === commentsUsernames.length)) return;
+            if(popupContentType !=="comments" || !comments || (comments.length === commentsUsernames.length))
+                {// DEBUG: console.log("avoiding fetching the commenters usernames..." + `\n${commentsUsernames.length}`);
+                return;} 
             const usernames = await Promise.all(
                 comments.map(async (comment)=> {
                     const username = await findUserNameDB(comment.userId);
@@ -85,27 +88,44 @@ export default function Post(props){
             );
             setCommentsUsernames(usernames);
         }
+
+        const fetchAvatar = async () =>{
+            try{
+                const refernceURL = `/users/${props.author}/settings/avatar`;
+                const results = await searchDB(refernceURL);
+                setAvatar(results);
+            }
+            catch(err){
+                console.log(err);
+            }
+        }
         fetchLikersUsernames();
         fetchCommentersUsernames();
+        
+        fetchAvatar();
+        // DEBUG: console.log(comments);
+        // DEBUG: console.log(commentsUsernames);
 
-    }, [likes,comments, popupContentType , likesUsernames ,commentsUsernames]);
+    }, [likes,comments, popupContentType , likesUsernames ,commentsUsernames, props.author]);
 
-    const timeSincePost = (time) =>{
-        const timePassed = Date.now() - new Date(time);
-        // DEBUG: console.log(timePassed);
+    const fetchCommentersAvatar = async() =>{
+        try{
+            if(popupContentType !=="comments" || !comments || (comments.length === commentsUsernames.length)) 
+                return; 
+            console.log("Attempting to fetch commenters avatars");
+            const avatars = await Promise.all(comments.map(async (comment)=>{
+                const avatar = await findAvatarDB(comment.userId);
+                return avatar;
+                })
+            );
+            // DEBUG: console.log(avatars);
+            setCommentsAvatars(avatars);
 
-        const seconds= Math.floor(timePassed/1000);
-        const minutes= Math.floor(seconds/60);
-        const hours= Math.floor(minutes/60);
-        const days= Math.floor(hours/24);
-
-        if (days > 0) return (days===1)? "1 day ago" : `${days} days ago`;
-        if (hours > 0) return (hours===1)? "1 hour ago" : `${hours} hours ago`;
-        if (minutes > 0) return (minutes===1)? "1 minute ago" : `${minutes} minutes ago`;
-        return "Just now";
-
+        }
+        catch(err) {
+            console.log(err);   
+        }
     }
-
 
     const unlikePost = async ()=>{
 
@@ -157,7 +177,7 @@ export default function Post(props){
         }
     }
 
-    const editPost = async ()=> {
+    const editPost = async (editContent)=> {
         const payload = {content: editContent};
 
         try{
@@ -165,6 +185,7 @@ export default function Post(props){
             if(response.status===200){
                 console.log(response.data.message);
                 setPostContent(editContent);
+                alert(response.data.message);
                 closePopup();
             }
 
@@ -182,86 +203,156 @@ export default function Post(props){
         setIsPopupOpen(false);
         setPopupContentType("");
     }
+    
+    fetchCommentersAvatar(); 
 
-
-    return(<>
+    return(
     <div id="post" >
+        <PostHeader avatar={avatar} name={props.name? props.name : "Unknown User"} postTime={postTime}/>
+        <PostBody postContent={postContent}/>
+        <PostComment commentContent={commentContent} setCommentContent={setCommentContent} addComment={addComment}/>
+        <PostFooter 
+            openPopup={openPopup}
+            user={user}
+            author={props.author} 
+            postLiked={postLiked} 
+            likePost={likePost} 
+            unlikePost={unlikePost} 
+            likes={likes} 
+            comments={comments} 
+            onDelete={props.onDelete}    
+        />
+
+        <PopupModal isOpen={isPopupOpen} onClose={closePopup} >
+            <ScreenTitle designId={"popup-title"} title={popupContentType==='likes'? 'Liked By': popupContentType==='comments'? 'Comments':'Edit Post'}/>
+            {popupContentType!=='edit' && (<ul className="popup-list">
+                {/*Likes items section */}
+                {popupContentType==="likes" && (<LikesListWindow likesUsernames={likesUsernames}/>)}
+                {/*Comments items section */}
+                {popupContentType==="comments" && (<>
+                    <div id="post-preview">
+                        <PostHeader avatar={avatar} name={props.name? props.name : "Unknown User"} postTime={postTime}/>
+                        <PostBody postContent={postContent}/>
+                    </div>
+                    <CommentsListWindow comments={comments} commentsUsernames={commentsUsernames} commentsAvatars={commentsAvatars} timeSincePost={timeSincePost}/>
+                </>)}
+            </ul>)}
+            {/*Edit comment section */}
+            {popupContentType=== 'edit' && (<EditPostWindow editPost={editPost}/>)}
+        </PopupModal>
+    </div>
+        );
+};
+
+/**
+ * A functional component that displays a post header.
+ * 
+ * @param {object} props - The props object.
+ * @param {string} props.avatar - The url of the avatar to display.
+ * @param {string} props.name - The name to display.
+ * @param {string} props.postTime - The timestamp to display.
+ * 
+ * @returns A JSX element representing the post header.
+ */
+const PostHeader = (props)=>{
+    return(
         <div id="post-header">
-            <img src={props.avatar? props.avatar : defaultAvatar} alt="avatar" />
-            <h2>{props.name? props.name : "Unknown User"}</h2>
-            <span className="timestamp">{postTime}</span>
+            <img src={props.avatar} alt="avatar" />
+            <h2>{props.name}</h2>
+            <span className="timestamp">{props.postTime}</span>
         </div>
+    );
+}
+
+/**
+ * A functional component that displays the content of a post.
+ * If the post content is not given, it displays a dummy text.
+ * @param {object} props - The props object.
+ * @param {string} props.postContent - The content of the post.
+ * @returns A JSX element representing the post content.
+ */
+const PostBody = (props)=>{
+    const dummyPostContent = 
+    `Lorem ipsum dolor sit amet, officia excepteur ex fugiat reprehenderit enim
+    labore culpa sint ad nisi Lorem pariatur mollit ex esse exercitation amet. Nisi
+    animcupidatat excepteur officia. Reprehenderit nostrud nostrud ipsum Lorem est
+    aliquip amet voluptate voluptate dolor minim nulla est proident. Nostrud officia
+    pariatur ut officia. Sit irure elit esse ea nulla sunt ex occaecat reprehenderit
+    commodo officia dolor Lorem duis laboris cupidatat officia voluptate. Culpa
+    proident adipisicing id nulla nisi laboris ex in Lorem sunt duis officia
+    eiusmod. Aliqua reprehenderit commodo ex non excepteur duis sunt velit enim.
+    Voluptate laboris sint cupidatat ullamco ut ea consectetur et est culpa et
+    culpa duis.`;
+    return(
         <div id="post-body">
-            <p>{postContent? postContent : "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"}</p>
+            <p>{props.postContent?? dummyPostContent}</p>
         </div>
+    );
+}
+
+/**
+ * A functional component that provides an input field for adding comments
+ * to a post and a button to submit the comment.
+ * 
+ * @param {object} props - The properties for the PostComment component.
+ * @param {string} props.commentContent - The current content of the comment input field.
+ * @param {function} props.setCommentContent - A function to update the commentContent state.
+ * @param {function} props.addComment - A function to handle the addition of a comment when the button is clicked.
+ */
+const PostComment = (props) =>{
+
+    return(
         <div id="post-add-comment">
             <Field 
                 type="text" 
-                value={commentContent} 
-                onChange={(e)=>setCommentContent(e.target.value)} 
+                value={props.commentContent} 
+                onChange={(e)=>props.setCommentContent(e.target.value)} 
                 prompt="Comment..."/>
-            <button className="submit-button" id="comment-button" onClick={addComment}>comment</button>
+            <button className="submit-button" id="comment-button" onClick={props.addComment}>comment</button>
         </div>
+    );
+}
+
+/**
+ * A functional component that displays a post footer.
+ * It contains a section that allows liking/unliking a post and shows the number of likes,
+ * a section that shows the number of comments and allows the user to view all comments when clicked on,
+ * and a section that allows the author to edit or delete the post.
+ * 
+ * @param {object} props - The properties for the PostFooter component.
+ * @param {boolean} props.postLiked - Whether the user has liked the post or not.
+ * @param {function} props.likePost - A function to like the post.
+ * @param {function} props.unlikePost - A function to unlike the post.
+ * @param {string[]} props.likes - The users that have liked the post.
+ * @param {function} props.openPopup - A function to open a popup window.
+ * @param {object[]} props.comments - The comments on the post.
+ * @param {function} props.onDelete - A function to delete the post.
+ */
+const PostFooter = (props) =>{
+    
+    return(
         <div id="post-footer">
             <div id="likes-comments">
                 
                 {/**This wil like/unlike the post */}
-                {postLiked?
-                <button onClick={unlikePost}>Unlike</button>:
-                <button onClick={likePost}>Like</button>} 
+                {props.postLiked?
+                <button onClick={props.unlikePost}>Unlike</button>:
+                <button onClick={props.likePost}>Like</button>} 
 
                 {/**This will show the number of likes and when clicked on will show the users that have liked the post */}
-                <button onClick={() => openPopup("likes")}>{likes?.length || 0}</button> 
+                <button onClick={() => props.openPopup("likes")}>{props.likes?.length || 0}</button> 
                 
                 {/**This will show the comments on the post */}
-                <button onClick={() => openPopup("comments")}>{`${comments.length || 0} comments`}</button> 
+                <button onClick={() => props.openPopup("comments")}>{`${props.comments.length || 0} comments`}</button> 
             </div>
+            {(props.user.uid === props.author) &&
+            (
             <div id="settings">
-                <button onClick={() => openPopup("edit")}>Edit</button>
+                <button onClick={() => props.openPopup("edit")}>Edit</button>
                 <button onClick = {props.onDelete}>Delete</button>
-            </div>
+            </div>)
+            }
+          
         </div>
-        <PopupModal isOpen={isPopupOpen} onClose={closePopup} >
-            <ScreenTitle title={popupContentType==='likes'? 'Liked By': popupContentType==='comments'? 'Comments':'Edit Post'}/>
-            {!popupContentType==='edit' && (<ul className="popup-list">
-                    {/*Likes items section */}
-                    {popupContentType==="likes" &&
-                    likesUsernames.map( ({ uid, username }, index) => <ScreenTitle design_id="post-username" title={username}/>)}
-
-                    {/*Comments items section */}
-                    {popupContentType==="comments" &&
-                        comments.map((comment, index) =>
-
-                            <li id="comment-item" key={index}>
-                                <div id="commment-header">
-                                    <ScreenTitle title={commentsUsernames[index]} design_id="post-username"/>
-                                    <span id="comment-timestamp">{timeSincePost(comment.timestamp)}</span>
-                                </div>
-                                <div id="comment-body">
-                                    {comment.content}
-                                </div>
-                            </li>
-                         
-                        )}
-                </ul>)}
-                {/*Edit comment section */}
-                {popupContentType=== 'edit' && (
-                    <div>
-                        <FieldArea 
-                            prompt="Edit Post.." 
-                            styleId="new-post-field" value={editContent} 
-                            onChange={(e)=>setEditContent(e.target.value)}/>
-                        <button
-                            className="submit-button"
-                            id="submit-post-button"
-                            onClick={editPost}>
-                                Edit Post
-                        </button>
-                    </div>
-                )
-    
-                }
-        </PopupModal>
-    </div>
-        </>);
-};
+    );
+}

@@ -1,0 +1,50 @@
+#group-feed-wrapper{
+    width: 55%;
+
+    margin-top: 0vh;
+    display:flex;
+    flex-direction: column;
+    padding:1rem;
+    padding-top:0;
+}
+
+.page-container{
+    width:100%;
+    align-items: baseline;
+}
+
+.groups{
+    align-items:center;
+    justify-content: center;
+    width:100%;
+}
+
+#new-group-form{
+    display:flex;
+
+    
+    align-self: baseline;
+    width:100%; 
+    justify-content:space-between;
+}
+
+#new-group-field{
+    height:100%;
+}
+
+#create-group-button{
+    margin-left: 2vw;
+    width:20%;
+    margin-top:0;
+    padding: 10px 5px;
+}
+
+#invite-popup{
+    height:50vh;
+}
+
+#groups-list{
+    width:100%;
+    margin-top: 3vw;
+}
+

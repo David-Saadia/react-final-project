@@ -110,3 +110,11 @@ export const removeFromListDB = async (path, data) => {
 export const findUserNameDB = async (userId)=>{
     return searchDB(`/users/${userId}/username`);
 }
+
+export const findAvatarDB = async (userId)=>{
+    return searchDB(`/users/${userId}/settings/avatar`);
+}
+
+export const findUIDbyUsername = async (username)=>{
+    return searchDB(`/users/`, "username", username);
+}

@@ -5,7 +5,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 
 // Context and tools
 import { writeToDB, writeToListDB } from '../../firebase/ReadWriteDB';
-import {splitAndCapitalizeEmail} from "../../utils";
+import {pickRandom, splitAndCapitalizeEmail} from "../../utils";
 
 
 //Compononets and styles
@@ -13,7 +13,6 @@ import ScreenTitle from "../../components/base-components/ScreenTitle/ScreenTitl
 import FormField from "../../components/base-components/FormField/FormField";
 import BackgroundWrapper from '../../components/base-components/BackgroundWrapper';
 import bg from"../../assets/images/Fox_in_forest_background.png";
-import defaultAvatar from "../../assets/images/avatars/avatar_default.png";
 import "./RegisterForm.css";
 import "../../utils.css";
 
@@ -34,7 +33,11 @@ export default function RegisterForm() {
             writeToListDB(`/presence/`, auth.currentUser.uid);
 
             //More settings later...
-            writeToDB(`/users/${auth.currentUser.uid}/settings/avatar/`, defaultAvatar); //Add default avatar to user's settings
+            
+            const avatarDecision = ["black","blue","default","green","light_blue","orange","purple","red","yellow"][pickRandom(9)]
+            console.log("decision = " , avatarDecision);
+            const avatar = await import(`../../assets/images/avatars/avatar_${avatarDecision}.png`);
+            writeToDB(`/users/${auth.currentUser.uid}/settings/avatar/`, avatar.default); //Add default avatar to user's settings
             startTransition(() => navigation("/"));
         }
         catch(error) {

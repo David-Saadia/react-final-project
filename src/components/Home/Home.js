@@ -1,4 +1,4 @@
-import {useContext} from "react";	
+import {useContext, useEffect} from "react";	
 
 // Context and tools
 import {userContext} from "../../UserProvider";
@@ -31,6 +31,7 @@ export default function Home() {
 
     const {loading} = useContext(userContext);
 
+
     
     if(loading) return <div>Loading...</div>;
 
@@ -46,10 +47,10 @@ export default function Home() {
             >
 
             <div className="home">
-                <NavigationBar currentPage="home"/>
+                <NavigationBar/>
                 <div className="page-container">
                     <SideMenu />
-                    <PostFeed />
+                    <PostFeed type="all"/>
                 </div>
             </div>
         </BackgroundWrapper>

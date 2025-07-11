@@ -21,7 +21,13 @@ const useHearbeat = ()=> {
     
     useEffect( ()=>{
 
-        const updateActivity = () =>{
+        const updateActivity = (mount=false) =>{
+            if(mount){
+                isActive.current = true;
+                lastActive.current = Date.now();
+                console.log("Refreshing stale activity token on mount..");
+                return;
+            }
             if((Date.now()- lastActive.current > ACTIVITY_TIMEOUT) && (isActive.current === false)){
                 isActive.current = true;
             }
@@ -57,7 +63,7 @@ const useHearbeat = ()=> {
                     }
                 }
                 catch(err){
-                    if(err.response.status===440){//Session invalidated - relog
+                    if(err.response?.status===440){//Session invalidated - relog
                         alert(err.response.data.message);
                         auth.signOut();
                         console.log("Session exired...");
@@ -67,15 +73,17 @@ const useHearbeat = ()=> {
                 }
             }
             else{
-                console.log("Skipping heartbeat - User Inactive...");
+                console.log("Skipping heartbeat - Heartbeat not ready...");
             }
         }
 
         //This will update our last active ref when each of these events occurs
         const activityEvents = ["mousemove","keydown","mousedown","touchstart"];
-        activityEvents.forEach(e => window.addEventListener(e, updateActivity)); 
+        activityEvents.forEach(e => window.addEventListener(e, ()=>updateActivity(false))   ); 
 
-        const interval = setInterval(sendHearbeat, 60*1000);
+        const interval = setInterval(sendHearbeat, 5 * 60*1000);
+
+        updateActivity(true);
 
         //Clear up any unused listeners when we finish with the hook
         return () => {

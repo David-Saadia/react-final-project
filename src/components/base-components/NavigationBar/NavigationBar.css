@@ -169,6 +169,7 @@
 #navigation-docker{
     height: 10vh;
     width: 100%;
+    overflow-x: hidden;
     margin-bottom: 5vh;
     display: flex;
     flex: 1;

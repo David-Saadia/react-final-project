@@ -6,10 +6,15 @@ import {lazy, Suspense} from 'react';
 import {UserProvider} from './UserProvider';
 import useHearbeat from './hooks/useHeartbeat';
 
+import "./utils.css"
+import GroupsFeed from './pages/Groups/GroupsFeed';
+
 // Page components (lazy loading to avoid loading overhead, initial bundle size and improve performance)
 const Profile = lazy(() => import('./pages/Profile/Profile'));
 const Dashboard = lazy(() => import('./components/Dashboard'));
 const RegisterForm = lazy(() => import('./pages/RegisterForm/RegisterForm'));
+const Groups = lazy(() => import('./pages/Groups/Groups'));
+const PostFeed = lazy(() => import('./components/PostFeed/PostFeed'));
 
 
 /**
@@ -21,7 +26,7 @@ const RegisterForm = lazy(() => import('./pages/RegisterForm/RegisterForm'));
 export default function Main(){
 
     useHearbeat();
-
+    
     return (
             <UserProvider>
                 <Suspense fallback={<div>Loading...</div>}>
@@ -30,6 +35,8 @@ export default function Main(){
                                 <Route path="/" element={<Dashboard/>} />
                                 <Route path="/signup" element={<RegisterForm/>} />
                                 <Route path="/profile" element={<Profile/>} />
+                                <Route path="/groups" element={<Groups/>}/>
+                                <Route path="/groups/feed/:groupId" element={<GroupsFeed/>}/>
                             </Routes>
                     </BrowserRouter>
                 </Suspense>

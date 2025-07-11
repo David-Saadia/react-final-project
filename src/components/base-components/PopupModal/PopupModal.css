@@ -13,13 +13,12 @@
     animation: fadeIn 0.3s ease;
 }
 
-#popup-content{
+.popup-content{
     background: #fd8d5db0;
     padding: 2rem;
     border-radius: 8px;
-    width:50vw;
+    width:clamp(20vw, 50vw, 75vw);
     height:90vh;
-    max-width: 75%;
     overflow-y:auto;
     display: flex;
     flex-direction: column;
@@ -28,15 +27,53 @@
     z-index: 1001;
 }
 
-#close-button{
+.close-button{
     position: absolute;
     top: 1rem;
     right: 1rem;
     cursor: pointer;
+    background: rgb(0,0,0,0.1);
+    border: none;
+    border-radius: 80%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
+    
+}
+
+.grouped-mashed{
+    display: flex;
+    flex-direction: row;
+}
+
+.grouped-horizontal{
+    display: flex;
+    flex-direction: row;
+}
+
+#popup-member-item{
+    justify-content: space-between;
+    gap:2em;
+    width:clamp(20%, 100%);
+    background: rgb(255,255,255,0.1);
+    min-width: 50%;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 5px 15px rgb(255,255,255,0.1);
+    padding:1rem;
+    border-radius:25px;
+    margin: 0.5rem;
+}
+#popup-member-item img{
+    height:6rem;
+    width:6rem;
+}
+#popup-member-item .disabled{
+    opacity:0;
+    pointer-events: none;
 }
 
 
-/* Animations */
+
+
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -56,4 +93,25 @@
 
 body.modal-open {
     overflow: hidden;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgb(0,0,0,0.5);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #d3602f;;
+  border-radius:25px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #d4541c;;
 }

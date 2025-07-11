@@ -25,6 +25,9 @@
     font-size: 1em;
     margin-top: 0.5vh;
     padding: 5px 0px 22px 0px;
+}
+#post-group-selector{
+    width: 100%; 
 }   
 
 #new-post-field{

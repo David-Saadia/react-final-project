@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react";
+import { useParams } from "react-router-dom";
 
 
 // Context and tools
@@ -10,7 +11,9 @@ import '../../utils.css';
 //Compononets and styles
 import Post from "../Post/Post"
 import FieldArea from "../base-components/FieldArea/FieldArea"
+import DropRadioButton from "../base-components/DropRadioButton/DropRadioButton";
 import './PostFeed.css';
+
 
 
 export default function PostFeed(props){
@@ -18,18 +21,24 @@ export default function PostFeed(props){
     const [posts, setPosts] = useState([]);
     const [newPostText, setNewPostText] = useState("");
     const [loading, setLoading] = useState(true);
+    const [groupAttached, setGroupAttached] = useState("None");
+    const [userGroups, setUserGroups] = useState([]);
     const {user} = useContext(userContext);
+    const {groupId} = useParams();
+    const type = props.type;
+
 
     useEffect( () => {
         //Fetch the posts from the backend
-        fetchPosts();
-
-    }, [loading]);
-
-     const fetchPosts = async () =>{
+         const fetchPosts = async () =>{
             try{
-                const response = await axiosInstance.get('/posts/?limit=100');
-                console.log(response.data.message);
+
+                let path = "/posts/?limit=100";
+                path += (type==="profile")? `&userId=${user.uid}`: "";
+                path = (type!=="group")? path:`/groups/posts/${groupId}?limit=100`;
+                console.log( `path= ${path}`);
+                const response = await axiosInstance.get(path);
+                // DEBUG: console.log(response.data.message);
                 
                 if (response.status===200){
                     const fetchedPosts = await Promise.all(
@@ -50,6 +59,29 @@ export default function PostFeed(props){
 
         }
 
+        const fetchUserGroups = async () =>{
+            const limit = 20;
+            try{
+                const response = await axiosInstance.get(`/groups/?userId=${user.uid}&limit=${limit}`);
+                if (response.status===200){
+                    setUserGroups(response.data.groups);
+                    console.log(response.data.groups);
+                    console.log(response.data.message);
+                }
+            }
+            catch(err){
+                console.log(err);
+                console.log(err.response?.data?.message);
+            }
+        }
+        fetchPosts();
+        fetchUserGroups();
+
+    }, [loading, type, user.uid, groupId]);
+
+
+
+    
     const createNewPost = async () =>{
         
         console.log("Attempting to create a new post..");
@@ -60,6 +92,9 @@ export default function PostFeed(props){
             author:user.uid,
             content:newPostText
         };
+        if(groupAttached!=="None")
+            newPost.group = userGroups.find((group)=>group.name===groupAttached)._id; 
+        console.log(`new post group = ${newPost.group}`);
         try{
             const response = await axiosInstance.post("/posts", newPost);
             if (response.status===201){
@@ -98,6 +133,12 @@ export default function PostFeed(props){
                 prompt="What's on your mind?" 
                 styleId="new-post-field" value={newPostText} 
                 onChange={(e)=>setNewPostText(e.target.value)}/>
+                <DropRadioButton
+                    styleId="post-group-selector"
+                    options={["None", ...userGroups.map((group)=>group.name)]}
+                    value={groupAttached}
+                    onChange={setGroupAttached}
+                    />
                 <button 
                     className="submit-button"
                     id="submit-post-button"
@@ -110,6 +151,7 @@ export default function PostFeed(props){
                     <Post 
                         key ={postItem._id}
                         postID={postItem._id}
+                        author={postItem.author}
                         name={postItem.userName}
                         content={postItem.content}
                         timestamp={postItem.timestamp}

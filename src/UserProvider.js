@@ -59,7 +59,7 @@ export const UserProvider = ({ children }) => {
             
                 const refernceURL = `/users/${userObj.uid}/settings/avatar`;
                 const results = userObj.uid? await searchDB(refernceURL): null;
-                console.log("The results are", results);
+                // DEBUG: console.log("The results are", results);
                 setAvatar(results);
             }
             catch(err){
