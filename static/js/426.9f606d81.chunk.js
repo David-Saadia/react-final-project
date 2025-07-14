@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkreact_final_project=self.webpackChunkreact_final_project||[]).push([[426],{2426:(a,e,t)=>{a.exports=t.p+"static/media/avatar_yellow.94a3362c0a28b0400436.png"}}]);
