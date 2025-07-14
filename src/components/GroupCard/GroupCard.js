@@ -279,7 +279,7 @@ export default function GroupCard(props){
             ? (<button onClick={joinGroup}>Join</button>)
             :(<div>
                 <button onClick={(e)=>goTo(`/groups/feed/${groupID}`)}>Explore</button>
-                <button>Chat</button>
+                <button onClick={(e)=>goTo(`/chat/${props.chatID}`)}>Chat</button>
                 {isAdmin() && (<div className="grouped">
                 <button onClick={() => openPopup()}>Manage</button>
                 <button onClick={deleteGroup}>Delete</button>

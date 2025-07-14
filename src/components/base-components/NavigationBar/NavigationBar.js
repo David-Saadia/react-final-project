@@ -13,6 +13,7 @@ import "./NavigationBar.css";
 
 
 
+
 /**
  * The NavigationBar component renders a docked navigation bar at the top of the page.
  * The NavigationBar contains the app's logo, a search bar, a settings menu, and a button to sign out.
@@ -38,16 +39,16 @@ export default function NavigationBar() {
     return(
 
         <div className="docked-container" id="navigation-docker">
-                        <img id ="logo" alt="logo" src={logo}/>
+                        <img onClick={() => goTo("/")} id ="logo" alt="logo" src={logo}/>
                         <div id = "home-search">
-                            <button onClick={() => goTo("/")} id="home-button"></button>
+                            <button className="nav-button" onClick={() => goTo("/")} id="home-button"></button>
                             <Field type="text" prompt="Search..." styleClass="search-bar" styleId="nav-search"/>
                         </div>
                         <menu id ="settings-menu">
-                            <button id="settings-button" onClick={signOut} aria-label="Settings"/>
-                            <button id="notifications-button" onClick={signOut} aria-label="Notifications"/>
+                            <button className="nav-button" id="settings-button" onClick={signOut} aria-label="Settings"/>
+                            <button className="nav-button" id="notifications-button" onClick={signOut} aria-label="Notifications"/>
                             <img id="profile-picture" alt="pfp" src={avatar}/>
-                            <button id="log-out-button" onClick={signOut} aria-label="Sign Out"></button>
+                            <button className="nav-button" id="log-out-button" onClick={signOut} aria-label="Sign Out"></button>
 
                         </menu>
                         

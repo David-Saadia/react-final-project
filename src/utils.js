@@ -2,6 +2,8 @@ const splitAndCapitalizeEmail = (email) => email.split("@")[0].charAt(0).toUpper
 
 const pickRandom = (options) => Date.now()%options;
 
+const extractAcronym = (name) => name.split(" ").map(word => word.charAt(0).toUpperCase()).join("");
+
 const timeSincePost = (time) =>{
     const timePassed = Date.now() - new Date(time);
     // DEBUG: console.log(timePassed);
@@ -11,6 +13,7 @@ const timeSincePost = (time) =>{
     const hours= Math.floor(minutes/60);
     const days= Math.floor(hours/24);
 
+    if (days > 10) return new Date(time).toDateString();
     if (days > 0) return (days===1)? "1 day ago" : `${days} days ago`;
     if (hours > 0) return (hours===1)? "1 hour ago" : `${hours} hours ago`;
     if (minutes > 0) return (minutes===1)? "1 minute ago" : `${minutes} minutes ago`;
@@ -18,4 +21,5 @@ const timeSincePost = (time) =>{
 
 }
 
-export {splitAndCapitalizeEmail, pickRandom, timeSincePost};
+
+export {splitAndCapitalizeEmail, pickRandom, timeSincePost, extractAcronym};

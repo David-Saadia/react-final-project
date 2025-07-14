@@ -169,17 +169,17 @@
 #navigation-docker{
     height: 10vh;
     width: 100%;
-    overflow-x: hidden;
+    
     margin-bottom: 5vh;
     display: flex;
     flex: 1;
     justify-content: space-between;
     text-align: center;
-    padding: 10px 10px;
+    padding-block: 0.7em;
     background: linear-gradient(to right, rgba(255,0,0,0.2), rgba(0,255,0,0.2));
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25); 
     backdrop-filter: blur(10px);
-  
+    z-index: 7;
 }
 
 
@@ -235,7 +235,7 @@
     background-color: rgba(255, 255, 255, 0.05);    
 }
 
-#navigation-docker button{
+#navigation-docker .nav-button{
     position: relative;
     cursor: pointer; 
     border: none;
@@ -251,7 +251,7 @@
     transition: all 0.2s ease; 
 }
 
-#navigation-docker button:hover{
+#navigation-docker .nav-button:hover{
     background-color: rgba(255, 255, 255, 0.15);
     transform: scale(1.05);
 }

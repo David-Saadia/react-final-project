@@ -1,4 +1,4 @@
-import { useState, startTransition } from "react";
+import { useState, startTransition, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import {auth} from "../../firebase/FireBase";
@@ -14,20 +14,24 @@ import FormField from "../base-components/FormField/FormField";
 import "./LoginForm.css";
 import "../../utils.css";	
 import bg from"../../assets/images/Fox_in_forest_background.png";
+import { userContext } from "../../UserProvider";
 
 export default function LoginForm() {
     
     const [email , setEmail] = useState("");
     const [password , setPassword] = useState("");
     const navigation = useNavigate();
+    const {refreshStaleActivityVal} = useContext(userContext);
 
     const handleSignIn = async (e) => {
         e.preventDefault();
        
         try{
             await signInWithEmailAndPassword(auth, email , password);
+            if (refreshStaleActivityVal.current) refreshStaleActivityVal.current();
             writeToListDB(`/presence/`, auth.currentUser.uid);
             alert("Signed In Successfully");
+
         }
         catch(error){
             alert(error.message);

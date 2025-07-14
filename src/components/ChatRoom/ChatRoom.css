@@ -1,0 +1,15 @@
+
+.chat-room{
+    
+}
+
+.messages{
+    box-sizing:border-box;
+    padding:0.5em;
+    margin:0;
+    width:100%;
+}
+
+.message{
+    margin-bottom:1em;
+}

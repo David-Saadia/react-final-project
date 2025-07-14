@@ -7,10 +7,11 @@ import { findAvatarDB, findUserNameDB, searchDB } from "../../firebase/ReadWrite
 import { timeSincePost } from "../../utils";
 
 // Components
-import PopupModal, { CommentsListWindow, EditPostWindow, LikesListWindow } from "../base-components/PopupModal/PopupModal";
+import PopupModal, { CommentsListWindow, EditPostWindow, LikesListWindow, MessageWindow } from "../base-components/PopupModal/PopupModal";
 import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
 import Field from "../base-components/Field/Field";
 import "./Post.css";
+import DropDownMenu from "../base-components/DropDownMenu/DropDownMenu";
 /**
  * 
  * @param {object} props - props object to contain all parameters 
@@ -206,9 +207,29 @@ export default function Post(props){
     
     fetchCommentersAvatar(); 
 
+ 
+
+    let pageTitle;
+    switch(popupContentType){
+        case "likes":
+            pageTitle = "Liked By";
+            break;
+        case "comments":
+            pageTitle = "Comments";
+            break;
+        case "edit":
+            pageTitle = "Edit Post";
+            break;
+        case "message":
+            pageTitle = "Message";
+            break;
+        default:
+            pageTitle = "N/A";
+    }
+
     return(
     <div id="post" >
-        <PostHeader avatar={avatar} name={props.name? props.name : "Unknown User"} postTime={postTime}/>
+        <PostHeader avatar={avatar} name={props.name? props.name : "Unknown User"} postTime={postTime} openPopup={openPopup}/>
         <PostBody postContent={postContent}/>
         <PostComment commentContent={commentContent} setCommentContent={setCommentContent} addComment={addComment}/>
         <PostFooter 
@@ -224,14 +245,14 @@ export default function Post(props){
         />
 
         <PopupModal isOpen={isPopupOpen} onClose={closePopup} >
-            <ScreenTitle designId={"popup-title"} title={popupContentType==='likes'? 'Liked By': popupContentType==='comments'? 'Comments':'Edit Post'}/>
+            <ScreenTitle designId={"popup-title"} title={pageTitle}/>
             {popupContentType!=='edit' && (<ul className="popup-list">
                 {/*Likes items section */}
                 {popupContentType==="likes" && (<LikesListWindow likesUsernames={likesUsernames}/>)}
                 {/*Comments items section */}
                 {popupContentType==="comments" && (<>
                     <div id="post-preview">
-                        <PostHeader avatar={avatar} name={props.name? props.name : "Unknown User"} postTime={postTime}/>
+                        <PostHeader avatar={avatar} name={props.name? props.name : "Unknown User"} postTime={postTime} openPopup={openPopup}/>
                         <PostBody postContent={postContent}/>
                     </div>
                     <CommentsListWindow comments={comments} commentsUsernames={commentsUsernames} commentsAvatars={commentsAvatars} timeSincePost={timeSincePost}/>
@@ -239,6 +260,8 @@ export default function Post(props){
             </ul>)}
             {/*Edit comment section */}
             {popupContentType=== 'edit' && (<EditPostWindow editPost={editPost}/>)}
+            {/*Message section */}
+            {popupContentType=== 'message' && (<MessageWindow receiver={props.author} onClose={closePopup}/>)}
         </PopupModal>
     </div>
         );
@@ -257,7 +280,10 @@ export default function Post(props){
 const PostHeader = (props)=>{
     return(
         <div id="post-header">
-            <img src={props.avatar} alt="avatar" />
+            
+            <DropDownMenu styleId={"message-menu"} options={["Message"]} onChange={()=>{props.openPopup("message")}}>
+                <img src={props.avatar} alt="avatar" />
+            </DropDownMenu>
             <h2>{props.name}</h2>
             <span className="timestamp">{props.postTime}</span>
         </div>

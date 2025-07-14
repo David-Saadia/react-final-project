@@ -1,7 +1,9 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useRef } from "react";
 import { auth } from "./firebase/FireBase";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, getIdToken } from "firebase/auth";
 import { removeFromListDB, searchDB } from "./firebase/ReadWriteDB";
+import useHearbeat from "./hooks/useHeartbeat";
+
 
 
 export const userContext = createContext(null);
@@ -22,15 +24,22 @@ export const userContext = createContext(null);
  */
 
 export const UserProvider = ({ children }) => {
+
+    const refreshStaleActivityVal = useRef(null);
     
     const [user, setUser] = useState(null);
+    const [token, setToken] = useState(null);
     const [avatar, setAvatar] = useState("");
     const [loading, setLoading] = useState(true); //Ensures that the user is loaded before anything else is rendered.
+    
+    useHearbeat(refreshStaleActivityVal, setUser, setToken);
 
     useEffect(() =>{
         
-        const unsub = onAuthStateChanged (auth, (currentUser) => {
+        const unsub = onAuthStateChanged (auth, async (currentUser) => {
             setUser(currentUser);
+            const fireBaseToken = currentUser? await getIdToken(currentUser, true) : null;
+            setToken(fireBaseToken);
             setLoading(false);
             if(currentUser && currentUser.uid) {
                 fetchUserPFP(currentUser);}
@@ -45,7 +54,9 @@ export const UserProvider = ({ children }) => {
         await removeFromListDB(`/presence/`, auth.currentUser.uid);
         await auth.signOut();
         setUser(null);
+        setToken(null);
     };
+
 
      const fetchUserPFP = async (userObj) => {
             
@@ -71,7 +82,7 @@ export const UserProvider = ({ children }) => {
 
 
     return (
-        <userContext.Provider value={{ user, loading, avatar,  signOut }}>
+        <userContext.Provider value={{ user, token, loading, avatar,  signOut, refreshStaleActivityVal }}>
             {!loading? children :<div>Loading...</div>}
         </userContext.Provider>
     );

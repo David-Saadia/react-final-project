@@ -2,32 +2,35 @@
  *  a heartbeat to the server to ensure our session is still valid, and if it is then to refresh it.
  *  This will ensure that if a user is unfocused on the window, or closed the window and left the system will
  *  always log the user out and the authentication will not be persistent.*/
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 
 // Context and tools
 import axiosInstance from "../axiosInstance";
 import { auth } from "../firebase/FireBase";
+import { removeFromListDB } from "../firebase/ReadWriteDB";
 
  
 
 const HEARTBEAT_INTERVAL = 30 * 60*1000; // Every 30 mins
 const ACTIVITY_TIMEOUT = 5 * 60*1000; // User must have been active in last 5 mins to send heartbeat
 
-const useHearbeat = ()=> {
+const useHearbeat = (triggerRef, setUser, setToken)=> {
     const lastActive = useRef(Date.now());
     const lastHeartbeat = useRef(0);
     const isActive = useRef(false);
-    
+
+    if (triggerRef){
+        triggerRef.current = ()=>{
+            isActive.current = true;
+            lastActive.current = Date.now();
+            console.log("Refreshing stale activity token on mount..");
+        };
+    }
     
     useEffect( ()=>{
 
-        const updateActivity = (mount=false) =>{
-            if(mount){
-                isActive.current = true;
-                lastActive.current = Date.now();
-                console.log("Refreshing stale activity token on mount..");
-                return;
-            }
+        const updateActivity = () =>{
+            //Active if the user has been active in the last 5 minutes
             if((Date.now()- lastActive.current > ACTIVITY_TIMEOUT) && (isActive.current === false)){
                 isActive.current = true;
             }
@@ -65,7 +68,10 @@ const useHearbeat = ()=> {
                 catch(err){
                     if(err.response?.status===440){//Session invalidated - relog
                         alert(err.response.data.message);
-                        auth.signOut();
+                        await removeFromListDB(`/presence/`, auth.currentUser.uid);
+                        await auth.signOut();
+                        setUser(null);
+                        setToken(null);
                         console.log("Session exired...");
                         return;
                     }
@@ -91,6 +97,8 @@ const useHearbeat = ()=> {
             clearInterval(interval);
         }
     },[]);
+
+
      
 }
 

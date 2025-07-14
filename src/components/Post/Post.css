@@ -108,6 +108,10 @@
 
 }
 
+#message-menu{
+    width:fit-content;
+}
+
 .post-username{
     font-size: 1.3em;
     margin: 0;

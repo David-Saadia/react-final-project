@@ -63,7 +63,7 @@ export const writeToDB = async (path, data) => {
     }
 }
 
-export const writeToListDB = async (path, data) => {
+export const writeToListDB = async (path, data, set=false) => {
 
     // Create a reference to the database at the specified path i.e. "database/users/$uid/friends"
     // The data could be something like "/friends/$uid"
@@ -79,7 +79,7 @@ export const writeToListDB = async (path, data) => {
         }
         const list = snapshot.val();
         console.log("List is: " , list);
-        await set(queryRef, [...list, data]);
+        await set(queryRef, set? [...list.filter(item => item !== data),data] : [...list, data]);
         console.log("Data written to database list successfully."); 
     }catch(error){ 
         console.error("Error writing data to database: ", error); 

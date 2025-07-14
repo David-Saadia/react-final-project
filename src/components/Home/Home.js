@@ -13,6 +13,7 @@ import bg from "../../assets/images/scrollableBackground.png";
 import NavigationBar from "../base-components/NavigationBar/NavigationBar";
 import PostFeed from "../PostFeed/PostFeed";
 import SideMenu from "../SideMenu/SideMenu"; 
+import Chat from "../../pages/Chat/Chat";
 
 /**
  * A component that renders the main page of the application. The page is
@@ -51,6 +52,7 @@ export default function Home() {
                 <div className="page-container">
                     <SideMenu />
                     <PostFeed type="all"/>
+                    <Chat miniView={true}/>
                 </div>
             </div>
         </BackgroundWrapper>

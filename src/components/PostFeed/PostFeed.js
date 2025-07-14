@@ -35,7 +35,7 @@ export default function PostFeed(props){
 
                 let path = "/posts/?limit=100";
                 path += (type==="profile")? `&userId=${user.uid}`: "";
-                path = (type!=="group")? path:`/groups/posts/${groupId}?limit=100`;
+                path = (type!=="group")? path : `/groups/posts/${groupId}?limit=100`;
                 console.log( `path= ${path}`);
                 const response = await axiosInstance.get(path);
                 // DEBUG: console.log(response.data.message);
@@ -103,7 +103,8 @@ export default function PostFeed(props){
                 const userName = await findUserNameDB(returnedPost.author);
                 const addedPost = {...returnedPost,userName }
                 setNewPostText("");
-                setPosts((prev)=> [addedPost , ...prev]);
+                if(newPost.group === groupId || type!=="group")
+                    setPosts((prev)=> [addedPost , ...prev]);
             } 
 
         }catch(err){

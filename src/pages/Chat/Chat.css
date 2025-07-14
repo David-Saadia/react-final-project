@@ -1,0 +1,19 @@
+#chat-container{
+    display:flex;
+    flex-direction:column;
+    width: 58%;
+    margin-left:18vw;
+    align-items: normal;
+    box-sizing: border-box;
+    justify-content: flex-start;
+    background:rgb(0,0,0,0.2);
+    padding:0.3em;
+    backdrop-filter: blur(25px);
+}
+
+#chat-container .grouped{
+    display:flex;
+    flex-direction: row;
+    width: 100%;
+    
+}

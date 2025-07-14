@@ -17,6 +17,8 @@ import "./Field.css";
 
 export default function Field(props){
 
+    const onKeyDown = props.onKeyDown?? null;
+
     return(
         <div className={`field ${props.styleClass}`} id={`${props.styleId}`} >
             <input  name={props.type} 
@@ -26,6 +28,7 @@ export default function Field(props){
                     value={props.value}
                     placeholder={props.prompt} 
                     onChange={props.onChange}
+                    onKeyDown={onKeyDown}
                      />
         </div>
     );

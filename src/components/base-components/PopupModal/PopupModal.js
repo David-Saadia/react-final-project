@@ -1,10 +1,16 @@
 import ReactDOM from "react-dom";
-import {useEffect, useState} from "react";
+import { startTransition, useContext, useEffect, useState} from "react";
 
-import "./PopupModal.css"
+//Context and tools
+import { userContext } from "../../../UserProvider";
+
+//Components and styles
 import Field from "../Field/Field";
-import ScreenTitle from "../ScreenTitle/ScreenTitle";
 import FieldArea from "../FieldArea/FieldArea";
+import ScreenTitle from "../ScreenTitle/ScreenTitle";
+import "./PopupModal.css"
+import axiosInstance from "../../../axiosInstance";
+import { useNavigate } from "react-router-dom";
 /**
  * 
  * @param {object} props - To hold all arguments.
@@ -37,6 +43,49 @@ export default function PopupModal(props){
         document.body
     );
       
+}
+
+export function MessageWindow(props){
+    
+    const [message, setMessage] = useState("");
+    const {receiver} = props;
+    const {user} = useContext(userContext);
+    const navigation = useNavigate();
+
+    const goTo = (path) => {
+        startTransition(() => {
+            navigation(path);
+        });
+    }
+
+    const createChat = async ()=>{
+        try{
+            const payload= {content:message, author:user.uid, receiver:receiver};
+            console.log(payload);
+            if(!payload.content || !payload.author || !payload.receiver) return;
+
+            const response= await axiosInstance.post("/chats/message" , payload);
+            if(response.status===201){
+                const chatId = response.data.chat._id;
+                console.log(response.data.message);
+                alert(response.data.message);
+                setMessage("");
+                props.onClose();
+                navigation(`/chat/${chatId}`);
+            }
+        }
+        catch(err){
+            console.log(err);
+        }
+    };
+
+    return(<>
+        <Field
+            value={props.message}
+            onChange={(e)=>setMessage(e.target.value)}
+            prompt="Message"/>
+        <button className="submit-button" id="message-button" onClick={()=>createChat()}>Send</button>
+    </>);
 }
 
 /**
@@ -87,6 +136,22 @@ export function MembersListWindow(props){
     </>);
 }
 
+/**
+ * ConfigureGroupWindow: A popup window that allows the user to configure group settings.
+ * 
+ * @param {object} props - The properties to be passed to the ConfigureGroupWindow component.
+ * @param {string} props.groupName - The current name of the group to be edited.
+ * @param {function} props.onRenameGroup - A function to be called when the 'Rename' button is clicked. 
+ * It takes the new group name as an argument.
+ * @param {{uid: string, username: string, avatar: string}[]} props.joinRequests - An array of objects 
+ * representing join requests, containing the uid, username, and avatar of each requester.
+ * @param {function} props.onAcceptInvite - A function to be called when the 'Accept' button is clicked 
+ * for a join request. It takes the uid of the requester as an argument.
+ * @param {function} props.onDeclineInvite - A function to be called when the 'Decline' button is clicked 
+ * for a join request. It takes the uid of the requester as an argument.
+ * 
+ * @returns {JSX.Element} A JSX element representing the ConfigureGroupWindow component.
+ */
 export function ConfigureGroupWindow(props){
 
     const [newGroupName, setNewGroupName] = useState(props.groupName);
