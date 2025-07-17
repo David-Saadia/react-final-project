@@ -52,8 +52,10 @@ export default function GroupCard(props){
             if(typeof img === "string" && img.includes("static"))
                 setGroupImage(img);
             else{
+                if(img)
+                    console.log(`img:`, img._id);
                 const fetchedAvatar = await fetchUserPFP(img._id, false);
-                console.log(`groupImage: ${img}`);
+                console.log(`groupImage`,img);
                 console.log(`fetchedAvatar: ${fetchedAvatar}`);
                 if(fetchedAvatar){
                     setGroupImage(fetchedAvatar);
@@ -279,7 +281,7 @@ export default function GroupCard(props){
                 <img className="group-image" src={groupImage} alt="groupImage"/>
                 <ScreenTitle title={groupName}/>
             </div>
-            {isJoined() && (<button onClick={leaveGroup}>Leave</button>)}
+            {isJoined() && (<button className="leave-btn" title="Leave Group" onClick={leaveGroup}></button>)}
           </div>
           <ul className="card-carousel">
             {membersAvatars && membersAvatars.map((avatar,index)=>{
@@ -297,8 +299,8 @@ export default function GroupCard(props){
             !isJoined() 
             ? (<button onClick={joinGroup}>Join</button>)
             :(<div>
-                <button onClick={(e)=>goTo(`/groups/feed/${groupID}`)}>Explore</button>
-                <button onClick={(e)=>goTo(`/chat/${chatID}`)}>Chat</button>
+                <button title="Explore" className="explore-btn" onClick={(e)=>goTo(`/groups/feed/${groupID}`)}/>
+                <button title="Chat"className="chat-btn" onClick={(e)=>goTo(`/chat/${chatID}`)}/>
                 {isAdmin() && (<div className="grouped">
                 <button onClick={() => openPopup()}>Manage</button>
                 <button onClick={deleteGroup}>Delete</button>

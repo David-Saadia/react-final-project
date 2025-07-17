@@ -395,14 +395,14 @@ const PostFooter = (props) =>{
                 
                 {/**This wil like/unlike the post */}
                 {props.postLiked?
-                <button onClick={props.unlikePost}>Unlike</button>:
-                <button onClick={props.likePost}>Like</button>} 
+                <button title="unlike" className="unlike-button"  onClick={props.unlikePost}></button>:
+                <button title="like" className="like-button" onClick={props.likePost}></button>} 
 
                 {/**This will show the number of likes and when clicked on will show the users that have liked the post */}
-                <button onClick={() => props.openPopup("likes")}>{props.likes?.length || 0}</button> 
+                <button title="likes" className="likes-button" onClick={() => props.openPopup("likes")}>{props.likes?.length || 0}</button> 
                 
                 {/**This will show the comments on the post */}
-                <button onClick={() => props.openPopup("comments")}>{`${props.comments.length || 0} comments`}</button> 
+                <button className="comments-button" onClick={() => props.openPopup("comments")}>{`${props.comments.length || 0} comments`}</button> 
             </div>
             {(props.user.uid === props.author) &&
             (

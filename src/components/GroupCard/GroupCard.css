@@ -68,6 +68,65 @@
     height:3rem;
 }
 
+.chat-btn{
+    background-color: rgb(150,255,255,0.4); 
+    -webkit-mask-image: url(../../assets/images/icons/comment-icon.png);
+    -webkit-mask-size: contain;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-image: url(../../assets/images/icons/comment-icon.png);
+    mask-size: contain;
+    mask-position: center;
+    mask-repeat: no-repeat;
+    position: relative;
+    cursor: pointer; 
+    border: none;
+    height:2em;
+    width:3em;
+    margin-inline: 1em;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    transition: all 0.4s ease;
+}
+
+.explore-btn{
+
+    background: url(../../assets/images/icons/explore-icon.png);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    cursor: pointer; 
+    border: none;
+    height:2.3em;
+    width:2.3em;
+    margin-inline: 1em;
+    border-radius: 8px;
+    transition: all 0.4s ease;
+}
+
+.leave-btn{
+
+     background-color: rgb(250,100,0,0.4); 
+    -webkit-mask-image: url(../../assets/images/icons/logout_icon.png);
+    -webkit-mask-size: contain;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-image: url(../../assets/images/icons/logout_icon.png);
+    mask-size: contain;
+    mask-position: center;
+    mask-repeat: no-repeat;
+    position: relative;
+    cursor: pointer; 
+    border: none;
+    height:2.3em;
+    width:2.3em;
+    margin-inline: 1em;
+    border-radius: 8px;
+    transition: all 0.4s ease;
+}
+
+
 .card-carousel{
   display: flex;
   flex-direction: row;

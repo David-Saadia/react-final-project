@@ -15,7 +15,7 @@ export default function ChatList(props){
 
     
     const [chatThumbnails, setChatThumbnails] = useState([]);
-    const {user, loading} = useContext(userContext);
+    const {user, loading, fetchUserPFP} = useContext(userContext);
     const [chatList, setChatList] = useState([]);
     
     useEffect(()=>{
@@ -40,23 +40,38 @@ export default function ChatList(props){
     useEffect(() => {
         const fetchChatThumbnails = async (limit=-1) => {
                 if(limit<0 && chatList){
+                    if(!user) return;
                     //DEBUG: console.log("Attempting to pull users's chats list names/images")
                     const thumbnails = await Promise.all(chatList.map(async (chatItem) => {
-                        const avatar = chatItem.isGroupChat
+                        let avatar = chatItem.isGroupChat
                         ? await findAvatarDB(chatItem.creator)
                         : await findAvatarDB(chatItem.participants.find(member => member !== user?.uid));
 
-                        //DEBUG: console.log(avatar);
-                        //DEBUG: console.log(chatItem);
+                        if(chatItem.group?.logo && chatItem.isGroupChat){
+                            console.log("Attempting to fetch group logo");
+                            const fetchedAvatar = await fetchUserPFP(chatItem.group?.logo, false);
+                            if(fetchedAvatar)
+                                avatar = fetchedAvatar;
+                        }
+                        else{
+                            if(!avatar.includes("static")){
+                                const fetchedAvatar = await fetchUserPFP(avatar, false);
+                                if(fetchedAvatar)
+                                    avatar = fetchedAvatar;
+                            }
+                        }
+
+                        console.log(avatar);
+                        console.log(chatItem);
                         let label = "N/A"
                         try{
                             if(!chatItem.isGroupChat) 
                                 label = await findUserNameDB(chatItem.participants.find(member => member !== user?.uid));
-                            else{
+                            else {
                                 const response = await axiosInstance.get(`/groups/search/${chatItem.group._id}`);
                                 if(response.status===200){
                                     label = response.data.group.name;
-                                    //DEBUG console.log(label);
+                                    console.log(label);
                                 }
                             }
                         }catch(err){
@@ -76,7 +91,7 @@ export default function ChatList(props){
                 }
         }
         fetchChatThumbnails();
-    }, [chatList,user]);
+    }, [chatList,user, fetchUserPFP]);
 
     const openChat =(chatIndex)=>{
         console.log("opening chat", chatIndex);

@@ -12,6 +12,7 @@ import "./PopupModal.css"
 import axiosInstance from "../../../axiosInstance";
 import { useNavigate } from "react-router-dom";
 import ImageSelector from "../ImageSelector/ImageSelector";
+import {BarGraph, LineGraph} from "../../BarLineChart/BarChart";
 /**
  * 
  * @param {object} props - To hold all arguments.
@@ -51,6 +52,8 @@ export function StatisticsNewImageWindow(props){
     const [image, setImage] = useState(null);
     const {groupId} = props;
     const {user} = useContext(userContext);
+    const [groupPostData, setGroupPostData] = useState([]);
+    const [groupMessagesData, setGroupMessagesData] = useState([]);
 
     const changeGroupImage = async ()=>{
         if(!groupId || !image) return;
@@ -71,6 +74,30 @@ export function StatisticsNewImageWindow(props){
             
     }
 
+    useEffect(()=>{
+        const fetchGroupPostStats = async () => {
+            console.log("Fetching group post stats");
+            axiosInstance.get(`/statistics/posts/${groupId}`, {adminId:user.uid, groupId:groupId}).then(response=>{
+                if(response.status===200){
+                    setGroupPostData(response.data);
+                }
+            }).catch(err=>console.log(err));
+        }
+
+        const fetchGroupMessagesStats = async () => {
+            console.log("Fetching group messsages stats");
+            axiosInstance.get(`/statistics/messages/${groupId}`, {adminId:user.uid, groupId:groupId}).then(response=>{
+                if(response.status===200){
+                    setGroupMessagesData(response.data);
+                }
+            }).catch(err=>console.log(err));
+        }
+
+        fetchGroupPostStats();
+        fetchGroupMessagesStats();
+          
+    },[groupId, user]);
+
     return(
     <>
         <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", flexDirection:"row"}}>
@@ -78,7 +105,11 @@ export function StatisticsNewImageWindow(props){
             <ImageSelector onSelectImage={(img)=>setImage(img)}/>
         </div>
         <button onClick={changeGroupImage} className="submit-button">Change</button>
-        <div className="settings-divider"></div>
+        <div className="settings-divider"/>
+        <BarGraph title="Posts per month" data={groupPostData}/>
+        <LineGraph title="Messages per month" data={groupMessagesData}/>
+
+
     </>
     );
 }

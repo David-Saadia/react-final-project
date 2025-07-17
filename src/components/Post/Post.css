@@ -147,3 +147,66 @@
     align-self:center;
     margin: 1em auto;
 }
+
+
+.like-button{
+    background: url(../../assets/images/icons/like-icon.png);
+}
+
+.unlike-button{
+    background-color: rgb(255,0,0,0.5); 
+    -webkit-mask-image: url(../../assets/images/icons/unlike-icon.png);
+    -webkit-mask-size: contain;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-image: url(../../assets/images/icons/unlike-icon.png);
+    mask-size: contain;
+    mask-position: center;
+    mask-repeat: no-repeat;
+    
+}
+
+.unlike-button, .like-button, .likes-button{
+    border-radius: 5px;
+    border: none;
+    padding: 0.5em;
+    height: 2em;
+    width: 2em;
+    background-size:contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.likes-button{
+    background:none;
+    font-weight:700;
+    text-align:left;
+    font-size: 1em;
+    padding:0;
+    padding-left: 0.2em;
+}
+
+.comments-button {
+    position: relative;
+    padding-left: 1.8em;
+    color: #dddddd;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.comments-button::before {
+    content: "";
+    position: absolute;
+    left: 0.5em;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1em;
+    height: 1em;
+    background-image: url(../../assets/images/icons/comment-icon.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+}

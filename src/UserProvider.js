@@ -37,6 +37,10 @@ export const UserProvider = ({ children }) => {
     useHearbeat(refreshStaleActivityVal, setUser, setToken);
 
      const fetchUserPFP= async (fileId, setUser=true)=>{
+        if(!fileId){
+            console.log("fileId is null");
+            return;
+        } 
         try{
             const response = await axiosInstance.get(`/upload/retrieve/${fileId}`,{responseType:"blob"});
             if(response.status === 200){
@@ -47,7 +51,7 @@ export const UserProvider = ({ children }) => {
                     return setAvatar(url);
                 }
                 else
-                    console.log(url);
+                    //DEBUG: console.log(url);
                     return url;
             }
         }
@@ -71,7 +75,7 @@ export const UserProvider = ({ children }) => {
                 console.log("The results are", results);
                 const isLocal = results.includes("static");
                 if(!isLocal){
-                    fetchUserPFP(results);
+                    await fetchUserPFP(results);
                     return;
                 }
                 setAvatar(results);
@@ -93,7 +97,7 @@ export const UserProvider = ({ children }) => {
         });
 
         return () => unsub();
-    }, []);
+    }, [user]);
 
     const signOut = async () => {
         //We must await removing the user from the presence list before signing them out due to firebase write rules.

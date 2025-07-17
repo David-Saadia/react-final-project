@@ -25,6 +25,7 @@ import "./NavigationBar.css";
 export default function NavigationBar() {
 
     const {signOut, avatar} = useContext(userContext);
+    console.log(avatar);
     const navigation = useNavigate();
 
 

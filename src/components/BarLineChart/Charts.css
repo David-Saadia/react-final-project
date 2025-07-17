@@ -1,0 +1,16 @@
+.chart-container{
+    margin: 2em auto;
+    padding: 2em;
+    max-width: 20em;
+    border: 1px solid #ddd;
+    border-radius:  5px;
+    background-color: #fafafa;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+
+.chart-containter h3{
+    text-align: center;
+    margin-bottom: 1em;
+    color: #333;
+}
