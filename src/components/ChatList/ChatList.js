@@ -24,7 +24,7 @@ export default function ChatList(props){
             try{
                 const response = await axiosInstance.get(`/chats/?userId=${user.uid}&limit=${limit}`);
                 if (response.status===200){
-                    console.log(response.data.message);
+                    //DEBUG: console.log(response.data.message);
                     //DEBUG: console.log(response.data.chats);
                     setChatList(response.data.chats);
                 }

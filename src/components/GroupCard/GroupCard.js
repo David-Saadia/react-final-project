@@ -49,12 +49,15 @@ export default function GroupCard(props){
     useEffect(()=>{
         const fetchGroupImage = async ()=>{
             const img = props.groupImage? props.groupImage: await findAvatarDB(creator);
-            if(img.includes("static"))
+            if(typeof img === "string" && img.includes("static"))
                 setGroupImage(img);
             else{
-                const fetchedAvatar = await fetchUserPFP(img, false);
-                if(fetchedAvatar)
+                const fetchedAvatar = await fetchUserPFP(img._id, false);
+                console.log(`groupImage: ${img}`);
+                console.log(`fetchedAvatar: ${fetchedAvatar}`);
+                if(fetchedAvatar){
                     setGroupImage(fetchedAvatar);
+                }
             }
         }
 
@@ -312,7 +315,7 @@ export default function GroupCard(props){
                     <MembersListWindow self={user.uid} members={membersUsernames} membersAvatars={membersAvatars} 
                     admins={admins} removeMember={kickMember} onPromote={promoteMember}/>,
                     <InviteWindow onInviteFriend={(e, inviteMember)=>props.onInvite(e, inviteMember, groupID, updateUI)}/>,
-                    <StatisticsNewImageWindow />
+                    <StatisticsNewImageWindow groupId={groupID} />
                 ]}
                 tabStyleId="manage-group-tabs"
            />

@@ -49,13 +49,36 @@ export default function PopupModal(props){
 export function StatisticsNewImageWindow(props){
     
     const [image, setImage] = useState(null);
-    
+    const {groupId} = props;
+    const {user} = useContext(userContext);
+
+    const changeGroupImage = async ()=>{
+        if(!groupId || !image) return;
+        const formData = new FormData();
+        formData.append("image", image);
+        formData.append("filePath" ,"/groups");
+        axiosInstance.post("/upload/image", formData ).then(response=>{
+            if(response.status===201){
+                const payload= {logo:response.data.file._id, adminId:user.uid, groupId:groupId};
+                axiosInstance.put(`/groups/${groupId}`,payload ).then(res=>{
+                    if(res.status===200){
+                        console.log(res.data.message);
+                        alert("Group image changed successfully.");
+                    }
+                });
+            }
+        } ).catch(err=>console.log(err));
+            
+    }
+
     return(
     <>
         <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", flexDirection:"row"}}>
             <ScreenTitle title="New Image"/>
-            <ImageSelector onSelectImage={(e)=>setImage(e)}/>
+            <ImageSelector onSelectImage={(img)=>setImage(img)}/>
         </div>
+        <button onClick={changeGroupImage} className="submit-button">Change</button>
+        <div className="settings-divider"></div>
     </>
     );
 }

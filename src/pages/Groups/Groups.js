@@ -153,6 +153,7 @@ export default function Groups(props) {
                             <GroupCard
                                 key={group._id}
                                 groupID={group._id}
+                                groupImage={group.logo}
                                 groupName={group.name}
                                 creator={group.creator}
                                 creationDate={group.creationDate}

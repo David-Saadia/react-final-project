@@ -44,10 +44,10 @@ export const UserProvider = ({ children }) => {
                 const url = URL.createObjectURL(blob);
                 
                 if(setUser){
-                    console.log(url);
                     return setAvatar(url);
                 }
                 else
+                    console.log(url);
                     return url;
             }
         }

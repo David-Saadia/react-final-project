@@ -28,6 +28,7 @@ section{
     border: 1px solid rgb(255,255,255,0.3);
     background: rgb(255,255,0,0.1);;
     box-shadow: 5px 5px 15px rgb(0,0,0,0.8);
+    margin:1em auto;
 }
 
 .settings-divider::after{
@@ -38,7 +39,7 @@ section{
     transform: translateX(-2em);
     width: calc(100% + 4em);
     height: 100%;
-    background: rgb(0,0,150,0.5);
+    background: rgb(255,255,150,0.5);
 }
 
 .user-primary-info, .credentials-change{

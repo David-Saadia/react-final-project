@@ -34,10 +34,6 @@ export default function Home() {
     const {loading} = useContext(userContext);
 
     useRequireAuth();
-    
-    if(loading) return <div>Loading...</div>;
-    
-
 
     return (
         //Setting page general attributes
