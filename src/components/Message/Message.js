@@ -33,7 +33,7 @@ export default function Message(props){
             }
         }
         fetchAvatarAndUsername();
-    }, [message.author]);
+    }, [message.author, fetchUserPFP]);
 
 
     return(

@@ -132,7 +132,7 @@ export default function Post(props){
         // DEBUG: console.log(comments);
         // DEBUG: console.log(commentsUsernames);
 
-    }, [likes,comments, popupContentType , likesUsernames ,commentsUsernames, props.author]);
+    }, [likes,comments, popupContentType , likesUsernames ,commentsUsernames, props.author, fetchUserPFP]);
 
     const fetchCommentersAvatar = async() =>{
         try{

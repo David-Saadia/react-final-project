@@ -28,7 +28,7 @@ import { useNavigate } from "react-router-dom";
 export default function GroupCard(props){
 
     const {user, fetchUserPFP} = useContext(userContext);
-    const {creator, creationDate, groupID, chatID} = props //Don't change - no need for useState.
+    const {creator,  groupID, chatID} = props //Don't change - no need for useState.
     const [groupName, setGroupName] = useState(props.groupName);
     const [groupImage, setGroupImage] = useState("");
     const [members, setMembers] = useState(props.members);
@@ -90,7 +90,7 @@ export default function GroupCard(props){
         fetchMembersImages();
         fetchMembersUsernames();
         
-    },[props.groupImage, creator, members]);
+    },[props.groupImage, creator, members, fetchUserPFP]);
 
 
     useEffect(()=>{

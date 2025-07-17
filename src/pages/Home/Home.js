@@ -1,8 +1,7 @@
-import { useContext} from "react";	
+
 
 // Context and tools
 import { useRequireAuth } from "../../hooks/useRequireAuth";
-import {userContext} from "../../UserProvider";
 import "../../utils.css";
 
 //Compononets and styles
@@ -30,8 +29,6 @@ import Chat from "../Chat/Chat";
  * @returns A JSX element representing the Home component.
  */
 export default function Home() {
-
-    const {loading} = useContext(userContext);
 
     useRequireAuth();
 
