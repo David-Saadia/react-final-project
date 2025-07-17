@@ -1,0 +1,76 @@
+.settings-card{
+    margin-top: 8vh;
+    background: rgb(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 5px 15px rgb(0,0,0,1);
+    border-radius:15px;
+    padding: 1em 0;
+    height: auto;
+    width: auto;
+    justify-content: normal;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-title{
+    border-bottom:0.1em double rgba(255,255,255,0.3);
+}
+
+section{
+    padding:1em;
+
+}
+.settings-divider{
+    position: relative;
+    width:80%;
+    height:0.05em;
+    border: 1px solid rgb(255,255,255,0.3);
+    background: rgb(255,255,0,0.1);;
+    box-shadow: 5px 5px 15px rgb(0,0,0,0.8);
+}
+
+.settings-divider::after{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    transform: translateX(-2em);
+    width: calc(100% + 4em);
+    height: 100%;
+    background: rgb(0,0,150,0.5);
+}
+
+.user-primary-info, .credentials-change{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    gap:2em;
+}
+
+.settings-user-name{
+    margin:0;
+    height:fit-content;
+}
+
+.settings-avatar{
+    height:10em;
+    width:10em;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.change-primary-btn, .change-credentials-btn{
+    padding:1em;
+    height:1em;
+    margin-top:0;
+    align-content:center;
+    line-height: 0.2em;
+
+}
+
+.change-credentials-btn{
+    width:7em;
+}
+
+

@@ -10,8 +10,8 @@ import { timeSincePost } from "../../utils";
 import PopupModal, { CommentsListWindow, EditPostWindow, LikesListWindow, MessageWindow } from "../base-components/PopupModal/PopupModal";
 import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
 import Field from "../base-components/Field/Field";
-import "./Post.css";
 import DropDownMenu from "../base-components/DropDownMenu/DropDownMenu";
+import "./Post.css";
 /**
  * 
  * @param {object} props - props object to contain all parameters 
@@ -27,12 +27,12 @@ import DropDownMenu from "../base-components/DropDownMenu/DropDownMenu";
  */
 export default function Post(props){
 
-    const {user} = useContext(userContext);
+    const {user, fetchUserPFP} = useContext(userContext);
     const {postID} = props;
     const postCreationTime = props.timestamp;
     const [postTime, setPostTime] = useState(Date(props.timestamp));
     const [postContent, setPostContent] = useState(props.content);
-    // const [editContent, setEditContent] = useState(props.content);
+    const [attachment, setAttachment] = useState("");
     const [avatar, setAvatar] = useState("");
     
 
@@ -55,6 +55,27 @@ export default function Post(props){
         
     },[postCreationTime]);
 
+    useEffect(()=>{
+        if(!props.attachment) return;
+
+        const fetchAttachment = async () => {
+            try{
+                console.log("Attempting to fetch attachment..");
+                const response = await axiosInstance.get(`/upload/retrieve/${props.attachment}`,{responseType:"blob"}); 
+                if(response.status === 200){
+                    console.log("Attachment fetched successfully.");
+                    const blob = response.data;
+                    const url = URL.createObjectURL(blob);
+                    setAttachment(url);
+                }
+            }
+            catch(err){
+                console.log(err);
+            }
+        }
+
+        fetchAttachment();
+    },[props.attachment]);
 
     useEffect(() => {
         if (!user || !likes) return;
@@ -94,7 +115,11 @@ export default function Post(props){
             try{
                 const refernceURL = `/users/${props.author}/settings/avatar`;
                 const results = await searchDB(refernceURL);
-                setAvatar(results);
+                if(results.includes("static"))
+                    return setAvatar(results);
+                const fetchedAvatar = await fetchUserPFP(results, false);
+                if(fetchedAvatar)
+                    return setAvatar(fetchedAvatar);
             }
             catch(err){
                 console.log(err);
@@ -116,7 +141,14 @@ export default function Post(props){
             console.log("Attempting to fetch commenters avatars");
             const avatars = await Promise.all(comments.map(async (comment)=>{
                 const avatar = await findAvatarDB(comment.userId);
-                return avatar;
+                if(avatar.includes("static"))
+                    return avatar;
+                else{
+                    const fetchedAvatar = await fetchUserPFP(avatar, false);
+                    if(fetchedAvatar)
+                        return fetchedAvatar;
+                } 
+                    
                 })
             );
             // DEBUG: console.log(avatars);
@@ -230,7 +262,7 @@ export default function Post(props){
     return(
     <div id="post" >
         <PostHeader avatar={avatar} name={props.name? props.name : "Unknown User"} postTime={postTime} openPopup={openPopup}/>
-        <PostBody postContent={postContent}/>
+        <PostBody postContent={postContent} attachment={attachment}/>
         <PostComment commentContent={commentContent} setCommentContent={setCommentContent} addComment={addComment}/>
         <PostFooter 
             openPopup={openPopup}
@@ -282,7 +314,7 @@ const PostHeader = (props)=>{
         <div id="post-header">
             
             <DropDownMenu styleId={"message-menu"} options={["Message"]} onChange={()=>{props.openPopup("message")}}>
-                <img src={props.avatar} alt="avatar" />
+                <img className="post-avatar" src={props.avatar} alt="avatar" />
             </DropDownMenu>
             <h2>{props.name}</h2>
             <span className="timestamp">{props.postTime}</span>
@@ -312,6 +344,7 @@ const PostBody = (props)=>{
     return(
         <div id="post-body">
             <p>{props.postContent?? dummyPostContent}</p>
+            {props.attachment && <img className="post-attachment" src={props.attachment} alt="post attachment"/>}
         </div>
     );
 }

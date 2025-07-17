@@ -1,8 +1,8 @@
 import { useContext, useState, useEffect} from "react";
-import { useNavigate } from "react-router-dom";
 
 //Context and tools
 import { userContext } from "../../UserProvider";
+import { useRequireAuth } from "../../hooks/useRequireAuth";
 import axiosInstance from "../../axiosInstance";
 import { findUIDbyUsername } from "../../firebase/ReadWriteDB";
 
@@ -14,20 +14,14 @@ import SideMenu from "../../components/SideMenu/SideMenu";
 import Field from "../../components/base-components/Field/Field";
 import PopupModal, { InviteWindow } from "../../components/base-components/PopupModal/PopupModal";
 import GroupCard from "../../components/GroupCard/GroupCard";
+import Chat from "../Chat/Chat";
 import "./Groups.css"
 
-export default function Groups() {
+export default function Groups(props) {
 
     const {user, loading} = useContext(userContext);
-
-    const navigation = useNavigate();
-
-    useEffect(()=>{
-            if (!user) {
-            navigation("/");
-        }
-    },[user,navigation]);
-
+    const {results} = props
+    useRequireAuth();
 
     const [groups, setGroups] = useState([]);
     const [newGroupName, setNewGroupName] = useState("");
@@ -38,8 +32,9 @@ export default function Groups() {
 
     useEffect(()=>{
         const fetchGroups = async ()=>{
+            const limit = 20;
             try{
-                const response = await axiosInstance.get("/groups");
+                const response = await axiosInstance.get(`/groups/?limit=${limit}`);
                 if(response.status===200){
                     console.log(response.data.message);
                     console.log(response.data.groups);
@@ -51,8 +46,13 @@ export default function Groups() {
                 console.log(err.response?.data?.message);
             }
         }
-        fetchGroups();
-    },[]);
+
+        if(!results || results.length===0)
+            fetchGroups();
+        else
+            setGroups(results);
+
+    },[results]);
 
 
     const openPopup = (groupId)=>{
@@ -129,9 +129,9 @@ export default function Groups() {
                 
             <div className="groups">
                 <NavigationBar/>
-                <div className="page-container">
+                <div className="page-container" id="groups-page-container">
                     <SideMenu />
-                    <div id="group-feed-wrapper">
+                    <div id="group-list-wrapper">
                         <div id="new-group-form">
                             <Field
                                 inputStyle="new-group-field"
@@ -169,6 +169,7 @@ export default function Groups() {
                             />))}
                         </div>
                     </div>
+                    <Chat miniView={true}/>
                     
                 </div>
                 <PopupModal styleId="invite-popup" onClose={closePopup} isOpen={isPopupOpen}>

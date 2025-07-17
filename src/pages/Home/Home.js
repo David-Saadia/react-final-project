@@ -1,6 +1,7 @@
-import {useContext, useEffect} from "react";	
+import { useContext} from "react";	
 
 // Context and tools
+import { useRequireAuth } from "../../hooks/useRequireAuth";
 import {userContext} from "../../UserProvider";
 import "../../utils.css";
 
@@ -8,12 +9,12 @@ import "../../utils.css";
 import "./Home.css";
 //import CardForm from "../CardForm/CardForm";
 //import CardTable from "../CardTable/CardTable";
-import BackgroundWrapper from "../base-components/BackgroundWrapper";
+import BackgroundWrapper from "../../components/base-components/BackgroundWrapper";
 import bg from "../../assets/images/scrollableBackground.png";
-import NavigationBar from "../base-components/NavigationBar/NavigationBar";
-import PostFeed from "../PostFeed/PostFeed";
-import SideMenu from "../SideMenu/SideMenu"; 
-import Chat from "../../pages/Chat/Chat";
+import NavigationBar from "../../components/base-components/NavigationBar/NavigationBar";
+import PostFeed from "../../components/PostFeed/PostFeed";
+import SideMenu from "../../components/SideMenu/SideMenu"; 
+import Chat from "../Chat/Chat";
 
 /**
  * A component that renders the main page of the application. The page is
@@ -32,9 +33,10 @@ export default function Home() {
 
     const {loading} = useContext(userContext);
 
-
+    useRequireAuth();
     
     if(loading) return <div>Loading...</div>;
+    
 
 
     return (
@@ -49,7 +51,7 @@ export default function Home() {
 
             <div className="home">
                 <NavigationBar/>
-                <div className="page-container">
+                <div className="page-container" id="home-container">
                     <SideMenu />
                     <PostFeed type="all"/>
                     <Chat miniView={true}/>

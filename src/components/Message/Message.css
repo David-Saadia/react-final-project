@@ -38,4 +38,5 @@
 #message-avatar{
     height:3rem;
     width:3rem;
+    border-radius:50%;
 }

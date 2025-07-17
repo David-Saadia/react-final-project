@@ -6,8 +6,9 @@
     justify-items: center;
     
     margin-top: 3.5vh;
-    padding:0;
-    padding-top:0.2em;
+    margin-bottom:0;
+    padding:1em;
+    padding-top:2em;
     background: linear-gradient(to bottom left, rgba(255,0,0,0.2), rgba(0,255,0,0.07),rgba(0,0,255,0.2));
     backdrop-filter: blur(5px);
     box-shadow: 0 5px 15px rgb(255,255,255,0.1);
@@ -15,6 +16,8 @@
     
     height:100%;
     width:100%;
+
+    direction:ltr;
 
 }
 
@@ -54,6 +57,8 @@
     width:100%;
 }
 
+
+
 #chat-list-container{
     display:flex;
     height:87vh;
@@ -61,9 +66,13 @@
     right:0;
     left:auto;
     width: 24vw;
+    overflow-y: scroll;
     justify-content: center;
     border-radius:25px;
     box-sizing:border-box;
+    border-left: 2px solid rgba(0, 0, 0, 0.9);
+
+    direction:rtl;
 }
 
 #chat-avatar{

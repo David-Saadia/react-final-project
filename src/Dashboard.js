@@ -2,12 +2,12 @@
 import { useContext } from "react";
 
 // Context and tools
-import { userContext } from "../UserProvider";
-import "../utils.css";
+import { userContext } from "./UserProvider";
+import "./utils.css";
 
 // Components  
-import Home from "./Home/Home";
-import LoginForm from "./LoginForm/LoginForm";
+import Home from "./pages/Home/Home";
+import LoginForm from "./components/LoginForm/LoginForm";
 
 
 /**

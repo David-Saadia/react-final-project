@@ -7,7 +7,7 @@ import axiosInstance from "../../axiosInstance";
 
 //Components and styles
 import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
-import PopupModal, { ConfigureGroupWindow, InviteWindow, MembersListWindow } from "../base-components/PopupModal/PopupModal";
+import PopupModal, { ConfigureGroupWindow, InviteWindow, MembersListWindow, StatisticsNewImageWindow } from "../base-components/PopupModal/PopupModal";
 import TabbedContent from "../base-components/TabbedContent/TabbedContent";
 import "./GroupCard.css"
 import { useNavigate } from "react-router-dom";
@@ -27,7 +27,7 @@ import { useNavigate } from "react-router-dom";
  */
 export default function GroupCard(props){
 
-    const {user} = useContext(userContext);
+    const {user, fetchUserPFP} = useContext(userContext);
     const {creator, creationDate, groupID, chatID} = props //Don't change - no need for useState.
     const [groupName, setGroupName] = useState(props.groupName);
     const [groupImage, setGroupImage] = useState("");
@@ -36,7 +36,7 @@ export default function GroupCard(props){
     const [membersUsernames, setMembersUsernames] = useState([]);
     const [admins, setAdmins] = useState(props.admins);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [joinRequests, setJoinRequests] = useState(props.joinRequests);
+    const [joinRequests, setJoinRequests] = useState(null);
     const navigation = useNavigate();
 
     const goTo = (path) => {
@@ -49,14 +49,26 @@ export default function GroupCard(props){
     useEffect(()=>{
         const fetchGroupImage = async ()=>{
             const img = props.groupImage? props.groupImage: await findAvatarDB(creator);
-            setGroupImage(img);
+            if(img.includes("static"))
+                setGroupImage(img);
+            else{
+                const fetchedAvatar = await fetchUserPFP(img, false);
+                if(fetchedAvatar)
+                    setGroupImage(fetchedAvatar);
+            }
         }
 
         const fetchMembersImages = async (limit=-1) =>{
             if(limit<0 && members){
                 const avatars = await Promise.all(members.map(async (member)=>{
                     const avatar = await findAvatarDB(member);
-                    return avatar;
+                    if(avatar.includes("static"))
+                        return avatar;
+                    else{
+                        const fetchedAvatar = await fetchUserPFP(avatar, false);
+                        if(fetchedAvatar)
+                            return fetchedAvatar;
+                    }
                 }));
                 setMembersAvatars(avatars);
             }
@@ -80,21 +92,25 @@ export default function GroupCard(props){
 
     useEffect(()=>{
         const fetchJoinRequestsData = async ()=>{
-            if(!joinRequests || joinRequests.length===0) return;
+            if(!props.joinRequests || props.joinRequests.length===0) return;
 
-            const data = await Promise.all(joinRequests.map(async (member)=>{
+            const data = await Promise.all(props.joinRequests.map(async (member)=>{
                 if(typeof member !== "string") return;
                 const username = await findUserNameDB(member);
                 const avatar = await findAvatarDB(member);
-                //DEBUG: console.log(`username: ${username}, uid: ${member}, avatar: ${avatar}`);
+                if(!username || !avatar){
+                    console.log('possible undefined hit');
+                    return null;
+                } 
+                //console.log(`username: ${username}, uid: ${member}, avatar: ${avatar}`);
                 return {username, uid:member, avatar}; 
             }));
-            setJoinRequests(data);
+            setJoinRequests(data.filter(Boolean));
         
         }
         fetchJoinRequestsData();
 
-    },[])
+    },[props.joinRequests])
 
     const isJoined = ()=>{
         return members && members.includes(user.uid);
@@ -257,7 +273,7 @@ export default function GroupCard(props){
         <div id="group-card">
           <div id="group-card-header">
             <div className="grouped">
-                <img src={groupImage} alt="groupImage"/>
+                <img className="group-image" src={groupImage} alt="groupImage"/>
                 <ScreenTitle title={groupName}/>
             </div>
             {isJoined() && (<button onClick={leaveGroup}>Leave</button>)}
@@ -266,7 +282,7 @@ export default function GroupCard(props){
             {membersAvatars && membersAvatars.map((avatar,index)=>{
                 if (index<5){
                     return (  <li key={index} className="card-carousel-item">
-                        <img src={avatar} alt="usersAvatar"/>
+                        <img className="group-member-avatar" src={avatar} alt="usersAvatar"/>
                     </li>);
                 }
                 else return null;
@@ -279,7 +295,7 @@ export default function GroupCard(props){
             ? (<button onClick={joinGroup}>Join</button>)
             :(<div>
                 <button onClick={(e)=>goTo(`/groups/feed/${groupID}`)}>Explore</button>
-                <button onClick={(e)=>goTo(`/chat/${props.chatID}`)}>Chat</button>
+                <button onClick={(e)=>goTo(`/chat/${chatID}`)}>Chat</button>
                 {isAdmin() && (<div className="grouped">
                 <button onClick={() => openPopup()}>Manage</button>
                 <button onClick={deleteGroup}>Delete</button>
@@ -288,14 +304,15 @@ export default function GroupCard(props){
           </div>
           <PopupModal isOpen={isPopupOpen} onClose={closePopup} styleId="invite-modal">
            <TabbedContent
-                tabs={["New Name","Members", "Invite"]}
+                tabs={["New Name","Members", "Invite", "New Image"]}
                 tabsContent={[
                     <ConfigureGroupWindow 
                         groupName={groupName} onRenameGroup={(newGroupName)=>renameGroup(newGroupName)} 
                         joinRequests={joinRequests} onAcceptInvite={acceptMember} onDeclineInvite={declineMember}/>,
                     <MembersListWindow self={user.uid} members={membersUsernames} membersAvatars={membersAvatars} 
                     admins={admins} removeMember={kickMember} onPromote={promoteMember}/>,
-                    <InviteWindow onInviteFriend={(e, inviteMember)=>props.onInvite(e, inviteMember, groupID, updateUI)}/>
+                    <InviteWindow onInviteFriend={(e, inviteMember)=>props.onInvite(e, inviteMember, groupID, updateUI)}/>,
+                    <StatisticsNewImageWindow />
                 ]}
                 tabStyleId="manage-group-tabs"
            />

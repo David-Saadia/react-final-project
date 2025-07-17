@@ -9,6 +9,12 @@
 
 }
 
+#home-container{
+    width: 100%;
+    position: relative;
+    justify-content: center;
+}
+
 
 @media screen and (max-width: 768px){
     .card-form, .page-container{
@@ -19,6 +25,8 @@
         width: 100%;
 
     }
+
+    
 
     .card-form *{
         width: 100%;

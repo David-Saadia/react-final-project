@@ -1,8 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
+//import {useContext} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 //Context and tools
-import { userContext } from "../../UserProvider";
+//import { userContext } from "../../UserProvider";
+import { useRequireAuth } from "../../hooks/useRequireAuth";
 
 //Components and styles
 import bg from "../../assets/images/scrollableBackground.png";
@@ -19,19 +21,12 @@ export default function Chat({miniView = false}){
     const {chatId} = useParams();
     const [chatSelected, setChatSelected] = useState(chatId || null);
     const navigation = useNavigate();
-    const {user} = useContext(userContext);
+    //const {user} = useContext(userContext);
+    useRequireAuth();
 
     useEffect(()=>{
         if(chatId!==chatSelected) setChatSelected(chatId);
-    },[chatId]);
-
-
-    useEffect(() => {
-        if (!user) {
-            navigation("/");
-        }
-    }, [user, navigation]);
-
+    },[chatId, chatSelected]);
 
 
     const handleChatSelect = (id)=>{

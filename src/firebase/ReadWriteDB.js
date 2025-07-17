@@ -32,6 +32,9 @@ export const searchDB = async (path, field = null, value = null , limit = 1) =>{
             equalTo(value), // This will filter the results by the specified value
             limitToFirst(limit)); 
         }
+        else if (field && !value) {
+            queryRef = query(queryRef, orderByChild(field),  limitToFirst(limit)); 
+        }
         
     // Get the data from the database
     try{ 
@@ -63,7 +66,7 @@ export const writeToDB = async (path, data) => {
     }
 }
 
-export const writeToListDB = async (path, data, set=false) => {
+export const writeToListDB = async (path, data, isSet=false) => {
 
     // Create a reference to the database at the specified path i.e. "database/users/$uid/friends"
     // The data could be something like "/friends/$uid"
@@ -79,7 +82,7 @@ export const writeToListDB = async (path, data, set=false) => {
         }
         const list = snapshot.val();
         console.log("List is: " , list);
-        await set(queryRef, set? [...list.filter(item => item !== data),data] : [...list, data]);
+        await set(queryRef, isSet? [...list.filter(item => item !== data),data] : [...list, data]);
         console.log("Data written to database list successfully."); 
     }catch(error){ 
         console.error("Error writing data to database: ", error); 
@@ -117,4 +120,8 @@ export const findAvatarDB = async (userId)=>{
 
 export const findUIDbyUsername = async (username)=>{
     return searchDB(`/users/`, "username", username);
+}
+
+export const getAllUsernames = async ()=>{
+    return searchDB(`/users/`, "username", null, 50);
 }

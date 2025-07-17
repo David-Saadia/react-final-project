@@ -1,0 +1,48 @@
+
+
+.slider-label{
+    display:flex;
+    flex-direction:column;
+    gap: 0.1em;
+}
+
+.check-box{
+    height:0;
+    width:0;
+    visibility: hidden;
+    margin:0;
+}
+
+.slider{
+    position: relative;
+    background: rgba(150,0,0,0.3);
+    cursor: pointer;
+    height: 1em;
+    width: calc(100%);
+    border-radius:15px;
+    border: 1px solid rgba(0,0,0, 0.8);
+}
+
+.slider::after{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 1em;
+    width: 1em;
+
+    border-radius: 50%;
+    background:#fff;
+
+    transition: 0.3s ease-in-out;
+}
+
+
+.check-box:checked + .slider{
+    background: green;
+}
+
+.check-box:checked + .slider::after{
+    left: calc(100% - 1em);
+    
+}   

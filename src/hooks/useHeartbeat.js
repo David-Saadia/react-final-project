@@ -2,7 +2,7 @@
  *  a heartbeat to the server to ensure our session is still valid, and if it is then to refresh it.
  *  This will ensure that if a user is unfocused on the window, or closed the window and left the system will
  *  always log the user out and the authentication will not be persistent.*/
-import { useContext, useEffect, useRef } from "react";
+import {  useEffect, useRef } from "react";
 
 // Context and tools
 import axiosInstance from "../axiosInstance";
@@ -19,15 +19,20 @@ const useHearbeat = (triggerRef, setUser, setToken)=> {
     const lastHeartbeat = useRef(0);
     const isActive = useRef(false);
 
-    if (triggerRef){
+    
+    
+    useEffect( ()=>{
+
+
+        if (triggerRef){
         triggerRef.current = ()=>{
             isActive.current = true;
             lastActive.current = Date.now();
             console.log("Refreshing stale activity token on mount..");
+            console.log("Date now: ", Date.now());
+            console.log(`lastActive.current = ${lastActive.current}`);
         };
     }
-    
-    useEffect( ()=>{
 
         const updateActivity = () =>{
             //Active if the user has been active in the last 5 minutes
@@ -69,9 +74,14 @@ const useHearbeat = (triggerRef, setUser, setToken)=> {
                     if(err.response?.status===440){//Session invalidated - relog
                         alert(err.response.data.message);
                         await removeFromListDB(`/presence/`, auth.currentUser.uid);
+                        if(setUser && setToken){
+                            setUser(null);
+                            setToken(null);
+                        }
+                        else 
+                            console.log("setUser and setToken not defined");
                         await auth.signOut();
-                        setUser(null);
-                        setToken(null);
+                    
                         console.log("Session exired...");
                         return;
                     }
@@ -96,7 +106,7 @@ const useHearbeat = (triggerRef, setUser, setToken)=> {
             activityEvents.forEach(e => window.removeEventListener(e, updateActivity));
             clearInterval(interval);
         }
-    },[]);
+    },[setUser,setToken, triggerRef]);
 
 
      

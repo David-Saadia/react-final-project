@@ -1,16 +1,20 @@
-#group-feed-wrapper{
-    width: 55%;
-
+#group-list-wrapper{
+    width: 52%;
+    margin-right:7vw;
     margin-top: 0vh;
     display:flex;
     flex-direction: column;
-    padding:1rem;
+
     padding-top:0;
 }
 
 .page-container{
-    width:100%;
     align-items: baseline;
+}
+
+#groups-page-container{
+    position: relative;
+    left: 0vw;
 }
 
 .groups{

@@ -3,6 +3,8 @@ import { auth } from "./firebase/FireBase";
 import { onAuthStateChanged, getIdToken } from "firebase/auth";
 import { removeFromListDB, searchDB } from "./firebase/ReadWriteDB";
 import useHearbeat from "./hooks/useHeartbeat";
+import axiosInstance from "./axiosInstance";
+
 
 
 
@@ -34,7 +36,51 @@ export const UserProvider = ({ children }) => {
     
     useHearbeat(refreshStaleActivityVal, setUser, setToken);
 
+     const fetchUserPFP= async (fileId, setUser=true)=>{
+        try{
+            const response = await axiosInstance.get(`/upload/retrieve/${fileId}`,{responseType:"blob"});
+            if(response.status === 200){
+                const blob = response.data;
+                const url = URL.createObjectURL(blob);
+                
+                if(setUser){
+                    console.log(url);
+                    return setAvatar(url);
+                }
+                else
+                    return url;
+            }
+        }
+        catch(err){
+            console.log("Cannot fetch userPFP.");
+            console.log(err);
+            setAvatar("");
+
+        }
+    }
+
     useEffect(() =>{
+
+        const setUserPFP = async (userObj) => {
+            try{
+                if (!userObj || typeof userObj !== "object" || !userObj.uid){
+                    return;
+                }
+                const refernceURL = `/users/${userObj.uid}/settings/avatar`;
+                const results = userObj.uid? await searchDB(refernceURL): null;
+                console.log("The results are", results);
+                const isLocal = results.includes("static");
+                if(!isLocal){
+                    fetchUserPFP(results);
+                    return;
+                }
+                setAvatar(results);
+            }
+            catch(err){
+                console.log(err);
+                console.log("Cannot fetch userPFP.");
+            }
+        }
         
         const unsub = onAuthStateChanged (auth, async (currentUser) => {
             setUser(currentUser);
@@ -42,7 +88,7 @@ export const UserProvider = ({ children }) => {
             setToken(fireBaseToken);
             setLoading(false);
             if(currentUser && currentUser.uid) {
-                fetchUserPFP(currentUser);}
+                setUserPFP(currentUser);}
             else setAvatar("");
         });
 
@@ -58,31 +104,8 @@ export const UserProvider = ({ children }) => {
     };
 
 
-     const fetchUserPFP = async (userObj) => {
-            
-            try{
-                //console.trace("fetchUserPFP called with:", userObj);
-                //console.log("userObj = " ,userObj);
-                if (!userObj || typeof userObj !== "object" || !userObj.uid){
-                    //console.warn("fetchUserPFP called with invalid userObj:", userObj);
-                    return;
-                }
-            
-                const refernceURL = `/users/${userObj.uid}/settings/avatar`;
-                const results = userObj.uid? await searchDB(refernceURL): null;
-                // DEBUG: console.log("The results are", results);
-                setAvatar(results);
-            }
-            catch(err){
-                console.log(err);
-                console.log("Cannot fetch userPFP.");
-            }
-        }
-  
-
-
     return (
-        <userContext.Provider value={{ user, token, loading, avatar,  signOut, refreshStaleActivityVal }}>
+        <userContext.Provider value={{ user, token, loading, avatar,  signOut, refreshStaleActivityVal, fetchUserPFP }}>
             {!loading? children :<div>Loading...</div>}
         </userContext.Provider>
     );

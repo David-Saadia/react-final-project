@@ -2,12 +2,12 @@ import { useContext, useEffect, useState } from "react";
 
 //Context and tools
 import { userContext } from "../../UserProvider";
+import { extractAcronym } from "../../utils";
+import { findAvatarDB, findUserNameDB } from "../../firebase/ReadWriteDB";
 import axiosInstance from "../../axiosInstance";
 
 //Components and styles
 import "./ChatList.css"
-import { findAvatarDB, findUserNameDB } from "../../firebase/ReadWriteDB";
-import { extractAcronym } from "../../utils";
 import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
 
 
@@ -25,7 +25,7 @@ export default function ChatList(props){
                 const response = await axiosInstance.get(`/chats/?userId=${user.uid}&limit=${limit}`);
                 if (response.status===200){
                     console.log(response.data.message);
-                    console.log(response.data.chats);
+                    //DEBUG: console.log(response.data.chats);
                     setChatList(response.data.chats);
                 }
             }
@@ -40,30 +40,35 @@ export default function ChatList(props){
     useEffect(() => {
         const fetchChatThumbnails = async (limit=-1) => {
                 if(limit<0 && chatList){
-                    console.log("Attempting to pull users's chats list names/images")
+                    //DEBUG: console.log("Attempting to pull users's chats list names/images")
                     const thumbnails = await Promise.all(chatList.map(async (chatItem) => {
                         const avatar = chatItem.isGroupChat
                         ? await findAvatarDB(chatItem.creator)
-                        : await findAvatarDB(chatItem.participants.find(member => member !== user.uid));
+                        : await findAvatarDB(chatItem.participants.find(member => member !== user?.uid));
 
-                        console.log(avatar);
-                        console.log(chatItem);
+                        //DEBUG: console.log(avatar);
+                        //DEBUG: console.log(chatItem);
                         let label = "N/A"
                         try{
                             if(!chatItem.isGroupChat) 
-                                label = await findUserNameDB(chatItem.participants.find(member => member !== user.uid));
+                                label = await findUserNameDB(chatItem.participants.find(member => member !== user?.uid));
                             else{
                                 const response = await axiosInstance.get(`/groups/search/${chatItem.group._id}`);
                                 if(response.status===200){
                                     label = response.data.group.name;
-                                    console.log(label);
+                                    //DEBUG console.log(label);
                                 }
                             }
                         }catch(err){
                             console.log(err);
                         }
-                        if(label?.length>10) label = extractAcronym(label).slice(0,3);
-                        console.log(`label: ${label} avatar: ${avatar}`);
+                        if(label?.length>10) {
+                            if(label.split(" ").length>1)
+                                label = extractAcronym(label).slice(0,3);          
+                            else
+                                label = label.slice(0,7);
+                        }
+                        //DEBUG: console.log(`label: ${label} avatar: ${avatar}`);
 
                         return {avatar, label};
                     }));

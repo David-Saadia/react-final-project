@@ -6,7 +6,7 @@ import Message from '../Message/Message';
 import Field from '../base-components/Field/Field';
 
 import "./ChatRoom.css"
-import { set } from 'firebase/database';
+
 
 
 
@@ -29,7 +29,7 @@ export default function ChatRoom(props){
                 const response = await axiosInstance.get(`/chats/${chatId}`);
                 if (response.status===200){
                     console.log(response.data.message);
-                    console.log(response.data.messages);
+                    //DEBUG: console.log(response.data.messages);
                     setMessages(response.data.messages);
                 }
             }
@@ -63,8 +63,8 @@ export default function ChatRoom(props){
         socket.on('joinedChat', (response)=>{ console.log(response?.message); setJoined(true);});
 
         socket.on('message', (msg) => {
-            console.log(socket.id);
-            console.log(msg.content);
+            //DEBUG: console.log(socket.id);
+            //DEBUG: console.log(msg.content);
             setMessages(prev=>[...prev, msg]);
         });
 

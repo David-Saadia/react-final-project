@@ -1,8 +1,8 @@
 const splitAndCapitalizeEmail = (email) => email.split("@")[0].charAt(0).toUpperCase() + email.split("@")[0].slice(1);
 
 const pickRandom = (options) => Date.now()%options;
-
-const extractAcronym = (name) => name.split(" ").map(word => word.charAt(0).toUpperCase()).join("");
+                                                    //Lol charAtCharAtCharAtCharAt
+const extractAcronym = (name) => name.split(" ").map(word => {return word.charAt(0).match(/^[a-zA-Z0-9]+$/)?word.charAt(0).toUpperCase():word}).join("");
 
 const timeSincePost = (time) =>{
     const timePassed = Date.now() - new Date(time);

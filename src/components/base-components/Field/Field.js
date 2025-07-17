@@ -9,10 +9,13 @@ import "./Field.css";
  * @param {String} [props.type] - The type of the input field, e.g. "text", "password", etc.
  * @param {String} [props.value] - The value of the input field.
  * @param {Function} [props.onChange] - The callback function when the input field's value changes.
+ * @param {Function} [props.onKeyDown] - The callback function when the input field's value changes.
  * @param {String} [props.prompt] - The label for the input field.
  * @param {String} [props.styleClass] - Any additional CSS classes to be added to the component's root element.
  * @param {String} [props.styleId] - Any additional CSS ids to be added to the component's root element.
  * @param {String} [props.inputStyle] - Any additional CSS to be added to the component's input element.
+ * @param {String} [props.inputClass] - Any additional CSS to be added to the component's input element.
+ * 
  */
 
 export default function Field(props){
@@ -23,6 +26,7 @@ export default function Field(props){
         <div className={`field ${props.styleClass}`} id={`${props.styleId}`} >
             <input  name={props.type} 
                     id={props.inputStyle}
+                    className={props.inputClass}
                     type={props.type} 
                     title={props.type} 
                     value={props.value}

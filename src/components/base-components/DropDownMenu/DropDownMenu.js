@@ -4,9 +4,15 @@ import "./DropDownMenu.css";
 export default function DropDownMenu(props){
 
     const [isOpen, setIsOpen] = useState(false);
+    const metaData = props.optionsMetaData?.length === props.options.length ? props.optionsMetaData : null;
+    // if (metaData) 
+    //     console.log(metaData);
 
     const selectOption = (option)=>{
-        props.onChange(option);
+        if(metaData) 
+            props.onChange(option, metaData[props.options.indexOf(option)]);
+        else
+            props.onChange(option);
         setIsOpen(false);
     };
 
@@ -16,10 +22,10 @@ export default function DropDownMenu(props){
             {isOpen && (
                 <div className="dropdown-content" id="dropdown-menu-content">
                 {
-                    props.isRadio &&props.options.map((option, index) =>(
+                    ( props.isRadio && props.options.map((option, index) =>(
                         (option!==props.value) && (
                             <button key={index} id="drop-menu-item" className="dropdown-item" onClick={(e)=>selectOption(option)}>{option}</button>))
-                        ) 
+                    ))
                         ||
                         //This SHOULD make it where if the button is not radio, it will just show the options
                     props.options.map((option, index) =>(

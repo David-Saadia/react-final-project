@@ -20,8 +20,10 @@
 }
 
 .grouped img{
+    border-radius:50%;
     height:10rem;
-    width: 10rem;
+    width:10rem;
+    object-fit: cover;
 }
 
 #remove-member-button, #promote-member-button{
@@ -77,6 +79,7 @@
 .card-carousel-item{
   width: 5rem;
   height: 5rem;
+  padding: 0.5em;
   background-color: #3498db17;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -90,8 +93,9 @@
 .card-carousel-item img{
   width: 5rem;
   height: 5rem;
-  padding:0;
   margin:0;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .card-carousel-item:first-child {

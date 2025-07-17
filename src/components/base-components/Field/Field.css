@@ -6,7 +6,7 @@
 
 .field input{
     width: 100%;
-    padding: 1vh 1vw;
+    padding: 1em;
     outline: none;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.1);

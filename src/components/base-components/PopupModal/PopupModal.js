@@ -11,6 +11,7 @@ import ScreenTitle from "../ScreenTitle/ScreenTitle";
 import "./PopupModal.css"
 import axiosInstance from "../../../axiosInstance";
 import { useNavigate } from "react-router-dom";
+import ImageSelector from "../ImageSelector/ImageSelector";
 /**
  * 
  * @param {object} props - To hold all arguments.
@@ -45,6 +46,28 @@ export default function PopupModal(props){
       
 }
 
+export function StatisticsNewImageWindow(props){
+    
+    const [image, setImage] = useState(null);
+    
+    return(
+    <>
+        <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", flexDirection:"row"}}>
+            <ScreenTitle title="New Image"/>
+            <ImageSelector onSelectImage={(e)=>setImage(e)}/>
+        </div>
+    </>
+    );
+}
+
+
+/**
+ * MessageWindow: A popup window that allows the user to send a message to a different user.
+ * @param {object} props - The properties to be passed to the MessageWindow component.
+ * @param {string} props.receiver - The user id of the receiver of the message.
+ * @param {function} props.onClose - The callback function when the popup modal is closed.
+ * @returns {JSX.Element} A JSX element representing the MessageWindow component.
+ */
 export function MessageWindow(props){
     
     const [message, setMessage] = useState("");
@@ -61,17 +84,17 @@ export function MessageWindow(props){
     const createChat = async ()=>{
         try{
             const payload= {content:message, author:user.uid, receiver:receiver};
-            console.log(payload);
+            //DEBUG: console.log(payload);
             if(!payload.content || !payload.author || !payload.receiver) return;
 
             const response= await axiosInstance.post("/chats/message" , payload);
             if(response.status===201){
                 const chatId = response.data.chat._id;
-                console.log(response.data.message);
+                //DEBUG: console.log(response.data.message);
                 alert(response.data.message);
                 setMessage("");
                 props.onClose();
-                navigation(`/chat/${chatId}`);
+                goTo(`/chat/${chatId}`);
             }
         }
         catch(err){
@@ -162,7 +185,7 @@ export function ConfigureGroupWindow(props){
         </div>
         <div>
             {props.joinRequests?.map(({uid, username, avatar}, index) =>{
-               console.log(`uid: ${uid}, username: ${username}`);
+               //DEBUG: console.log(`uid: ${uid}, username: ${username}`);
                return (
                     <div className="grouped" key={index} id="popup-member-item">
                         <img src={avatar} alt="member_avatar"/>

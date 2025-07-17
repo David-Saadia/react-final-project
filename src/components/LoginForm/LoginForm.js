@@ -28,7 +28,12 @@ export default function LoginForm() {
        
         try{
             await signInWithEmailAndPassword(auth, email , password);
-            if (refreshStaleActivityVal.current) refreshStaleActivityVal.current();
+            if (refreshStaleActivityVal.current){
+                refreshStaleActivityVal.current();
+            } 
+            else{
+                console.log("No refreshStalActiviyFunction found.");
+            }
             writeToListDB(`/presence/`, auth.currentUser.uid);
             alert("Signed In Successfully");
 

@@ -2,7 +2,7 @@
 export default function ToolTipped(props){
 
     return(
-    <div>
+    <div className="tooltip">
         {props.children}
     </div>
     );

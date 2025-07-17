@@ -1,0 +1,23 @@
+.image-selection{
+    position: relative;
+}
+
+
+.choose-file-label{
+    display: inline-block;
+    width:max-content;
+    margin-bottom:0;
+    padding:0.3em;
+    text-align: center;
+    cursor: pointer;
+    background: #222;
+    line-height: 1em;
+    border-radius: 5px;
+    border: #000 0.4px solid;
+    font-size:0.9em;
+
+}
+
+.image-selection input[type="file"]{
+   display:none;
+}

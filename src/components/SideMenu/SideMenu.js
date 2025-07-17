@@ -17,6 +17,6 @@ export default function SideMenu(props){
         <button className="menu-item" onClick={() => goTo('/') }>Home</button>
         <button className="menu-item" onClick={() => goTo('/profile') }>Profile</button>    
         <button className="menu-item" onClick={() => goTo('/groups') }>Groups</button>
-        <button className="menu-item" onClick={() => goTo('/chats') }>Messages</button>
+        <button className="menu-item" onClick={() => goTo('/chat') }>Messages</button>
     </div>);
 }

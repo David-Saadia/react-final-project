@@ -8,7 +8,7 @@ import { userContext } from "../../../UserProvider";
 
 // Compononets and styles
 import logo from "../../../assets/images/logo.png";
-import Field from "../Field/Field";
+import SearchBar from '../../SearchBar/SearchBar'; 
 import "./NavigationBar.css";
 
 
@@ -42,12 +42,11 @@ export default function NavigationBar() {
                         <img onClick={() => goTo("/")} id ="logo" alt="logo" src={logo}/>
                         <div id = "home-search">
                             <button className="nav-button" onClick={() => goTo("/")} id="home-button"></button>
-                            <Field type="text" prompt="Search..." styleClass="search-bar" styleId="nav-search"/>
+                            <SearchBar type="posts" inputStyleAdditions='search-input'/>
                         </div>
                         <menu id ="settings-menu">
-                            <button className="nav-button" id="settings-button" onClick={signOut} aria-label="Settings"/>
-                            <button className="nav-button" id="notifications-button" onClick={signOut} aria-label="Notifications"/>
-                            <img id="profile-picture" alt="pfp" src={avatar}/>
+                            <button className="nav-button" id="settings-button" onClick={() => goTo("/settings")} aria-label="Settings"/>
+                            <img id="profile-picture" alt="pfp" src={avatar} title="My Avatar"/>
                             <button className="nav-button" id="log-out-button" onClick={signOut} aria-label="Sign Out"></button>
 
                         </menu>

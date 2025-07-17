@@ -10,11 +10,13 @@ import "./utils.css"
 import GroupsFeed from './pages/Groups/GroupsFeed';
 
 // Page components (lazy loading to avoid loading overhead, initial bundle size and improve performance)
-const Dashboard = lazy(() => import('./components/Dashboard'));
+const Dashboard = lazy(() => import('./Dashboard'));
 const Profile = lazy(() => import('./pages/Profile/Profile'));
 const RegisterForm = lazy(() => import('./pages/RegisterForm/RegisterForm'));
 const Groups = lazy(() => import('./pages/Groups/Groups'));
 const Chat = lazy(() => import('./pages/Chat/Chat'));
+const SearchResults = lazy(() => import('./pages/SearchResults/SearchResults'));
+const Settings = lazy(() => import('./pages/Settings/Settings'));
 
 
 
@@ -40,6 +42,8 @@ export default function Main(){
                                 <Route path="/groups/feed/:groupId" element={<GroupsFeed/>}/>
                                 <Route path="/chat" element={<Chat />} />
                                 <Route path="/chat/:chatId" element={<Chat/>}/>
+                                <Route path="/search/results/" element={<SearchResults/>}/>
+                                <Route path="/settings" element={<Settings/>}/>
 
                             </Routes>
                     </BrowserRouter>
