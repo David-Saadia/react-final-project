@@ -3,17 +3,17 @@
 // the user to the home page if authentication expires, instead of implementing this 
 // redirection logic in every component, we'll just include this hook in every page component */
 
-import { startTransition, useContext, useEffect, useState } from "react";
+import { startTransition, useContext, useEffect } from "react";
 import { userContext } from "../UserProvider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 
 export function useRequireAuth(){
+    
     const {user, loading} = useContext(userContext);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-
     
     const navigate = useNavigate();
+    const location = useLocation();
     
     useEffect(()=>{   
         const goto = (path, options={}) => {
@@ -22,14 +22,19 @@ export function useRequireAuth(){
             });
         };
 
-        if(loading) return <div>Loading...</div>;
-    
-        if(user)
-            setIsAuthenticated(true);
-        if(!isAuthenticated && !loading) 
-            console.log("User is not authenticated, redirecting...");
-        if(!loading && !user)
+        if(location === "/")
+            return;
+
+        if (location === "/home" && !user)
+            goto("/login");
+
+        if(loading && !user)
+            console.log("User authentication is loading...");
+
+        if(!loading && !user){
+            console.log("User is not logged in. Redirecting to login page...");
             goto("/");
+        }
             
-    },[user,loading, navigate, isAuthenticated]);
+    },[user,loading, location, navigate]);
 }

@@ -267,7 +267,8 @@ export function CommentsListWindow(props){
     return(<>
             {  
             props.comments.map(({content, timestamp}, index) =>{
-            // DEBUG: console.log(`commentsUsernames[index]= ${commentsUsernames[index]}`)
+            console.log(`commentsUsernames[index]= ${props.commentsUsernames[index]}`)
+            console.log(`commentsAvatars[index]= ${props.commentsAvatars[index]}`)
             return (   
             <li id="comment-item" key={index}>
                 <div id="commment-header">

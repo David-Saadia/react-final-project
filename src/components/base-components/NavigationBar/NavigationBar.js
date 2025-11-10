@@ -25,7 +25,7 @@ import "./NavigationBar.css";
 export default function NavigationBar() {
 
     const {signOut, avatar} = useContext(userContext);
-    console.log(avatar);
+    console.log("avatar: ", avatar);
     const navigation = useNavigate();
 
 
@@ -47,7 +47,7 @@ export default function NavigationBar() {
                         </div>
                         <menu id ="settings-menu">
                             <button className="nav-button" id="settings-button" onClick={() => goTo("/settings")} aria-label="Settings"/>
-                            <img id="profile-picture" alt="pfp" src={avatar} title="My Avatar"/>
+                            <img id="profile-picture" alt="pfp" src={avatar===""? "https://cdn-icons-png.flaticon.com/512/149/149071.png":avatar} title="My Avatar"/>
                             <button className="nav-button" id="log-out-button" onClick={signOut} aria-label="Sign Out"></button>
 
                         </menu>

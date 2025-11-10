@@ -1,11 +1,9 @@
-import { createContext, useState, useEffect, useRef } from "react";
+import { createContext, useState, useEffect, useRef, useCallback } from "react";
 import { auth } from "./firebase/FireBase";
 import { onAuthStateChanged, getIdToken } from "firebase/auth";
 import { removeFromListDB, searchDB } from "./firebase/ReadWriteDB";
-import useHearbeat from "./hooks/useHeartbeat";
+import useHeartbeat from "./hooks/useHeartbeat";
 import axiosInstance from "./axiosInstance";
-
-
 
 
 export const userContext = createContext(null);
@@ -25,18 +23,32 @@ export const userContext = createContext(null);
  * user and signOut function to its descendants.
  */
 
+
 export const UserProvider = ({ children }) => {
 
     const refreshStaleActivityVal = useRef(null);
     
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(null);
+    const [tokenState, setTokenState] = useState(null);
     const [avatar, setAvatar] = useState("");
-    const [loading, setLoading] = useState(true); //Ensures that the user is loaded before anything else is rendered.
+    //Ensures that the user is loaded before anything else is rendered.
+    const [loading, setLoading] = useState(true); 
     
-    useHearbeat(refreshStaleActivityVal, setUser, setToken);
+    
 
-     const fetchUserPFP= async (fileId, setUser=true)=>{
+  const signOut = useCallback(async () => {
+        //We must await removing the user from the presence list before signing them out due to firebase write rules.
+        setLoading(true);
+        await removeFromListDB(`/presence/`, auth.currentUser.uid);
+        await auth.signOut();
+        // setUser(null);
+        // setTokenState(null);
+        // setAccessToken(null);
+        // setLoading(false);
+    },[]);
+
+    
+    const fetchImage = async (fileId, setUser=true)=>{
         if(!fileId){
             console.log("fileId is null");
             return;
@@ -46,39 +58,45 @@ export const UserProvider = ({ children }) => {
             if(response.status === 200){
                 const blob = response.data;
                 const url = URL.createObjectURL(blob);
+                console.log("Profile picture blob: ", blob);
+                console.log("Profile picture url: ", url);
                 
                 if(setUser){
-                    return setAvatar(url);
+                    setAvatar(url);
                 }
                 else
-                    //DEBUG: console.log(url);
-                    return url;
+                    console.log("setUser is false - called by chatlist or by");
+                return url;
             }
         }
         catch(err){
             console.log("Cannot fetch userPFP.");
             console.log(err);
             setAvatar("");
-
+            
         }
     }
-
+    
+    useHeartbeat(refreshStaleActivityVal, signOut);
+    
+    //To avoid running on first mount, we add user to the dependecies
     useEffect(() =>{
-
+        
         const setUserPFP = async (userObj) => {
             try{
-                if (!userObj || typeof userObj !== "object" || !userObj.uid){
-                    return;
-                }
+                console.log("Attempting to set user PFP.");
                 const refernceURL = `/users/${userObj.uid}/settings/avatar`;
-                const results = userObj.uid? await searchDB(refernceURL): null;
-                console.log("The results are", results);
-                const isLocal = results.includes("static");
+                const picture = await searchDB(refernceURL);
+                console.log("Profile picture firebase result:", picture);
+                const isLocal = picture.includes("static");
+                //If it's not one of the default avatar images
                 if(!isLocal){
-                    await fetchUserPFP(results);
-                    return;
+                    //This interally calls setAvatar
+                    await fetchImage(picture);
                 }
-                setAvatar(results);
+                else{
+                    setAvatar(picture);
+                }
             }
             catch(err){
                 console.log(err);
@@ -86,32 +104,42 @@ export const UserProvider = ({ children }) => {
             }
         }
         
-        const unsub = onAuthStateChanged (auth, async (currentUser) => {
+        const authStateListener = onAuthStateChanged(auth, async (currentUser) => {
+ 
+            //Set user object and firebase token
             setUser(currentUser);
-            const fireBaseToken = currentUser? await getIdToken(currentUser, true) : null;
-            setToken(fireBaseToken);
+            if(currentUser === null){
+                console.log("User signed out.");
+            }
+            try{
+                //Force refresh token
+                const idToken = await getIdToken(currentUser, true)
+                setTokenState(idToken);
+
+            }catch(err){
+                //If user is null, which means they've signed out, we catch it as an error.
+                console.log("error getting id token: ", err);
+                setUser(null);
+                setTokenState(null);
+                setLoading(false);
+                return;
+            }
+            setUserPFP(currentUser);
             setLoading(false);
-            if(currentUser && currentUser.uid) {
-                setUserPFP(currentUser);}
-            else setAvatar("");
-        });
+            });
 
-        return () => unsub();
-    }, [user]);
+        return ()=> authStateListener();
+ 
+    }, []);
 
-    const signOut = async () => {
-        //We must await removing the user from the presence list before signing them out due to firebase write rules.
-        await removeFromListDB(`/presence/`, auth.currentUser.uid);
-        await auth.signOut();
-        setUser(null);
-        setToken(null);
-    };
+  
 
 
     return (
-        <userContext.Provider value={{ user, token, loading, avatar,  signOut, refreshStaleActivityVal, fetchUserPFP }}>
+        <userContext.Provider value={{ user, token: tokenState, loading, avatar,  signOut, refreshStaleActivityVal, fetchImage }}>
             {!loading? children :<div>Loading...</div>}
         </userContext.Provider>
     );
+    
 
 }

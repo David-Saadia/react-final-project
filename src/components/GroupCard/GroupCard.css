@@ -19,12 +19,16 @@
     border-radius:25px;
 }
 
-.grouped img{
-    border-radius:50%;
+.group-image{
+    border-radius:30%;
+    background-color: rgba(255, 255, 255, 0.1);
     height:10rem;
     width:10rem;
     object-fit: cover;
+    margin-right: 1rem;
+    border: 0.2em solid rgb(255,255,255,0.2);
 }
+
 
 #remove-member-button, #promote-member-button{
     width:5rem;

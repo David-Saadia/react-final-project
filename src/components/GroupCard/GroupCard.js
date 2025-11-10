@@ -1,4 +1,5 @@
 import { startTransition, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 //Context and tools
 import { userContext } from "../../UserProvider";
@@ -10,7 +11,7 @@ import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
 import PopupModal, { ConfigureGroupWindow, InviteWindow, MembersListWindow, StatisticsNewImageWindow } from "../base-components/PopupModal/PopupModal";
 import TabbedContent from "../base-components/TabbedContent/TabbedContent";
 import "./GroupCard.css"
-import { useNavigate } from "react-router-dom";
+import defaultGroupImage from "../../assets/images/icons/groups-icon.png";
 
 /**
  * 
@@ -27,10 +28,10 @@ import { useNavigate } from "react-router-dom";
  */
 export default function GroupCard(props){
 
-    const {user, fetchUserPFP} = useContext(userContext);
+    const {user, fetchImage} = useContext(userContext);
     const {creator,  groupID, chatID} = props //Don't change - no need for useState.
     const [groupName, setGroupName] = useState(props.groupName);
-    const [groupImage, setGroupImage] = useState("");
+    const [groupImage, setGroupImage] = useState(null);
     const [members, setMembers] = useState(props.members);
     const [membersAvatars, setMembersAvatars] = useState([]);
     const [membersUsernames, setMembersUsernames] = useState([]);
@@ -48,18 +49,22 @@ export default function GroupCard(props){
 
     useEffect(()=>{
         const fetchGroupImage = async ()=>{
-            const img = props.groupImage? props.groupImage: await findAvatarDB(creator);
+
+            const img = props.groupImage;
+
             if(typeof img === "string" && img.includes("static"))
                 setGroupImage(img);
             else{
-                if(img)
-                    console.log(`img:`, img._id);
-                const fetchedAvatar = await fetchUserPFP(img._id, false);
-                console.log(`groupImage`,img);
-                console.log(`fetchedAvatar: ${fetchedAvatar}`);
-                if(fetchedAvatar){
+                try{
+                    const fetchedAvatar = await fetchImage(img._id, false);
+                    console.log(`groupImage:`,img);
+                    console.log(`fetchedAvatar: ${fetchedAvatar}`);
                     setGroupImage(fetchedAvatar);
+
+                }catch(err){
+                    console.log("Error fetching group image, setting default." ,err);
                 }
+               
             }
         }
 
@@ -70,9 +75,14 @@ export default function GroupCard(props){
                     if(avatar.includes("static"))
                         return avatar;
                     else{
-                        const fetchedAvatar = await fetchUserPFP(avatar, false);
-                        if(fetchedAvatar)
+                        try{
+                            const fetchedAvatar = await fetchImage(avatar, false);
                             return fetchedAvatar;
+                        }catch(err){
+                            console.log("Error fetching member avatar" ,err);
+                            return "";
+                        }
+                       
                     }
                 }));
                 setMembersAvatars(avatars);
@@ -92,7 +102,7 @@ export default function GroupCard(props){
         fetchMembersImages();
         fetchMembersUsernames();
         
-    },[props.groupImage, creator, members, fetchUserPFP]);
+    },[props.groupImage, creator, members, fetchImage]);
 
 
     useEffect(()=>{
@@ -278,7 +288,7 @@ export default function GroupCard(props){
         <div id="group-card">
           <div id="group-card-header">
             <div className="grouped">
-                <img className="group-image" src={groupImage} alt="groupImage"/>
+                <img className="group-image" src={groupImage || defaultGroupImage} alt="groupImage"/>
                 <ScreenTitle title={groupName}/>
             </div>
             {isJoined() && (<button className="leave-btn" title="Leave Group" onClick={leaveGroup}></button>)}

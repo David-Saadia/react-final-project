@@ -12,17 +12,19 @@ export default function Message(props){
     const [avatar, setAvatar] = useState("");
     const [userName, setUsername] = useState("");
     const {message} = props
-    const {user, fetchUserPFP} = useContext(userContext);
+    const {user, fetchImage} = useContext(userContext);
 
     useEffect(()=>{
         const fetchAvatarAndUsername = async () => {
             try{
                 const avatar = await findAvatarDB(message.author);
                 const username = await findUserNameDB(message.author);
+                console.log("avatar from message: ", avatar);
                 if(avatar.includes("static")) 
                     setAvatar(avatar);
                 else{
-                    const fetchedAvatar = await fetchUserPFP(avatar, false);
+                    const fetchedAvatar = await fetchImage(avatar, false);
+
                     if(fetchedAvatar)
                         setAvatar(fetchedAvatar);
                 }
@@ -33,7 +35,7 @@ export default function Message(props){
             }
         }
         fetchAvatarAndUsername();
-    }, [message.author, fetchUserPFP]);
+    }, [message.author, fetchImage]);
 
 
     return(

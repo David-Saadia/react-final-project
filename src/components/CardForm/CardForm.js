@@ -53,7 +53,6 @@ export default function CardForm(props){
         const refernceURL = `/users/${auth.currentUser.uid}/`;
         console.log(refernceURL);
         const dbRef = ref(database, refernceURL);
-        console.log(dbRef);
         const userSnapshot  = await get(dbRef);
         const currentUserName = userSnapshot.exists()? userSnapshot.val() : {name: splitAndCapitalizeEmail(auth.currentUser.email), actors: []};
         try{
@@ -68,16 +67,7 @@ export default function CardForm(props){
     }
     return(
         <div className = "card-form-container">
-            <ScreenTitle title="Add your own actor" design_id="card-form-title"/>
             <form onSubmit={SubmitHandler} className = {`${props.styleClass} `}>
-                <div>
-                    <FormField 
-                        type="text"
-                        prompt="New Actor" 
-                        styleClass="card-form-field" 
-                        value={title} 
-                        onChange={titleHandler}/>
-                </div>
                 <div className="image-selection">
                     <label htmlFor="file-input" className="choose-file-label">{(imagePath==="")? "Choose actor image...":"Image selected."}</label>
                     <input 

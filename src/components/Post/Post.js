@@ -27,9 +27,10 @@ import "./Post.css";
  */
 export default function Post(props){
 
-    const {user, fetchUserPFP} = useContext(userContext);
-    const {postID} = props;
-    const postCreationTime = props.timestamp;
+    //fetchImage
+    const {user, fetchImage} = useContext(userContext);
+    const {postID, timestamp:postCreationTime} = props;
+
     const [postTime, setPostTime] = useState(Date(props.timestamp));
     const [postContent, setPostContent] = useState(props.content);
     const [attachment, setAttachment] = useState("");
@@ -49,12 +50,14 @@ export default function Post(props){
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [popupContentType, setPopupContentType] = useState(""); //Can be popup for comments, likes, or edit post.
 
+    //Handle post creation time
     useEffect(()=>{
         //Set post timestamp formatting..
         setPostTime(timeSincePost(postCreationTime));
         
     },[postCreationTime]);
 
+    //Handle post attachment
     useEffect(()=>{
         if(!props.attachment) return;
 
@@ -77,6 +80,7 @@ export default function Post(props){
         fetchAttachment();
     },[props.attachment]);
 
+    //Handle post like status
     useEffect(() => {
         if (!user || !likes) return;
         setPostLiked(likes.includes(user.uid));
@@ -115,9 +119,12 @@ export default function Post(props){
             try{
                 const refernceURL = `/users/${props.author}/settings/avatar`;
                 const results = await searchDB(refernceURL);
+                //If it's one of the default avatar images
                 if(results.includes("static"))
                     return setAvatar(results);
-                const fetchedAvatar = await fetchUserPFP(results, false);
+
+                console.log("Attempting to fetch profile picture for post author..")
+                const fetchedAvatar = await fetchImage(results, false);
                 if(fetchedAvatar)
                     return setAvatar(fetchedAvatar);
             }
@@ -125,26 +132,33 @@ export default function Post(props){
                 console.log(err);
             }
         }
+        fetchAvatar();
         fetchLikersUsernames();
         fetchCommentersUsernames();
         
-        fetchAvatar();
         // DEBUG: console.log(comments);
         // DEBUG: console.log(commentsUsernames);
 
-    }, [likes,comments, popupContentType , likesUsernames ,commentsUsernames, props.author, fetchUserPFP]);
+    }, [likes,comments, popupContentType , likesUsernames ,commentsUsernames, props.author, fetchImage]);
 
     const fetchCommentersAvatar = async() =>{
         try{
-            if(popupContentType !=="comments" || !comments || (comments.length === commentsUsernames.length)) 
+            if(popupContentType !=="comments" || !comments || (comments.length === commentsAvatars.length)) 
+            {   
+                // console.log(`popupContentType: ${popupContentType}`);
+                // console.log("avoiding fetching the commenters avatars..." + `
+                //     avatars  length: \n${commentsAvatars.length} 
+                //     comments length: \n${comments.length}`);
+                // console.log(commentsAvatars ); 
                 return; 
+            }
             console.log("Attempting to fetch commenters avatars");
             const avatars = await Promise.all(comments.map(async (comment)=>{
                 const avatar = await findAvatarDB(comment.userId);
                 if(avatar.includes("static"))
                     return avatar;
                 else{
-                    const fetchedAvatar = await fetchUserPFP(avatar, false);
+                    const fetchedAvatar = await fetchImage(avatar, false);
                     if(fetchedAvatar)
                         return fetchedAvatar;
                 } 

@@ -15,7 +15,7 @@ export default function ChatList(props){
 
     
     const [chatThumbnails, setChatThumbnails] = useState([]);
-    const {user, loading, fetchUserPFP} = useContext(userContext);
+    const {user, loading, fetchImage} = useContext(userContext);
     const [chatList, setChatList] = useState([]);
     
     useEffect(()=>{
@@ -49,13 +49,13 @@ export default function ChatList(props){
 
                         if(chatItem.group?.logo && chatItem.isGroupChat){
                             console.log("Attempting to fetch group logo");
-                            const fetchedAvatar = await fetchUserPFP(chatItem.group?.logo, false);
+                            const fetchedAvatar = await fetchImage(chatItem.group?.logo, false);
                             if(fetchedAvatar)
                                 avatar = fetchedAvatar;
                         }
                         else{
                             if(!avatar.includes("static")){
-                                const fetchedAvatar = await fetchUserPFP(avatar, false);
+                                const fetchedAvatar = await fetchImage(avatar, false);
                                 if(fetchedAvatar)
                                     avatar = fetchedAvatar;
                             }
@@ -91,7 +91,7 @@ export default function ChatList(props){
                 }
         }
         fetchChatThumbnails();
-    }, [chatList,user, fetchUserPFP]);
+    }, [chatList,user, fetchImage]);
 
     const openChat =(chatIndex)=>{
         console.log("opening chat", chatIndex);

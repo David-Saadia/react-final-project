@@ -2,41 +2,44 @@
  *  a heartbeat to the server to ensure our session is still valid, and if it is then to refresh it.
  *  This will ensure that if a user is unfocused on the window, or closed the window and left the system will
  *  always log the user out and the authentication will not be persistent.*/
-import {  useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 // Context and tools
 import axiosInstance from "../axiosInstance";
 import { auth } from "../firebase/FireBase";
-import { removeFromListDB } from "../firebase/ReadWriteDB";
 
- 
 
-const HEARTBEAT_INTERVAL = 30 * 60*1000; // Every 30 mins
+ /**
+  * Heartbeat tries to send every 5 minutes, 
+  */
+
+const HEARTBEAT_INTERVAL = 1 * 60*1000; // Every 30 mins
 const ACTIVITY_TIMEOUT = 5 * 60*1000; // User must have been active in last 5 mins to send heartbeat
 
-const useHearbeat = (triggerRef, setUser, setToken)=> {
+
+const useHeartbeat = (triggerRef, signOut)=> {
     const lastActive = useRef(Date.now());
-    const lastHeartbeat = useRef(0);
     const isActive = useRef(false);
 
-    
-    
+   
+
     useEffect( ()=>{
 
-
-        if (triggerRef){
-        triggerRef.current = ()=>{
-            isActive.current = true;
-            lastActive.current = Date.now();
-            console.log("Refreshing stale activity token on mount..");
-            console.log("Date now: ", Date.now());
-            console.log(`lastActive.current = ${lastActive.current}`);
-        };
-    }
+        let isMounted = true;
+        if(triggerRef){
+            //If triggerRef is null, we will set the value to this function
+            triggerRef.current = ()=>{
+                isActive.current = true;
+                lastActive.current = Date.now();
+                console.log("Refreshing stale activity token on mount..");
+                console.log("Date now: ", Date.now());
+                console.log(`lastActive.current = ${lastActive.current}`);
+            };
+        }
 
         const updateActivity = () =>{
             //Active if the user has been active in the last 5 minutes
-            if((Date.now()- lastActive.current > ACTIVITY_TIMEOUT) && (isActive.current === false)){
+            if((Date.now() - lastActive.current > ACTIVITY_TIMEOUT) && (isActive.current === false)){
                 isActive.current = true;
             }
            
@@ -45,7 +48,10 @@ const useHearbeat = (triggerRef, setUser, setToken)=> {
         const sendHearbeat = async ()=> {
             const now = Date.now();
             const user = auth.currentUser;
-            if (!user) return;
+            
+            if (!user || document.visibilityState !== "visible") return;
+
+            // Update the last active timestamp
             if(isActive.current){
                 if(document.hasFocus()){
                     lastActive.current = Date.now();
@@ -54,62 +60,53 @@ const useHearbeat = (triggerRef, setUser, setToken)=> {
             }
             
             console.log(`now (${now}) - lastActive (${lastActive.current}) =  ${(now-lastActive.current )}`, 
-            `value = ${now-lastActive.current <= ACTIVITY_TIMEOUT}`);
-            const HeartbeatReady = now-lastHeartbeat.current >= HEARTBEAT_INTERVAL;
+            `active = ${now-lastActive.current <= ACTIVITY_TIMEOUT}`);
 
-            if(HeartbeatReady){
-
-                 console.log("Attempting to send a heartbeat...");
-                 console.log(`lastActive.current = ${lastActive.current}`);
-                try{
-                    
-                    const payload = {timestamp: lastActive.current};
-                    const response = await axiosInstance.post("/heartbeat", payload);
-                    console.log(response.data.message);
-                    if (response.status===200){ //Successfull heartbeat
-                        lastHeartbeat.current = now;
-                    }
-                }
-                catch(err){
-                    if(err.response?.status===440){//Session invalidated - relog
-                        alert(err.response.data.message);
-                        await removeFromListDB(`/presence/`, auth.currentUser.uid);
-                        if(setUser && setToken){
-                            setUser(null);
-                            setToken(null);
-                        }
-                        else 
-                            console.log("setUser and setToken not defined");
-                        await auth.signOut();
-                    
-                        console.log("Session exired...");
-                        return;
-                    }
-                    console.log("Failed to send heartbeat with error - ", err);
+            console.log("Attempting to send a heartbeat...");
+            console.log(`lastActive.current = ${lastActive.current}`);
+            try{
+                const payload = {timestamp: lastActive.current};
+                const response = await axiosInstance.post("/heartbeat", payload);
+                //if componet dismounted while sending heartbeat
+                if (!isMounted) return;
+                console.log(response.data.message);
+                if (response.status===200){ 
+                    //Successfull heartbeat
+                    console.log("Heartbeat received successfully.");
                 }
             }
-            else{
-                console.log("Skipping heartbeat - Heartbeat not ready...");
+            catch(err){
+                //if componet dismounted while sending heartbeat
+                if (!isMounted) return;
+                //Session invalidated - relog
+                if(err.response?.status===440){
+                    console.log("Session invalidated by server..");
+                    signOut();
+                    alert(err.response.data.message);
+                }
+                console.log("Failed to send heartbeat with error - ", err);
             }
+            
         }
 
         //This will update our last active ref when each of these events occurs
         const activityEvents = ["mousemove","keydown","mousedown","touchstart"];
-        activityEvents.forEach(e => window.addEventListener(e, ()=>updateActivity(false))   ); 
+        activityEvents.forEach(e => window.addEventListener(e, updateActivity)); 
 
-        const interval = setInterval(sendHearbeat, 5 * 60*1000);
+        const interval = setInterval(sendHearbeat, HEARTBEAT_INTERVAL);
 
-        updateActivity(true);
+        updateActivity();
 
         //Clear up any unused listeners when we finish with the hook
         return () => {
             activityEvents.forEach(e => window.removeEventListener(e, updateActivity));
             clearInterval(interval);
+            isMounted = false;
         }
-    },[setUser,setToken, triggerRef]);
+    },[ signOut, triggerRef]);
 
 
      
 }
 
-export default useHearbeat;
+export default useHeartbeat;

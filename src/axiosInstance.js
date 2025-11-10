@@ -1,6 +1,10 @@
 import axios from "axios";
+
 import { getIdToken } from "firebase/auth";
 import { auth } from "./firebase/FireBase";
+
+
+
 
 //Base server URL - add exact database route through exported function
 const axiosInstance = axios.create({
@@ -22,7 +26,7 @@ axiosInstance.interceptors.request.use(
     async (config) => {
         const user = auth.currentUser;
         if (user) {
-            const token = await getIdToken(user, true); //Make sure token is fresh
+            const token = await getIdToken(user, false);
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;

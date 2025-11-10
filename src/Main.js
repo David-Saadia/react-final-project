@@ -2,9 +2,10 @@
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import {lazy, Suspense} from 'react';
 
+
+
 // Context and tools
 import {UserProvider} from './UserProvider';
-import useHearbeat from './hooks/useHeartbeat';
 
 import "./utils.css"
 import GroupsFeed from './pages/Groups/GroupsFeed';
@@ -25,10 +26,8 @@ const Settings = lazy(() => import('./pages/Settings/Settings'));
  * and BrowserRouter and sets the basename to "/react-assignment1". 
  * It defines three routes: "/" that renders Dashboard, "/signup" that renders
  * RegisterForm, and "/profile" that renders Profile.
- */
+*/
 export default function Main(){
-
-    useHearbeat();
     
     return (
             <UserProvider>
