@@ -1,17 +1,15 @@
 .chat-list{
     display:flex;
     align-items: center;
-    right:0;
     list-style: none;
     justify-items: center;
     
-    margin-top: 3.5vh;
+    padding:2em 1em 0 0;
+    margin-top: 2vh;
     margin-bottom:0;
-    padding:1em;
-    padding-top:2em;
-    background: linear-gradient(to bottom left, rgba(255,0,0,0.2), rgba(0,255,0,0.07),rgba(0,0,255,0.2));
-    backdrop-filter: blur(5px);
-    box-shadow: 0 5px 15px rgb(255,255,255,0.1);
+    background: var(--background-burn-effect);
+    backdrop-filter: var(--blur-effect-heavy);
+    box-shadow: var(--dropshadow-medium);
     flex-direction: column;
     
     height:100%;
@@ -31,8 +29,8 @@
     justify-content: center;
     padding:0.3em;
     cursor:pointer;
-    background: rgb(255,255,255,0.1);
-    box-shadow: 0 5px 15px rgb(255,255,255,0.1);
+    background: var(--bg-glass);
+    box-shadow: var(--dropshadow-medium);
     border-radius: 25px;
     width:100%;
     margin-bottom:0.5em;
@@ -40,8 +38,8 @@
 }
 
 .chat-item:hover{
-    background: rgb(255,255,255,0.2);
-    box-shadow: 0 5px 15px rgb(255,255,255,0.2);
+    background: var(--bg-glass-hover);
+    box-shadow: var(--dropshadow-heavy);
 }
 
 #chat-i{
@@ -49,7 +47,7 @@
 }
 
 .chat-title{
-    font-size:1.5em;
+    font-size:1em;
     margin:0;
 }
 
@@ -61,18 +59,18 @@
 
 #chat-list-container{
     display:flex;
-    height:87vh;
+    height: 100%;
     top: 13vh; 
     right:0;
     left:auto;
-    width: 24vw;
+    width: 18vw;
     overflow-y: scroll;
+    overflow-x: hidden;
     justify-content: center;
-    border-radius:25px;
     box-sizing:border-box;
-    border-left: 2px solid rgba(0, 0, 0, 0.9);
+    z-index:0;
 
-    direction:rtl;
+
 }
 
 #chat-avatar{

@@ -1,7 +1,6 @@
-"use client";
+
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import {lazy, Suspense} from 'react';
-
 
 
 // Context and tools
@@ -36,7 +35,8 @@ export default function Main(){
                             <Routes>
                                 <Route path="/" element={<Dashboard/>} />
                                 <Route path="/signup" element={<RegisterForm/>} />
-                                <Route path="/profile" element={<Profile/>} />
+                                <Route path="/profile/:uid" element={<Profile/>} />
+                                <Route path="/profile/" element={<Profile/>} />
                                 <Route path="/groups" element={<Groups/>}/>
                                 <Route path="/groups/feed/:groupId" element={<GroupsFeed/>}/>
                                 <Route path="/chat" element={<Chat />} />

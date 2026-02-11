@@ -9,7 +9,7 @@ import "./Home.css";
 //import CardForm from "../CardForm/CardForm";
 //import CardTable from "../CardTable/CardTable";
 import BackgroundWrapper from "../../components/base-components/BackgroundWrapper";
-import bg from "../../assets/images/scrollableBackground.png";
+import bg from "../../assets/images/background-postfeed-light.png";
 import NavigationBar from "../../components/base-components/NavigationBar/NavigationBar";
 import PostFeed from "../../components/PostFeed/PostFeed";
 import SideMenu from "../../components/SideMenu/SideMenu"; 

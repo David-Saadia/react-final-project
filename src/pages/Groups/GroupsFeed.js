@@ -1,11 +1,12 @@
-import { useNavigate } from "react-router-dom";
+
 import { useContext, useEffect } from "react";
 
 //Context and tools
 import { userContext } from "../../UserProvider";
+import useGoTo from "../../hooks/useGoTo";
 
 // Styles and components
-import bg from "../../assets/images/scrollableBackground.png";
+import bg from "../../assets/images/background-postfeed-light.png";
 import BackgroundWrapper from "../../components/base-components/BackgroundWrapper";
 import NavigationBar from "../../components/base-components/NavigationBar/NavigationBar";
 import SideMenu from "../../components/SideMenu/SideMenu";
@@ -14,13 +15,13 @@ import PostFeed from "../../components/PostFeed/PostFeed";
 export default function GroupsFeed(){
 
     const {user} = useContext(userContext);
-    const navigation = useNavigate();
+    const goTo = useGoTo();
 
     useEffect(()=>{
             if (!user) {
-            navigation("/");
+            goTo("/");
         }
-    },[user,navigation]);
+    },[user,goTo]);
 
     return(
     <div>

@@ -12,7 +12,7 @@ import NavigationBar from "../../components/base-components/NavigationBar/Naviga
 import PostFeed from "../../components/PostFeed/PostFeed";
 import SideMenu from "../../components/SideMenu/SideMenu"; 
 import Chat from "../Chat/Chat";
-import bg from "../../assets/images/scrollableBackground.png";
+import bg from "../../assets/images/background-postfeed-light.png";
 import Groups from "../Groups/Groups";
 
 

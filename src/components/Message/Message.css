@@ -1,42 +1,91 @@
-.chat-bubble{
+.message-item {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    align-items: flex-end; /* Align avatar to bottom of message */
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /*Transition for finding a message*/
+}
+
+.message-item.self {
+    flex-direction: row-reverse;
+}
+
+.message-item.other {
+    flex-direction: row;
+}
+
+.message-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
     
-    background:rgb(20,180,255,0.5);
-    width:100%;
-    backdrop-filter: blur(5px);
-    box-shadow: 0 5px 15px rgb(255,255,255,0.1);
-    border-radius:3px 20px 20px 20px;
-    box-sizing: border-box;
-    padding:0.5em;
 }
 
-.chat-bubble.right{
-    border-radius:20px 3px 20px 20px;
-    width: auto;    
-    background:rgb(80,80,80,0.5);
-}
-
-.message{
-    align-items: center;
-    padding:0.1em;
-    transition: 0.5 ease;
-}
-
-.message-content{
-    width:100%;
-}
-.message-username.right{
-   text-align:right;
-}
-.message-text.right{
-    text-align:right;
-}
-
-.message-time.right{
-    justify-self:right;
-}
-
-#message-avatar{
-    height:3rem;
-    width:3rem;
+.message-avatar-container{
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius:50%;
+    flex-shrink: 0;
+    background-color:var(--grey-300);
+    box-shadow: var(--dropshadow-sm);
+    overflow:hidden;
 }
+
+.message-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: 70%;
+}
+
+.message-item.self .message-content-wrapper {
+    align-items: flex-end;
+}
+
+.message-item.other .message-content-wrapper {
+    align-items: flex-start;
+}
+
+.message-bubble {
+    padding: 0.8rem 1rem;
+    border-radius: 18px;
+    position: relative;
+    word-wrap: break-word;
+    box-shadow: var(--dropshadow-sm);
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.message-item.self .message-bubble {
+    background-color: var(--primary-color);
+    color: white;
+    border-bottom-right-radius: 4px; /* Subtle corner effect */
+}
+
+.message-item.other .message-bubble {
+    background-color: white;
+    color: var(--text-primary);
+    border: 1px solid var(--grey-300);
+    border-bottom-left-radius: 4px;
+}
+
+.message-username {
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+    color: var(--primary-700);
+}
+
+.message-timestamp {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-top: 0.3rem;
+    padding: 0 0.2rem;
+}
+
+.highlight {
+    position: relative;
+    background-color: #da7c017c;
+    box-shadow: 0 0 5px 0.5em #e784017c;
+}
+

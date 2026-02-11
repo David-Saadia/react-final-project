@@ -7,7 +7,7 @@ import axiosInstance from "../../axiosInstance";
 import { findUIDbyUsername } from "../../firebase/ReadWriteDB";
 
 // Components and styling
-import bg from "../../assets/images/scrollableBackground.png"
+import bg from "../../assets/images/background-postfeed-light.png";
 import BackgroundWrapper from "../../components/base-components/BackgroundWrapper";
 import NavigationBar from "../../components/base-components/NavigationBar/NavigationBar";
 import SideMenu from "../../components/SideMenu/SideMenu";
@@ -125,13 +125,14 @@ export default function Groups(props) {
             backgroundPosition = "top center"
             backgroundRepeat="repeat-y"
             backgroundAttachment = "scroll"
+            
             >
                 
             <div className="groups">
                 <NavigationBar/>
                 <div className="page-container" id="groups-page-container">
                     <SideMenu />
-                    <div id="group-list-wrapper">
+                    <div id="group-list-wrapper" className="center-container">
                         <div id="new-group-form">
                             <Field
                                 inputStyle="new-group-field"

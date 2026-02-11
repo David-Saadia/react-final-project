@@ -6,12 +6,12 @@ import { findUserNameDB, writeToDB } from "../../firebase/ReadWriteDB";
 
 
 import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
-import TabbedContent from "../base-components/TabbedContent/TabbedContent";
 import Field from "../base-components/Field/Field";
 import ImageSelector from "../base-components/ImageSelector/ImageSelector";
 import "./SettingsCard.css"
 import FormField from "../base-components/FormField/FormField";
 import { updatePassword } from "firebase/auth";
+import SettingItem from "../SettingItem/SettingItem";
 
 
 
@@ -29,7 +29,6 @@ export default function SettingsCard(props){
         const fetchUsername = async ()=>{
             try{
                 const userName = await findUserNameDB(user.uid);
-                console.log(`userName: ${userName}`);
                 setDisplayUserName(userName);
             }
             catch(err){
@@ -65,8 +64,8 @@ export default function SettingsCard(props){
                 if(newUserName==="") return;
                 await writeToDB(`/users/${user.uid}/settings/username`, newUserName);
                 alert("Username changed successfully.");
-                setNewUserName("");
                 setDisplayUserName(newUserName);
+                setNewUserName("");
             }
             catch(err){
                 console.log(err);
@@ -77,7 +76,10 @@ export default function SettingsCard(props){
         const changePassword = async ()=>{
             try{
                 if(newPassword==="" || confirmPassword==="") return;
-                if(newPassword!==confirmPassword) return alert("Passwords do not match.");
+                if(newPassword!==confirmPassword) {
+                    alert("Passwords do not match.");
+                    return;
+                }
                 await updatePassword(user, newPassword);
                 alert("Password changed successfully.");
                 setNewPassword("");
@@ -85,55 +87,56 @@ export default function SettingsCard(props){
             }
             catch(err){
                 console.log(err);
-                console.log(err.response?.data?.message);
-            }
-        }
-    
-
-        const onSubmit = async(e, type)=>{
-            e.preventDefault();
-            if(type==="primary"){
-                await changeProfilePic();
-                await changeUserName();
-            }
-            else if(type==="credentials"){
-                await changePassword();
+                alert(err.response?.data?.message || err.message);
             }
         }
 
+        const deleteAccount = async () => {
+            alert("This functionality is not yet implemented.");
+        }
 
     return(
-        <div className="center-container  settings-card">
-            <ScreenTitle designClass="settings-title"title="User Settings"/>
-            <section className="user-primary-info">
+        <div className="settings-card">
+            <ScreenTitle designClass="settings-title" title="User Settings"/>
+            <div className="settings-user-info">
                 <img className="settings-avatar" alt="avatar" src={avatar}/>
-                <ScreenTitle designClass="settings-user-name" title={displayUserName} />
-                <button className="submit-button change-primary-btn">Change</button>
-            </section>
-            <div className="settings-divider"/>
-            <section className="credentials-change">
-                <ScreenTitle designClass="settings-user-name" title="Change Credentials"/>
-                <button className="submit-button change-credentials-btn">Change</button>
-            </section>
-            <div className="settings-divider"/>
-            <TabbedContent tabs={["Primary","Credentials"]} tabsContent={[
-                <form className="primary-details-form">
-                    <Field type="text" value={newUserName} onChange={(e)=>setNewUserName(e.target.value)} prompt="New Username" />
-                    <ImageSelector onSelectImage={(image)=>setNewProfilePic(image)}/>
-                    <button className="submit-button" onClick={(e)=>onSubmit(e, "primary")}>Submit</button>
-                </form>,
-                <form className="credentials-form">
+                <h2 className="settings-user-name">{displayUserName}</h2>
+            </div>
+            
+            <SettingItem
+                title="Change Username"
+                description="This will be the name other users see on your posts and profile."
+            >
+                <Field type="text" value={newUserName} onChange={(e)=>setNewUserName(e.target.value)} prompt="New Username" />
+                <button className="submit-button" onClick={changeUserName}>Save</button>
+            </SettingItem>
+
+            <SettingItem
+                title="Change Profile Picture"
+                description="Upload a new avatar. Recommended aspect ratio is 1:1."
+            >
+                <ImageSelector onSelectImage={(image)=>setNewProfilePic(image)}/>
+                <button className="submit-button" onClick={changeProfilePic}>Save</button>
+            </SettingItem>
+
+            <SettingItem
+                title="Change Password"
+                description="Choose a strong password to keep your account secure."
+            >
+                <div className="setting-control vertical">
                     <FormField type="password" value={newPassword} onChange={(e)=>setNewPassword(e.target.value)} prompt="New Password" />
                     <FormField type="password" value={confirmPassword} onChange={(e)=>setConfirmPassword(e.target.value)} prompt="Confirm Password" />
-                    <button className="submit-button" onClick={(e)=>onSubmit(e, "credentials")}>Submit</button>
-                </form>  
-                ]}/>
-            <div className="settings-divider"/>
-            <section className="delete-account">
-                <span>Delete Account</span>
-                <button className="submit-button delete-btn">Delete</button>
-            </section>
+                    <button className="submit-button" onClick={changePassword}>Save</button>
+                </div>
+            </SettingItem>
 
+            <SettingItem
+                title="Delete Account"
+                description="Permanently delete your account, posts, and all other data. This action is irreversible."
+                danger={true}
+            >
+                <button className="submit-button delete-btn" onClick={deleteAccount}>Delete Account</button>
+            </SettingItem>
         </div>
     );
 }

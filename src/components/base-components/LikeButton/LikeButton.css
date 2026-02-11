@@ -1,0 +1,82 @@
+/* --- Base Setup --- */
+.heart-button svg {
+  overflow: visible;
+}
+
+.heart-shape {
+  transition: fill 0.3s ease, stroke 0.3s ease;
+}
+
+/* The Crack: Always hidden by default in static states */
+.crack-path {
+  stroke-dasharray: 17; 
+  stroke-dashoffset: 17; /* Hidden */
+  fill: none;
+  stroke: #555;
+}
+
+/* --- STATE: LIKED (Full Red, Whole) --- */
+.heart-button.liked .heart-shape {
+  fill: #ff6b6b;
+  stroke: #ff6b6b;
+  /* Instant fill, no delay when liking */
+  transition-delay: 0s; 
+}
+
+.heart-button.liked .crack-path {
+  stroke: #ff6b6b;
+  stroke-dashoffset: 17; /* Remain Hidden */
+  transition: none;      /* No animation when entering liked state */
+}
+
+/* --- STATE: UNLIKED (Empty, Whole) --- */
+.heart-button.unliked .heart-shape {
+  fill: transparent;
+  stroke: #555;
+  
+  /* THE DELAY: Wait for the crack to appear before draining color */
+  transition: fill 0.4s ease; 
+  transition-delay: 0.1s; 
+}
+
+/* --- The Break Animation (Only triggers when entering .unliked) --- */
+@keyframes break-heart {
+  0% {
+    stroke-dashoffset: 17; /* Hidden */
+    opacity: 1;
+  }
+  30% {
+    stroke-dashoffset: 0;  /* Crack Appears (Breaks) */
+    opacity: 1;
+  }
+  70% {
+    stroke-dashoffset: 0;  /* Stay broken briefly while color drains */
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 17; /* Crack Zips away (Heals) */
+    opacity: 0;            /* Fade out to be safe */
+  }
+}
+
+.heart-button.unliked .crack-path {
+  stroke: #555;
+  /* Run the animation once when the class is applied */
+  animation: break-heart 0.6s forwards; 
+}
+
+/* --- The Shake Animation (Only triggers when entering .liked) --- */
+@keyframes shake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-2px, 2px) rotate(-5deg); }
+  75% { transform: translate(2px, -2px) rotate(5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.heart-button.liked svg {
+  animation: shake 0.4s ease-in-out;
+}
+
+.heart-button.unliked svg {
+  animation: shake 0.4s ease-in-out;
+}

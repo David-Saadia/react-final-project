@@ -1,8 +1,7 @@
 
-.dropdown {
-  width:fit-content;
+.dropdown-toggle {
+  width:100%;
   position: relative;
-  font-family: sans-serif;
 }
 
 
@@ -15,19 +14,21 @@
   top: 100%;
   left: 0;
   width: 100%;
+  height:fit-content;
   max-height: 25vh;
   overflow-y: auto;
 
-  backdrop-filter: blur(10px);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5em;
+
+  background-color: var(--bg-glass-hover);
+  backdrop-filter: var(--blur-effect);
   border-radius: 8px;
   z-index: 1005;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  box-shadow: var(--dropshadow-lg);
 }
 
-#dropdown-menu-content{
-    background: rgb(0,0,0,0.5);
-    
-}
 
 
 #drop-menu-item{
@@ -38,6 +39,6 @@
 }
 
 .dropdown-item:hover {
-  background-color: #333;
+  background-color: var(--grey-200);
 }
 

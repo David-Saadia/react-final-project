@@ -1,17 +1,10 @@
 
-import { startTransition } from "react";
+import useGoTo from "../../hooks/useGoTo";
 import "./SideMenu.css";
-import { useNavigate } from "react-router-dom";
 
 export default function SideMenu(props){
 
-    const navigation = useNavigate();
-
-    const goTo = (path) => {
-        startTransition(() => {
-            navigation(path);
-        });
-    }
+    const goTo = useGoTo();
 
     return(<div className="docked-container" id="side-menu">
         <button className="menu-item" onClick={() => goTo('/') }>Home</button>

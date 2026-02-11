@@ -1,0 +1,58 @@
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--grey-300);
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+}
+
+.setting-info {
+    flex: 1;
+    padding-right: 2rem;
+}
+
+.setting-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.setting-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.setting-control {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.setting-control.vertical {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.danger-zone {
+    border-color: var(--danger-color-light);
+}
+
+.danger-zone .setting-info h3 {
+    color: var(--danger-color);
+}
+
+.danger-zone .delete-btn {
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+}
+
+.danger-zone .delete-btn:hover {
+    background-color: var(--danger-color-dark);
+}

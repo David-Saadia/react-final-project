@@ -1,18 +1,16 @@
 
 .dropdown {
   position: relative;
-  width: 220px;
-  font-family: sans-serif;
 }
 
 
 .dropdown-toggle {
   width: fit-content;
-  padding: 0.5em;
-  background-color: #3333336b;
+  padding: 0.9em;
+  background-color: var(--bg-primary);
   margin-top:0;
-  color: #ffa500;
-  border: none;
+  color: var(--text-primary);
+  border: 1px solid var(--grey-300);
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.7rem;
@@ -23,8 +21,8 @@
 }
 
 .dropdown-toggle:hover {
-  background-color: #444;
-  border: none;
+  background-color: var(--grey-200);
+  border: 1px solid var(--grey-500);;
 }
 
 .arrow {
@@ -42,11 +40,12 @@
   width: 100%;
   max-height: 25vh;
   overflow-y: auto;
-  background-color: #222;
-  backdrop-filter: blur(10px);
+  background-color: var(--bg-secondary);
+  backdrop-filter: var(--blur-effect);
+  border: 1px solid var(--grey-300);
   border-radius: 8px;
   z-index: 1000;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  box-shadow: var(--dropshadow-lg);
 }
 
 
@@ -56,13 +55,13 @@
   background: none;
   border: none;
   text-align: left;
-  color: #ffa500;
+  color: var(--text-primary);
   cursor: pointer;
   font-size: 0.95rem;
   transition: 0.2s ease;
 }
 
 .dropdown-item:hover {
-  background-color: #333;
+  background-color: var(--grey-200);
 }
 

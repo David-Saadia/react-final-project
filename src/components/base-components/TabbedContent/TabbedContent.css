@@ -1,7 +1,7 @@
 .tabs{
     overflow: hidden;
     display: flex;     
-    background-color:#f5d6b3;
+    background-color:var(--bg-secondary);
     border-radius:25px;
     min-height:10%;
 }
@@ -18,12 +18,12 @@
 }
 
 .tab-link:hover{
-    background-color: #dba86f
+    background-color: var(--grey-200);
 }
 
 .tab-link.active{
-    background-color: #e2b57d;
-    color: #222;
+    background-color: var(--primary-color);
+    color: var(--text-primary);
 }
 
 .tab-content {

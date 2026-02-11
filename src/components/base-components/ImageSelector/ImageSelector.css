@@ -7,13 +7,14 @@
     display: inline-block;
     width:max-content;
     margin-bottom:0;
-    padding:0.3em;
+    padding:0.6em;
     text-align: center;
     cursor: pointer;
-    background: #222;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
     line-height: 1em;
     border-radius: 5px;
-    border: #000 0.4px solid;
+    border: 1px solid var(--grey-300);
     font-size:0.9em;
 
 }

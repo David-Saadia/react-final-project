@@ -1,15 +1,16 @@
 .field-area{
     width: 100%;
     min-width: 100%;
-    padding: 1vh 1vw;
+    min-height: 2.25rem;
+    padding: 0.5em 1em;
     outline: none;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+    background: var(--bg-glass);
+    box-shadow: var(--dropshadow-md);
     box-sizing: border-box;
-    border: 1px solid #000;
-    backdrop-filter: blur(10px);
-    color: #fff;
+    border: 1px solid var(--grey-300);
+    backdrop-filter: var(--blur-effect);
+    color: var(--text-primary);
     font-size: 1em;
     letter-spacing: 0.1em;
     resize: none;

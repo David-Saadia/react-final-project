@@ -39,62 +39,62 @@ export default function ChatList(props){
     
     useEffect(() => {
         const fetchChatThumbnails = async (limit=-1) => {
-                if(limit<0 && chatList){
-                    if(!user) return;
-                    //DEBUG: console.log("Attempting to pull users's chats list names/images")
-                    const thumbnails = await Promise.all(chatList.map(async (chatItem) => {
-                        let avatar = chatItem.isGroupChat
-                        ? await findAvatarDB(chatItem.creator)
-                        : await findAvatarDB(chatItem.participants.find(member => member !== user?.uid));
+            if(limit<0 && chatList){
+                if(!user) return;
+                //DEBUG: console.log("Attempting to pull users's chats list names/images")
+                const thumbnails = await Promise.all(chatList.map(async (chatItem) => {
+                    let avatar = chatItem.isGroupChat
+                    ? await findAvatarDB(chatItem.creator)
+                    : await findAvatarDB(chatItem.participants.find(member => member !== user?.uid));
 
-                        if(chatItem.group?.logo && chatItem.isGroupChat){
-                            console.log("Attempting to fetch group logo");
-                            const fetchedAvatar = await fetchImage(chatItem.group?.logo, false);
+                    if(chatItem.group?.logo && chatItem.isGroupChat){
+                        //DEBUG: console.log("Attempting to fetch group logo");
+                        const fetchedAvatar = await fetchImage(chatItem.group?.logo, false);
+                        if(fetchedAvatar)
+                            avatar = fetchedAvatar;
+                    }
+                    else{
+                        if(!avatar.includes("static")){
+                            const fetchedAvatar = await fetchImage(avatar, false);
                             if(fetchedAvatar)
                                 avatar = fetchedAvatar;
                         }
-                        else{
-                            if(!avatar.includes("static")){
-                                const fetchedAvatar = await fetchImage(avatar, false);
-                                if(fetchedAvatar)
-                                    avatar = fetchedAvatar;
+                    }
+
+                    //DEBUG: console.log(avatar);
+                    //DEBUG: console.log(chatItem);
+                    let label = "N/A"
+                    try{
+                        if(!chatItem.isGroupChat) 
+                            label = await findUserNameDB(chatItem.participants.find(member => member !== user?.uid));
+                        else {
+                            const response = await axiosInstance.get(`/groups/search/${chatItem.group._id}`);
+                            if(response.status===200){
+                                label = response.data.group.name;
+                                //DEBUG: console.log(label);
                             }
                         }
+                    }catch(err){
+                        console.log(err);
+                    }
+                    if(label?.length>10) {
+                        if(label.split(" ").length>1)
+                            label = extractAcronym(label).slice(0,3);          
+                        else
+                            label = label.slice(0,7);
+                    }
+                    //DEBUG: console.log(`label: ${label} avatar: ${avatar}`);
 
-                        console.log(avatar);
-                        console.log(chatItem);
-                        let label = "N/A"
-                        try{
-                            if(!chatItem.isGroupChat) 
-                                label = await findUserNameDB(chatItem.participants.find(member => member !== user?.uid));
-                            else {
-                                const response = await axiosInstance.get(`/groups/search/${chatItem.group._id}`);
-                                if(response.status===200){
-                                    label = response.data.group.name;
-                                    console.log(label);
-                                }
-                            }
-                        }catch(err){
-                            console.log(err);
-                        }
-                        if(label?.length>10) {
-                            if(label.split(" ").length>1)
-                                label = extractAcronym(label).slice(0,3);          
-                            else
-                                label = label.slice(0,7);
-                        }
-                        //DEBUG: console.log(`label: ${label} avatar: ${avatar}`);
-
-                        return {avatar, label};
-                    }));
-                    setChatThumbnails(thumbnails);
-                }
+                    return {avatar, label};
+                }));
+                setChatThumbnails(thumbnails);
+            }
         }
         fetchChatThumbnails();
     }, [chatList,user, fetchImage]);
 
     const openChat =(chatIndex)=>{
-        console.log("opening chat", chatIndex);
+        //DEBUG: console.log("opening chat", chatIndex);
         props.setChatSelected(chatIndex);
     }
     
@@ -109,6 +109,7 @@ export default function ChatList(props){
                     <ScreenTitle title={thumbnail.label} designClass="chat-title"/>
                 </li>
             ))}
+            
         </ul>    
     </div>
 

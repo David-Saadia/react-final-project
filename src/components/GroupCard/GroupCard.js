@@ -1,17 +1,18 @@
-import { startTransition, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 
 //Context and tools
 import { userContext } from "../../UserProvider";
 import { findAvatarDB, findUserNameDB } from "../../firebase/ReadWriteDB";
 import axiosInstance from "../../axiosInstance";
+import useGoTo from "../../hooks/useGoTo";
 
 //Components and styles
-import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
-import PopupModal, { ConfigureGroupWindow, InviteWindow, MembersListWindow, StatisticsNewImageWindow } from "../base-components/PopupModal/PopupModal";
+import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle"; //StatisticsNewImageWindow down here \/
+import PopupModal, { ConfigureGroupWindow, InviteWindow, MembersListWindow, StatisticsNewImageWindow  } from "../base-components/PopupModal/PopupModal";
 import TabbedContent from "../base-components/TabbedContent/TabbedContent";
 import "./GroupCard.css"
 import defaultGroupImage from "../../assets/images/icons/groups-icon.png";
+import { ManageGroupIcon, JoinGroupIcon, DeleteIcon, GroupChatIcon, ExplorePostsIcon, LeaveGroupIcon } from "../IconSVGs";
 
 /**
  * 
@@ -37,14 +38,9 @@ export default function GroupCard(props){
     const [membersUsernames, setMembersUsernames] = useState([]);
     const [admins, setAdmins] = useState(props.admins);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isActionsPopupOpen, setIsActionsPopupOpen] = useState(false);
     const [joinRequests, setJoinRequests] = useState(null);
-    const navigation = useNavigate();
-
-    const goTo = (path) => {
-        startTransition(() => {
-            navigation(path);
-        });
-    }
+    const goTo = useGoTo();
     
 
     useEffect(()=>{
@@ -57,8 +53,8 @@ export default function GroupCard(props){
             else{
                 try{
                     const fetchedAvatar = await fetchImage(img._id, false);
-                    console.log(`groupImage:`,img);
-                    console.log(`fetchedAvatar: ${fetchedAvatar}`);
+                    //DEBUG: console.log(`groupImage:`,img);
+                    //DEBUG: console.log(`fetchedAvatar: ${fetchedAvatar}`);
                     setGroupImage(fetchedAvatar);
 
                 }catch(err){
@@ -112,7 +108,12 @@ export default function GroupCard(props){
             const data = await Promise.all(props.joinRequests.map(async (member)=>{
                 if(typeof member !== "string") return;
                 const username = await findUserNameDB(member);
-                const avatar = await findAvatarDB(member);
+                let avatar = await findAvatarDB(member);
+                if(!avatar.includes("static")){
+                    avatar = await fetchImage(avatar, false);
+                }
+
+
                 if(!username || !avatar){
                     console.log('possible undefined hit');
                     return null;
@@ -125,7 +126,7 @@ export default function GroupCard(props){
         }
         fetchJoinRequestsData();
 
-    },[props.joinRequests])
+    },[props.joinRequests, fetchImage])
 
     const isJoined = ()=>{
         return members && members.includes(user.uid);
@@ -202,6 +203,9 @@ export default function GroupCard(props){
             }
         }
         catch(err){
+            if(err.response?.status===400){
+                alert(err.response?.data?.message);
+            }
             console.log(err);
             console.log(err.response?.data?.message);
         }
@@ -291,7 +295,7 @@ export default function GroupCard(props){
                 <img className="group-image" src={groupImage || defaultGroupImage} alt="groupImage"/>
                 <ScreenTitle title={groupName}/>
             </div>
-            {isJoined() && (<button className="leave-btn" title="Leave Group" onClick={leaveGroup}></button>)}
+            {isJoined() && (<button className="leave-btn desktop-only" title="Leave Group" onClick={leaveGroup}><LeaveGroupIcon/></button>)}
           </div>
           <ul className="card-carousel">
             {membersAvatars && membersAvatars.map((avatar,index)=>{
@@ -307,19 +311,23 @@ export default function GroupCard(props){
           <div id="group-card-footer">
             { /*The logic here is basically: If not joined -> display Join. If joined, explore, if joined and admin, display manage/del*/
             !isJoined() 
-            ? (<button onClick={joinGroup}>Join</button>)
-            :(<div>
-                <button title="Explore" className="explore-btn" onClick={(e)=>goTo(`/groups/feed/${groupID}`)}/>
-                <button title="Chat"className="chat-btn" onClick={(e)=>goTo(`/chat/${chatID}`)}/>
-                {isAdmin() && (<div className="grouped">
-                <button onClick={() => openPopup()}>Manage</button>
-                <button onClick={deleteGroup}>Delete</button>
+            ? (<>
+                <button className="join-btn desktop-only" title="Join Group"onClick={joinGroup}><JoinGroupIcon size="30"/></button>
+                <button className="mobile-actions-btn" onClick={joinGroup}>Join Group</button>
+               </>)
+            :(<>
+                <button title="Explore" className="explore-btn desktop-only" onClick={(e)=>goTo(`/groups/feed/${groupID}`)}><ExplorePostsIcon size="28"/></button>
+                <button title="Chat"className="chat-btn desktop-only" onClick={(e)=>goTo(`/chat/${chatID}`)}><GroupChatIcon size="30"/></button>
+                {isAdmin() && (<div className="grouped desktop-only">
+                    <button title="Manage" className="manage-btn" onClick={() => openPopup()}><ManageGroupIcon size="30"/></button>
+                    <button title="Delete" className="delete-btn" onClick={deleteGroup}><DeleteIcon size="30"/></button>
                 </div>)}
-            </div> )}
+                <button className="mobile-actions-btn" onClick={() => setIsActionsPopupOpen(true)}>Manage Group</button>
+            </> )}
           </div>
           <PopupModal isOpen={isPopupOpen} onClose={closePopup} styleId="invite-modal">
            <TabbedContent
-                tabs={["New Name","Members", "Invite", "New Image"]}
+                tabs={["Rename","Members", "Invite", "New Image"]}
                 tabsContent={[
                     <ConfigureGroupWindow 
                         groupName={groupName} onRenameGroup={(newGroupName)=>renameGroup(newGroupName)} 
@@ -332,6 +340,21 @@ export default function GroupCard(props){
                 tabStyleId="manage-group-tabs"
            />
 
+          </PopupModal>
+
+          <PopupModal isOpen={isActionsPopupOpen} onClose={() => setIsActionsPopupOpen(false)} styleId="mobile-actions-modal">
+            <div className="mobile-actions-list">
+                <ScreenTitle title="Group Options"/>
+                <button className="action-item" onClick={() => {goTo(`/groups/feed/${groupID}`); setIsActionsPopupOpen(false);}}>Explore</button>
+                <button className="action-item" onClick={() => {goTo(`/chat/${chatID}`); setIsActionsPopupOpen(false);}}>Chat</button>
+                <button className="action-item" onClick={() => {leaveGroup(); setIsActionsPopupOpen(false);}}>Leave Group</button>
+                {isAdmin() && (
+                    <>
+                        <button className="action-item" onClick={() => {openPopup(); setIsActionsPopupOpen(false);}}>Configure</button>
+                        <button className="action-item delete-action" onClick={() => {deleteGroup(); setIsActionsPopupOpen(false);}}>Delete Group</button>
+                    </>
+                )}
+            </div>
           </PopupModal>
         </div>
     );

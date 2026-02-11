@@ -1,4 +1,4 @@
-import bg from "../../assets/images/scrollableBackground.png";
+import bg from "../../assets/images/background-postfeed-light.png";
 import BackgroundWrapper from "../../components/base-components/BackgroundWrapper";
 import NavigationBar from "../../components/base-components/NavigationBar/NavigationBar";
 import SettingsCard from "../../components/SettingsCard/SettingsCard";

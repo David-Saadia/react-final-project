@@ -1,10 +1,10 @@
-const splitAndCapitalizeEmail = (email) => email.split("@")[0].charAt(0).toUpperCase() + email.split("@")[0].slice(1);
+export const splitAndCapitalizeEmail = (email) => email.split("@")[0].charAt(0).toUpperCase() + email.split("@")[0].slice(1);
 
-const pickRandom = (options) => Date.now()%options;
+export const pickRandom = (options) => Date.now()%options;
                                                     //Lol charAtCharAtCharAtCharAt
-const extractAcronym = (name) => name.split(" ").map(word => {return word.charAt(0).match(/^[a-zA-Z0-9]+$/)?word.charAt(0).toUpperCase():word}).join("");
+export const extractAcronym = (name) => name.split(" ").map(word => {return word.charAt(0).match(/^[a-zA-Z0-9]+$/)?word.charAt(0).toUpperCase():word}).join("");
 
-const timeSincePost = (time) =>{
+export const timeSincePost = (time) =>{
     const timePassed = Date.now() - new Date(time);
     // DEBUG: console.log(timePassed);
 
@@ -20,6 +20,3 @@ const timeSincePost = (time) =>{
     return "Just now";
 
 }
-
-
-export {splitAndCapitalizeEmail, pickRandom, timeSincePost, extractAcronym};

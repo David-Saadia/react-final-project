@@ -1,24 +1,58 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./DropDownMenu.css";
 
 export default function DropDownMenu(props){
 
     const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef(null);
     const metaData = props.optionsMetaData?.length === props.options.length ? props.optionsMetaData : null;
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) 
+                setIsOpen(false);
+        };
+
+        if (isOpen) document.addEventListener("mousedown", handleClickOutside);
+
+        return () => { document.removeEventListener("mousedown", handleClickOutside); };
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!props.options || props.options.length === 0) {
+            setIsOpen(false);
+        }
+        else if(props.autoOpen && props.options && props.options.length > 0){
+            setIsOpen(true);
+        }
+    }, [props.options, props.autoOpen]);
+
     // if (metaData) 
     //     console.log(metaData);
 
     const selectOption = (option)=>{
-        if(metaData) 
+        // console.log("Selected option:", option);
+        if(metaData && props.options.indexOf(option) !== -1) 
             props.onChange(option, metaData[props.options.indexOf(option)]);
         else
             props.onChange(option);
         setIsOpen(false);
     };
 
+    const handleToggle = () => {
+        if (props.options && props.options.length > 0) {
+            setIsOpen(!isOpen);
+        }
+    };
+
     return(
-        <div className="dropdown" id={props.styleId}>
-            <div id="dropdown-menu-toggle" className="dropdown-toggle"  onClick={()=>setIsOpen(!isOpen)}>{ props.children || "Select"}</div>
+        <div className="dropdown" id={props.styleId} ref={dropdownRef} >
+            <div id="dropdown-menu-toggle" 
+                className={`dropdown-toggle ${props.styleClass}`}  
+                onClick={handleToggle}>
+
+                    { props.children || "Select"}
+            </div>
             {isOpen && (
                 <div className="dropdown-content" id="dropdown-menu-content">
                 {

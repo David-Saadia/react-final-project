@@ -1,18 +1,20 @@
 import ReactDOM from "react-dom";
-import { startTransition, useContext, useEffect, useState} from "react";
+import { useContext, useEffect, useState, useRef} from "react";
 
 //Context and tools
 import { userContext } from "../../../UserProvider";
+import axiosInstance from "../../../axiosInstance";
+import useGoTo from "../../../hooks/useGoTo";
 
 //Components and styles
 import Field from "../Field/Field";
 import FieldArea from "../FieldArea/FieldArea";
 import ScreenTitle from "../ScreenTitle/ScreenTitle";
-import "./PopupModal.css"
-import axiosInstance from "../../../axiosInstance";
-import { useNavigate } from "react-router-dom";
 import ImageSelector from "../ImageSelector/ImageSelector";
 import {BarGraph, LineGraph} from "../../BarLineChart/BarChart";
+import "./PopupModal.css"
+
+
 /**
  * 
  * @param {object} props - To hold all arguments.
@@ -22,23 +24,72 @@ import {BarGraph, LineGraph} from "../../BarLineChart/BarChart";
  * @returns {JSX.PopupModal} 
  */
 export default function PopupModal(props){
+    const { isOpen, onClose } = props;
+    const backdropMouseDown = useRef(false);
+    const backdropRef = useRef(null);
     
     //This prevents background scrolling.
     useEffect(()=> {
-    if (props.isOpen) document.body.classList.add("modal-open");
-    else document.body.classList.remove("modal-open");
-    return () => document.body.classList.remove("modal-open");
-    },[props.isOpen]);
+        if (isOpen) document.body.classList.add("modal-open");
+        
+        return () => {
+            // Check if there are other modals open before removing the class
+            // We use a timeout to allow the DOM to update if a modal is closing
+            setTimeout(() => {
+                if (document.querySelectorAll('.popup-backdrop').length === 0) {
+                    document.body.classList.remove("modal-open");
+                }
+            }, 0);
+        };
+    },[isOpen]);
 
-    if(!props.isOpen) return null;
+    // Handle ESC key to close the modal
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === "Escape") {
+                const backdrops = document.querySelectorAll('.popup-backdrop');
+                // Only close if this is the topmost modal (last in the DOM)
+                if (backdrops.length > 0 && backdrops[backdrops.length - 1] === backdropRef.current) {
+                    onClose();
+                }
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener("keydown", handleKeyDown);
+        }
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [isOpen, onClose]);
+
+    //Moved to mouseDown and backDropClick handlers to avoid issues with mouse release outside the backdrop.
+    //e.target === e.currentTarget checks if the component clicked is the same as the component with the listener(currentTarget).
+    const handleMouseDown = (e) => {
+        if (e.target === e.currentTarget) {
+            backdropMouseDown.current = true;
+        } else {
+            backdropMouseDown.current = false;
+        }
+    };
+
+    const handleBackdropClick = (e) => {
+        if (backdropMouseDown.current && e.target === e.currentTarget) {
+            onClose();
+        }
+        backdropMouseDown.current = false;
+    };
+
+    if(!isOpen) return null;
 
 
     //This portal basically allows nesting this component in other components but still having
     // it have the document.body constraits and not the parents constraits, so we can fill the entire screen.
     return ReactDOM.createPortal(
-             <div id="popup-backdrop" onClick={props.onClose}>
+             <div className="popup-backdrop" ref={backdropRef} onMouseDown={handleMouseDown} onClick={handleBackdropClick}>
             <div className="popup-content" id={props.styleId} onClick={(e) => e.stopPropagation()}>
-                <button className="close-button" onClick={props.onClose}>X</button>
+                <button className="close-button" onClick={onClose}>X</button>
                 {props.children}
             </div>
         </div>,
@@ -106,8 +157,8 @@ export function StatisticsNewImageWindow(props){
         </div>
         <button onClick={changeGroupImage} className="submit-button">Change</button>
         <div className="settings-divider"/>
-        <BarGraph title="Posts per month" data={groupPostData}/>
-        <LineGraph title="Messages per month" data={groupMessagesData}/>
+        {/* <BarGraph title="Posts per month" data={groupPostData}/>
+        <LineGraph title="Messages per month" data={groupMessagesData}/> */}
 
 
     </>
@@ -127,28 +178,33 @@ export function MessageWindow(props){
     const [message, setMessage] = useState("");
     const {receiver} = props;
     const {user} = useContext(userContext);
-    const navigation = useNavigate();
+    const goTo = useGoTo();
 
-    const goTo = (path) => {
-        startTransition(() => {
-            navigation(path);
-        });
+    //For now, make a title screen if the user tries to message themselves, later add error screen.
+    if(receiver===user.uid){
+        return(<>
+            <ScreenTitle title="You cannot send messages to yourself."/>
+        </>);
     }
 
     const createChat = async ()=>{
         try{
+            //FIX: if a chat is already open with this user, just send the message there.
             const payload= {content:message, author:user.uid, receiver:receiver};
             //DEBUG: console.log(payload);
             if(!payload.content || !payload.author || !payload.receiver) return;
 
             const response= await axiosInstance.post("/chats/message" , payload);
-            if(response.status===201){
+            if(response.status===200){
                 const chatId = response.data.chat._id;
                 //DEBUG: console.log(response.data.message);
                 alert(response.data.message);
                 setMessage("");
                 props.onClose();
                 goTo(`/chat/${chatId}`);
+            }
+            if(response.status===269){
+                console.log("Chat already exists, redirecting to chat.");
             }
         }
         catch(err){
@@ -234,7 +290,7 @@ export function ConfigureGroupWindow(props){
     const [newGroupName, setNewGroupName] = useState(props.groupName);
     return(<>
         <div className="grouped">
-            <Field value={newGroupName} onChange={(e)=>setNewGroupName(e.target.value)} prompt="Group Name" />\
+            <Field value={newGroupName} onChange={(e)=>setNewGroupName(e.target.value)} prompt="Group Name" />
             <button className="submit-button" id="rename-group-button" onClick={(e)=>props.onRenameGroup(newGroupName)}>Rename</button>
         </div>
         <div>
@@ -264,26 +320,73 @@ export function ConfigureGroupWindow(props){
  * @returns {JSX.Element} A JSX element representing the CommentsListWindow component.
  */
 export function CommentsListWindow(props){
+    
+    const {user} = useContext(userContext);
+    const [editingComment, setEditingComment] = useState(null);
+    const [deletingComment, setDeletingComment] = useState(null);
+
+    const handleEdit = (comment) => {
+        setEditingComment(comment);
+    };
+
+    const handleDelete = (commentId) => {
+        setDeletingComment(commentId);
+    };
+
+    const submitEdit = (newContent) => {
+        if (props.onEditComment && editingComment) {
+            props.onEditComment(editingComment._id, newContent);
+        }
+        setEditingComment(null);
+    };
+
     return(<>
+    <ul className="comments-list">
             {  
-            props.comments.map(({content, timestamp}, index) =>{
-            console.log(`commentsUsernames[index]= ${props.commentsUsernames[index]}`)
-            console.log(`commentsAvatars[index]= ${props.commentsAvatars[index]}`)
+            props.comments.map((comment, index) =>{
+            const {content, timestamp} = comment;
             return (   
-            <li id="comment-item" key={index}>
-                <div id="commment-header">
-                    <div className="grouped-horizontal">
-                    <img src={props.commentsAvatars[index]} alt="commenter_avatar"/>
-                    <ScreenTitle title={props.commentsUsernames[index]} designClass="post-username"/>
+            <li className="comment-item" key={index}>
+                <div className="comment-header">
+                    <div className="comment-user">
+                        <img src={props.commentsAvatars[index]} alt="commenter_avatar" className="comment-avatar"/>
+                        <span className="comment-username">{props.commentsUsernames[index]}</span>
                     </div>
-                    <span id="comment-timestamp">{props.timeSincePost(timestamp)}</span>
+                    <span className="comment-timestamp">{props.timeSincePost(timestamp)}</span>
+
                 </div>
-                <div id="comment-body">
-                    {content}
+                <div className="comment-body">
+                    <p>{content}</p>
                 </div>
+                {comment.userId === user.uid &&
+                    <div className="comment-controls">
+                        <button onClick={() => handleEdit(comment)}>Edit</button>
+                        <button onClick={() => handleDelete(comment._id)}>Remove</button>
+                    </div>
+                }
+                
             </li>
             );
         })}
+    </ul>
+    <PopupModal isOpen={!!editingComment} onClose={() => setEditingComment(null)}>
+        <ScreenTitle title="Edit Comment"/>
+        <EditPostWindow 
+            content={editingComment?.content || ""} 
+            editPost={submitEdit} 
+        />
+    </PopupModal>
+    <PopupModal isOpen={!!deletingComment} onClose={() => setDeletingComment(null)}>
+        <WarningWindow 
+            title="Delete Comment"
+            message="Are you sure you want to delete this comment?"
+            onConfirm={() => {
+                props.onDeleteComment(deletingComment);
+                setDeletingComment(null);
+            }}
+            onCancel={() => setDeletingComment(null)}
+        />
+    </PopupModal>
     </>);
 }
 
@@ -320,8 +423,87 @@ export function EditPostWindow(props){
                     className="submit-button"
                     id="submit-post-button"
                     onClick={(e)=>props.editPost(editContent)}>
-                        Edit Post
+                        Edit
                 </button>
             </div>
     </>);
+}
+
+export function StatusWindowWrapper(props){
+    const {statusType, message, onClose, title} = props;
+    if(statusType === "error") return(<ErrorWindow message={message} onClose={onClose} title={title}/>);
+    if(statusType === "success") return(<SuccessWindow message={message} onClose={onClose} title={title}/>);
+    if(statusType === "warning") return(<WarningWindow message={message} onClose={onClose} title={title} onConfirm={props.onConfirm} onCancel={props.onCancel}/>);
+    return(<AlertWindow message={message} onClose={onClose} title={title}/>);
+}
+
+
+
+/**
+ * ErrorWindow: A popup window that displays an error message.
+ * @param {object} props
+ * @param {string} props.message - The error message to display.
+ * @param {function} props.onClose - Function to be called when the close button is clicked.
+ */
+export function ErrorWindow(props){
+    return(
+        <div className="popup-status-window error">
+            <ScreenTitle title={props.title ||"Error"} designClass="status-title error-text"/>
+            <p className="status-message">{props.message}</p>
+            <button className="submit-button" onClick={props.onClose}>Close</button>
+        </div>
+    );
+}
+
+/**
+ * SuccessWindow: A popup window that displays a success message.
+ * @param {object} props
+ * @param {string} props.message - The success message to display.
+ * @param {function} props.onClose - Function to be called when the OK button is clicked.
+ */
+export function SuccessWindow(props){
+    return(
+        <div className="popup-status-window success">
+            <ScreenTitle title={props.title ||"Success"} designClass="status-title success-text"/>
+            <p className="status-message">{props.message}</p>
+            <button className="submit-button" onClick={props.onClose}>OK</button>
+        </div>
+    );
+}
+
+/**
+ * WarningWindow: A popup window that displays a warning message with confirm/cancel options.
+ * @param {object} props
+ * @param {string} props.message - The warning message to display.
+ * @param {function} props.onConfirm - Function to be called when the confirm button is clicked.
+ * @param {function} props.onCancel - Function to be called when the cancel button is clicked.
+ */
+export function WarningWindow(props){
+    return(
+        <div className="popup-status-window warning">
+            <ScreenTitle title={ props.title ||"Warning"} designClass="status-title warning-text"/>
+            <p className="status-message">{props.message}</p>
+            <div className="grouped-mashed">
+                <button className="submit-button cancel-button" onClick={props.onCancel}>Cancel</button>
+                <button className="submit-button" onClick={props.onConfirm}>Confirm</button>
+            </div>
+        </div>
+    );
+}
+
+/**
+ * AlertWindow: A popup window that displays a generic message/notice.
+ * @param {object} props
+ * @param {string} props.title - The title of the alert (optional, defaults to "Notice").
+ * @param {string} props.message - The message to display.
+ * @param {function} props.onClose - Function to be called when the OK button is clicked.
+ */
+export function AlertWindow(props){
+    return(
+        <div className="popup-status-window alert">
+            <ScreenTitle title={props.title || "Notice"} designClass="status-title alert-text"/>
+            <p className="status-message">{props.message}</p>
+            <button className="submit-button" onClick={props.onClose}>OK</button>
+        </div>
+    );
 }

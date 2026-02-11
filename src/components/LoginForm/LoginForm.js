@@ -1,27 +1,34 @@
-import { useState, startTransition, useContext } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useState, useContext } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import {auth} from "../../firebase/FireBase";
 
 // Context and tools
 import { writeToListDB } from '../../firebase/ReadWriteDB';
+import useGoTo from '../../hooks/useGoTo';
+import { userContext } from "../../UserProvider";
 
 
 //Compononets and styles
-import BackgroundWrapper from "../base-components/BackgroundWrapper";
+
+import PopupModal from "../base-components/PopupModal/PopupModal";
+import { StatusWindowWrapper } from "../base-components/PopupModal/PopupModal";
+
 import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
 import FormField from "../base-components/FormField/FormField";
+import BackgroundWrapper from "../base-components/BackgroundWrapper";
 import "./LoginForm.css";
 import "../../utils.css";	
-import bg from"../../assets/images/Fox_in_forest_background.png";
-import { userContext } from "../../UserProvider";
+import bg from"../../assets/images/background-login-light.jpg";
 
 export default function LoginForm() {
     
+    const [statusMessage, setStatusMessage] = useState("");
+    const [popupStatus, setPopupStatus] = useState(null);
     const [email , setEmail] = useState("");
     const [password , setPassword] = useState("");
-    const navigation = useNavigate();
     const {refreshStaleActivityVal} = useContext(userContext);
+
+    const goTo = useGoTo();
 
     const handleSignIn = async (e) => {
         e.preventDefault();
@@ -35,19 +42,15 @@ export default function LoginForm() {
                 console.log("No refreshStalActiviyFunction found.");
             }
             writeToListDB(`/presence/`, auth.currentUser.uid);
-            alert("Signed In Successfully");
 
         }
         catch(error){
-            alert(error.message);
+            setStatusMessage(error.message.split("(")[1].split(")")[0]);
+            setPopupStatus("error");
+            //alert(error.message);
             console.log(error);}
     }
 
-    const goTo = (path) => {
-        startTransition(() => {
-            navigation(path);
-        });
-    }
 
 
     return (
@@ -68,6 +71,12 @@ export default function LoginForm() {
                     <button onClick={() => goTo("/signup")}>Sign Up</button>
                 </div>
             </div>
+            <PopupModal isOpen={!!statusMessage} onClose={() => setStatusMessage("")}>
+                <StatusWindowWrapper 
+                    statusType={popupStatus}
+                    message={statusMessage} 
+                    onClose={() => {setPopupStatus(null); setStatusMessage("");}}/>
+            </PopupModal>
         </BackgroundWrapper>
     );
 }

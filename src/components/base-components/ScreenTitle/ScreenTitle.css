@@ -1,12 +1,10 @@
 .screen-title {
-    font-size: 2em;
+    font-size: 2.5em;
     margin-bottom: 5vh;
     text-align: center;
     font-weight: 800;
-    text-shadow: #000000 1px 1px 5px;
-    text-decoration: bold;
+    text-shadow: var(--text-shadow);
     letter-spacing: 0.01em;
     position: relative;
+    color: var(--text-primary);
 }
-
-

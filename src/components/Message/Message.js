@@ -6,6 +6,7 @@ import { userContext } from "../../UserProvider";
 import { timeSincePost } from "../../utils";
 
 //Components and styles
+import defaultAvatar from "../../assets/images/avatars/avatar_black.png";
 import "./Message.css";
 
 export default function Message(props){
@@ -14,12 +15,14 @@ export default function Message(props){
     const {message} = props
     const {user, fetchImage} = useContext(userContext);
 
+    const isSelf = message.author === user?.uid;
+
     useEffect(()=>{
         const fetchAvatarAndUsername = async () => {
             try{
                 const avatar = await findAvatarDB(message.author);
                 const username = await findUserNameDB(message.author);
-                console.log("avatar from message: ", avatar);
+                //console.log("avatar from message: ", avatar);
                 if(avatar.includes("static")) 
                     setAvatar(avatar);
                 else{
@@ -39,33 +42,17 @@ export default function Message(props){
 
 
     return(
-        <li className="message grouped">
-            {message.author === user?.uid
-            ? (
-                <>
-                    <img src={avatar} alt={`message-avatar`} id="message-avatar"/>
-                    <div className="message-content">
-                        <div className="message-time">{timeSincePost(message.timestamp)}</div>
-                        <div className="chat-bubble">
-                            <div className="message-username"><strong>{userName}</strong></div>
-                            <div className="message-text">{message.content}</div>
-                        </div>
-                    </div>
-                </>
-            )
-            : (
-                <>
-                <div className="message-content">
-                    <div className="message-time right">{timeSincePost(message.timestamp)}</div>
-                    <div className="chat-bubble right">
-                        <div className="message-username right"><strong>{userName}</strong></div>
-                        <div className="message-text right">{message.content}</div>
-                    </div>
+        <li id={`msg-${message._id}`} className={`message-item ${isSelf ? "self" : "other"} ${props.isHighlighted? "highlight": ""}`}>
+            <div className="message-avatar-container">
+                <img src={avatar || defaultAvatar} title="avatar" alt="" className="message-avatar"/>
+            </div>
+            <div className="message-content-wrapper">
+                <div className="message-bubble">
+                    {!isSelf && <div className="message-username">{userName || "\u00A0"}</div>}
+                    <div className="message-text">{message.content}</div>
                 </div>
-                <img src={avatar} alt={`message-avatar`} id="message-avatar"/>
-                </>
-            )}
-            
+                <div className="message-timestamp">{timeSincePost(message.timestamp)}</div>
+            </div>
         </li>
     );
 }

@@ -37,13 +37,18 @@ const BackgroundWrapper = ({
     children,}) => 
     {
         const PageBackgroundLayout = {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
             backgroundImage: `url(${backgroundImage})`,
             backgroundPosition,
             backgroundSize,
             backgroundRepeat,
             backgroundAttachment,
             transition,
-            minHeight: '100vh',
+            height: '100dvh',
+            overflow: 'hidden',
             margin: 0,
             padding: 0,
             ...style,

@@ -23,12 +23,11 @@ export default function PostFeed(props){
     const [newPostText, setNewPostText] = useState("");
     const [newPostImage, setNewPostImage] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [groupAttached, setGroupAttached] = useState("None");
+    const [groupAttached, setGroupAttached] = useState("Choose Group");
     const [userGroups, setUserGroups] = useState([]);
     const {user} = useContext(userContext);
     const {groupId} = useParams();
-    const type = props.type;
-
+    const {type, uid} = props;
 
     useEffect( () => {
         //Fetch the posts from the backend
@@ -40,13 +39,14 @@ export default function PostFeed(props){
                     return;
                 
                 let path = "/posts/?limit=100";
-                path += (type==="profile")? `&userId=${user?.uid}`: "";
+                path += (type==="profile")? `&userId=${uid?? user.uid}`: "";
                 path = (type!=="group")? path : `/groups/posts/${groupId}?limit=100`;
-                console.log( `path= ${path}`);
+                //DEBUG: console.log( `path= ${path}`);
                 const response = await axiosInstance.get(path);
                 // DEBUG: console.log(response.data.message);
                 
                 if (response.status===200){
+                    // DEBUG: console.log("Posts=", response.data.posts);
                     const fetchedPosts = await Promise.all(
                         response.data.posts.map(async (post)=>{
                             const userName = await findUserNameDB(post.author);
@@ -72,8 +72,8 @@ export default function PostFeed(props){
                 const response = await axiosInstance.get(`/groups/?userId=${user?.uid}&limit=${limit}`);
                 if (response.status===200){
                     setUserGroups(response.data.groups);
-                    //DEBUG:console.log(response.data.groups);
-                    console.log(response.data.message);
+                    //DEBUG: console.log(response.data.groups);
+                    //DEBUG: console.log(response.data.message);
                 }
             }
             catch(err){
@@ -85,7 +85,7 @@ export default function PostFeed(props){
         fetchPosts();
         fetchUserGroups();
 
-    }, [loading, type, user, groupId]);
+    }, [loading, type, user, groupId, uid]);
 
     useEffect(() => {
 
@@ -113,8 +113,14 @@ export default function PostFeed(props){
     
     const createNewPost = async () =>{
         
-        console.log("Attempting to create a new post..");
+        //DEBUG: console.log("Attempting to create a new post..");
         let attachment = null;
+        if(newPostText.trim().length===0 && !newPostImage){
+            //DEBUG: console.log("Post content is empty. Aborting post creation.");
+            alert("You cannot create an empty post!");
+            return;
+        }
+
         if(newPostImage){
             try{
                 console.log("Attempting to upload image to attach to post..");
@@ -134,7 +140,7 @@ export default function PostFeed(props){
             }
         }
         
-        console.log(newPostText);
+        //DEBUG: console.log(newPostText);
         const newPost = {
             author:user.uid,
             content:newPostText,
@@ -142,9 +148,9 @@ export default function PostFeed(props){
         if(attachment)
             newPost.attachment = attachment;
 
-        if(groupAttached!=="None")
+        if(groupAttached!=="Choose Group" && groupAttached!=="Personal post")
             newPost.group = userGroups.find((group)=>group.name===groupAttached)._id; 
-        console.log(`new post group = ${newPost.group}`);
+        //DEBUG: console.log(`new post group = ${newPost.group}`);
         try{
             const response = await axiosInstance.post("/posts", newPost);
             if (response.status===201){
@@ -187,7 +193,7 @@ export default function PostFeed(props){
                 <div className="post-selectors">
                     <DropRadioButton
                         styleId="post-group-selector"
-                        options={["None", ...userGroups.map((group)=>group.name)]}
+                        options={["Personal post", ...userGroups.map((group)=>group.name)]}
                         value={groupAttached}
                         onChange={setGroupAttached}
                         />

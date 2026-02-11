@@ -1,125 +1,92 @@
-
-#navigation-docker{
+#navigation-docker {
     height: 10vh;
     width: 100%;
-    
-    margin-bottom: 5vh;
     display: flex;
-    flex: 1;
     justify-content: space-between;
-    text-align: center;
-    padding-block: 0.7em;
-    background: linear-gradient(to right, rgba(255,0,0,0.2), rgba(0,255,0,0.2));
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25); 
-    backdrop-filter: blur(10px);
-    z-index: 7;
+    align-items: center;
+    padding: 0.7em 1em;
+    background-color: rgba(245, 241, 234, 0.8); /* Fallback */
+    background: var(--bg-glass);
+    box-shadow: var(--dropshadow-md);
+
+    backdrop-filter: var(--blur-effect);
 }
 
-
-#logo{  
+#logo {
     position: relative;
     height: 7.5rem;
     width: 12.5rem;
 }
 
-#home-search{
+#home-search {
     display: flex;
     flex-grow: 0.5;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    width:100%;
+    width: 100%;
     gap: 5px;
 }
 
-#nav-search{
-    width: 0;
-    opacity:0;
-    transition: all 0.7s ease;
-}
-#search-input{
-    padding:0;
-    transition: all 0.7s ease;
-}
 
-#nav-search.active{
-    width:100%;
-    opacity:1;
-}
-#nav-search.active #search-input{
-    padding:1em;
-}
-
-#settings-menu{
+#settings-menu {
     display: flex;
     flex-direction: row;
+    align-items: center;
     justify-content: space-evenly;
-    gap: 0.1em;
-    margin-right: 0px;
+    gap: 0.5em;
+    margin-right: 1em;
 }
 
+#profile-picture {
+    cursor: pointer;
+    width: 3.5em;
+    height: 3.5em;
+    object-fit: cover;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
 
-#profile-picture{
-    position: relative;
-    cursor: pointer; 
+#profile-picture:hover {
+    border: 2px solid var(--secondary-color);
+    box-shadow: var(--dropshadow-sm);
+}
+
+#navigation-docker .nav-button {
+    cursor: pointer;
     border: none;
-    width:3.5em;
-    height:3.5em;
-    background-size: contain;   
-    object-fit: cover;   
-    background-position: center;   
+    width: 3.5em;
+    height: 3.5em;
+    margin-inline: 0.5em;
+    background-size: 60%;
+    background-position: center;
     background-repeat: no-repeat;
-    border: 1px solid rgba(255, 255, 255, 0);
-    
-    border-radius: 50px;
-    transition: all 0.2s ease; 
- 
-   
-}
-#profile-picture:hover{
-    border: 1px solid rgba(255,255,255,0.01);
-    background-color: rgba(255, 255, 255, 0.05);    
-}
-
-#navigation-docker .nav-button{
-    position: relative;
-    cursor: pointer; 
-    border: none;
-    width:4em;
-    height:4em;
-    margin-inline: 1em;
-    background-size: contain;      
-    background-position: center;   
-    background-repeat: no-repeat;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255,255,255,0.1);
+    background-color: var(--grey-100);
+    border: 1px solid var(--grey-100);
     border-radius: 8px;
-    transition: all 0.2s ease; 
+    transition: all 0.2s ease;
 }
 
-#navigation-docker .nav-button:hover{
-    background-color: rgba(255, 255, 255, 0.15);
+#navigation-docker .nav-button:hover {
+    background-color: var(--grey-200);
     transform: scale(1.05);
+    box-shadow: var(--dropshadow-sm);
 }
 
-#navigation-docker #log-out-button{
+#navigation-docker #log-out-button {
     background-image: url(../../../assets/images/icons/logout_icon.png);
 }
 
-#navigation-docker #settings-button{
+#navigation-docker #settings-button {
     background-image: url(../../../assets/images/icons/settings-icon.png);
 }
 
-
-#navigation-docker #notifications-button{
+#navigation-docker #notifications-button {
     background-image: url(../../../assets/images/icons/notifications-icon.png);
 }
-#navigation-docker #home-button{
-    width:4em;
-    height:4em;
-    padding: 2em;
+
+#navigation-docker #home-button {
+    background-size: 60%;
     background-image: url(../../../assets/images/icons/home-icon.png);
 }
-
-
-

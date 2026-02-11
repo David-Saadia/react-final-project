@@ -58,14 +58,14 @@ export const UserProvider = ({ children }) => {
             if(response.status === 200){
                 const blob = response.data;
                 const url = URL.createObjectURL(blob);
-                console.log("Profile picture blob: ", blob);
-                console.log("Profile picture url: ", url);
+                //DEBUG: console.log("Profile picture blob: ", blob);
+                //DEBUG: console.log("Profile picture url: ", url);
                 
                 if(setUser){
                     setAvatar(url);
                 }
                 else
-                    console.log("setUser is false - called by chatlist or by");
+                    //DEBUG: console.log("setUser is false - called by chatlist or by");
                 return url;
             }
         }
@@ -84,10 +84,10 @@ export const UserProvider = ({ children }) => {
         
         const setUserPFP = async (userObj) => {
             try{
-                console.log("Attempting to set user PFP.");
+                //DEBUG: console.log("Attempting to set user PFP.");
                 const refernceURL = `/users/${userObj.uid}/settings/avatar`;
                 const picture = await searchDB(refernceURL);
-                console.log("Profile picture firebase result:", picture);
+                //DEBUG: console.log("Profile picture firebase result:", picture);
                 const isLocal = picture.includes("static");
                 //If it's not one of the default avatar images
                 if(!isLocal){

@@ -1,32 +1,35 @@
-.form-field{
+.form-field {
     position: relative;
     width: 100%;
     margin-top: 2vh;
 }
 
-.form-field input{
+.form-field input {
     width: 100%;
     padding: 3vh 1vw;
-    padding-right: 4vw; 
+    padding-right: 4vw;
     outline: none;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+    background-color: var(--bg-secondary);
+    box-shadow: var(--dropshadow-sm);
     box-sizing: border-box;
-    border: 1px solid #000;
-    backdrop-filter: blur(10px);
-    color: #fff;
+    border: 1px solid var(--grey-300);
+    color: var(--text-primary);
     font-size: 1em;
-    letter-spacing: 0.1em;
-    
+    letter-spacing: 0.05em;
+    transition: border-color 0.3s ease;
 }
 
-.form-field .popup_text{
+.form-field input:focus {
+    border-color: var(--primary-color);
+}
+
+.form-field .popup_text {
     position: absolute;
     left: 0;
     font-size: 1em;
     padding: 3vh 1vw;
-    color: #fff;
+    color: var(--text-secondary);
     letter-spacing: 0.1em;
     border-radius: 4px;
     transition: 0.25s;
@@ -34,25 +37,33 @@
 }
 
 .form-field input:focus ~ .popup_text,
-.form-field .popup_text.has-content{
-    transform: translate(15px,-10px);
+.form-field .popup_text.has-content {
+    transform: translate(15px, -10px);
     font-size: 0.75em;
-    background: #FF6B00;
-    color: #fff;
+    background: var(--primary-color);
+    color: var(--bg-primary);
     padding: 2px 5px;
-    border: 1px solid rgba(0, 0, 0, 0.75);
-    font-weight: bolder;
+    font-weight: bold;
 }
 
-.toggle-password{
+.toggle-password {
     position: absolute;
     right: 1vw;
-    top: 2vh;
+    top: 50%;
+    transform: translateY(-50%);
     cursor: pointer;
-    width: 40px;
-    height: 40px;
-}   
+    width: 24px;
+    height: 24px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
 
+.toggle-password:hover {
+    opacity: 1;
+}
 
 /* Hide the default password reveal button - we will use our own */
-input[type="password"]::-ms-reveal, input[type="password"]::-ms-clear { display: none; }
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}

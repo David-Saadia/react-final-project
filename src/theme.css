@@ -1,0 +1,70 @@
+/* --- theme.css --- */
+
+:root {
+  /* --- Primary Colors --- */
+  /* A friendly and warm primary color, like a soft terracotta. */
+  --primary-color: #D89B78;
+  --primary-100: #FBF3EE;
+  --primary-200: #F4E5D9;
+  --primary-300: #EDD7C4;
+  --primary-400: #E5C9AF;
+  --primary-500: #D89B78;
+  --primary-600: #C08A6A;
+  --primary-700: #A8795C;
+  --primary-800: #8F684E;
+  --primary-900: #765740;
+
+  /* --- Secondary/Accent Colors --- */
+  /* A complementary accent color that pops gently, like a muted gold. */
+  --secondary-color: #C8A951;
+
+  /* --- Background Colors --- */
+  /* A very light, warm neutral (creamy off-white) instead of pure white. */
+  --bg-primary: #FDFBF5;
+  /* A slightly darker background for surfaces like cards or modals. */
+  --bg-secondary: #F5F1EA;
+  /* A slightly transparent and cloudy background for glassmorphism effects. */
+  --bg-glass: rgba(255, 255, 255, 0.1);
+  --bg-glass-hover: rgba(255, 255, 255, 0.6);
+  --bg-glass-50: rgba(255, 255, 255, 0.5);
+  --bg-glass-80: rgba(255, 255, 255, 0.8);
+  /* A semi-transparent dark background for modal backdrops. */
+  --backdrop-color: rgba(67, 62, 58, 0.6);
+
+  /* --- Text Colors --- */
+  /* A dark, soft color for main text (dark warm grey/charcoal). */
+  --text-primary: #433E3A;
+  /* A lighter, muted color for secondary text or captions. */
+  --text-secondary: #7D746D;
+  /* A color for links that fits the theme and has good contrast. */
+  --text-link: #B38465;
+
+  /* --- Neutral/Grey Scale (Warm) --- */
+  /* A full scale based on a warm grey (with hints of brown/yellow). */
+  --grey-100: #F9F6F2;
+  --grey-200: #EFEBE4;
+  --grey-300: #E2DACE;
+  --grey-400: #D5C9B8;
+  --grey-500: #B9AFA0;
+  --grey-600: #9D9488;
+  --grey-700: #817A70;
+  --grey-800: #656058;
+  --grey-900: #433E3A;
+
+  /* --- Functional Colors --- */
+  /* Muted versions of standard functional colors to fit the soft, warm aesthetic. */
+  --success-color: #73A580; /* Muted Green */
+  --warning-color: #E5B36A; /* Muted Yellow/Orange */
+  --error-color: #D17B69;   /* Muted Red */
+
+  /* --- Background Effects --- */
+  /* Subtle drop shadows for depth. */
+  --dropshadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --dropshadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --dropshadow-lg: 0 10px 20px rgba(0, 0, 0, 0.1);
+  --text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  /* Effects for glassmorphism and other background treatments. */
+  --blur-effect: blur(25px);
+  --burn-effect: sepia(0.7) blur(50px);
+}
