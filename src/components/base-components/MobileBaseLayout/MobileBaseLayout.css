@@ -1,0 +1,35 @@
+.mobile-toggle-btn {
+    display: none;
+    position: fixed;
+    top: 25vh;
+    z-index: 1100;
+    width: 2rem;
+    height: 2rem;
+    background-color: var(--secondary-color, #4a90e2);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: 0.2s;
+}
+
+.mobile-toggle-btn:hover {
+    filter: brightness(1.1);
+}
+
+.left-toggle {
+    left: 0;
+    border-radius: 0 5px 5px 0;
+}
+
+.right-toggle {
+    right: 0;
+    border-radius: 5px 0 0 5px;
+}
+
+@media screen and (max-width: 768px){
+    .mobile-toggle-btn {
+        display: block;
+    }
+}

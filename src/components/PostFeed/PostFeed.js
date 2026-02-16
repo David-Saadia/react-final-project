@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, use } from "react";
 import { useParams } from "react-router-dom";
 
 
@@ -193,8 +193,8 @@ export default function PostFeed(props){
                 <div className="post-selectors">
                     <DropRadioButton
                         styleId="post-group-selector"
-                        options={["Personal post", ...userGroups.map((group)=>group.name)]}
-                        value={groupAttached}
+                        options={type!=="group"?["Personal post", ...userGroups.map((group)=>group.name)] :[]}
+                        value={type!=="group"? groupAttached: userGroups.find((group)=>group._id===groupId)?.name || "Choose Group"}
                         onChange={setGroupAttached}
                         />
                     <ImageSelector onSelectImage={(image)=>setNewPostImage(image)}/>

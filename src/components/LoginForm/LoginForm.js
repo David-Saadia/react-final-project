@@ -45,9 +45,8 @@ export default function LoginForm() {
 
         }
         catch(error){
-            setStatusMessage(error.message.split("(")[1].split(")")[0]);
+            setStatusMessage(error.message.split("/")[1].split(")")[0]);
             setPopupStatus("error");
-            //alert(error.message);
             console.log(error);}
     }
 
@@ -61,7 +60,7 @@ export default function LoginForm() {
             transition="background-image 0.5s ease-in-out"
             className="center-container">
                 
-            <div className="login auth-form-container">
+            <div className="login auth-form-container" onKeyDown={(e) => e.key === "Enter" && handleSignIn(e)}>
                 <ScreenTitle title="Login"/>
                 <FormField type="email" value={email} prompt="Email" onChange={(e) => setEmail(e.target.value)}/>
                 <FormField type="password" value={password} prompt="Password" onChange={(e) => setPassword(e.target.value)}/>

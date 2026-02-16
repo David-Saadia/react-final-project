@@ -6,14 +6,13 @@ import { useRequireAuth } from "../../hooks/useRequireAuth";
 
 //Components and styles
 import bg from "../../assets/images/background-postfeed-light.png";
-import ChatList from "../../components/ChatList/ChatList";
 import ChatRoom from "../../components/ChatRoom/ChatRoom";
-import SideMenu from "../../components/SideMenu/SideMenu";
 import NavigationBar from "../../components/base-components/NavigationBar/NavigationBar";
 import BackgroundWrapper from "../../components/base-components/BackgroundWrapper";
+import {MobileBaseChatLayout} from "../../components/base-components/MobileBaseLayout/MobileBaseLayout";
 import "./Chat.css";
 
-export default function Chat({miniView = false}){
+export default function Chat(){
     
     const {chatId} = useParams();
     const [chatSelected, setChatSelected] = useState(chatId || null);
@@ -28,12 +27,8 @@ export default function Chat({miniView = false}){
     const handleChatSelect = (id)=>{
         setChatSelected(id);
         navigation(`/chat/${id}`);
-        
     }
     
-    if( miniView)
-        return (<ChatList setChatSelected={handleChatSelect}/>)
-
     return(
         <BackgroundWrapper
             title="Chat"
@@ -45,11 +40,10 @@ export default function Chat({miniView = false}){
 
             <div className="chat">
                 <NavigationBar/>
-                <SideMenu/>
-                <div className="page-container" id="chat-container">
-                    {chatSelected  && (<ChatRoom chatId={chatSelected} />) }   
-                </div>
-                <ChatList setChatSelected={handleChatSelect}/>
+                <MobileBaseChatLayout pageContainerId="chat-container" handleChatSelected={handleChatSelect}>
+                    {chatSelected  && (<ChatRoom chatId={chatSelected} />) }
+                </MobileBaseChatLayout>
+              
             </div>
         </BackgroundWrapper>
     );

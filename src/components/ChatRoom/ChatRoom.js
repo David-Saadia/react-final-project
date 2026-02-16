@@ -33,12 +33,18 @@ export default function ChatRoom(props){
     //Scrolling
     const endRef = useRef(null);
     const startRef = useRef(null);
+    const scrollContainerRef = useRef(null);
     const [atTop, setAtTop] = useState(false);
     const [atBottom, setAtBottom] = useState(false);
     const [highlightedMsgId, setHighlightedMsgId] = useState(null);
     const targetScrollMsgId = useRef(null);
 
-    const showScrollLoadBtn = atTop !== atBottom && !isSearching;
+    /**
+     * English: If we're not in the middle of the chat (top & bottom = false) or we're viewing small amount of messages (top & bottom = true)
+     * AND we're not currently searching, AND we have more messages to load (or we're not at the top), only then show the button.
+     */
+    const showScrollLoadBtn = atTop !== atBottom && !isSearching && (!atTop || hasMoreMsgs);
+    //DEBUG: console.log(`atTop: ${atTop}, atBottom: ${atBottom}, showScrollLoadBtn: ${showScrollLoadBtn}`);
     const scrollLoadBtnText = atTop ? "Load more" : "Scroll to top";
 
     const mergeMessages = (existing, newMsgs, direction) => {
@@ -106,14 +112,8 @@ export default function ChatRoom(props){
     },[chatId, messages, latestLoad]);
 
     const onTopIntersect = useCallback((isIntersecting) =>{
-        if(hasMoreMsgs)
-            setAtTop(isIntersecting);
-        else{
-            //If we have no more messages, we don't want loadMore button to appear.
-            //DEBUG: console.log(`No more messages to load`);
-            setAtTop(false);
-        }
-    },[hasMoreMsgs]);
+        setAtTop(isIntersecting);
+    },[]);
 
     const onBottomIntersect = useCallback((isIntersecting) =>{
         setAtBottom(isIntersecting);
@@ -203,8 +203,12 @@ export default function ChatRoom(props){
         if(atTop && hasMoreMsgs){
            loadMoreMessages("older");
         }
-        else if(atBottom)
-            startRef.current?.scrollIntoView({behavior: "smooth", block: "end"});
+        else if(atBottom){
+            const scrollContainerRect = scrollContainerRef.current?.getBoundingClientRect();
+            const startRect = startRef.current?.getBoundingClientRect();
+            const offset = startRect?.bottom - scrollContainerRect?.bottom;
+            scrollContainerRef.current?.scrollBy({top: offset, behavior: "smooth"});
+        }
     }
 
     const handleShuffleResults = (direction) =>{
@@ -261,14 +265,36 @@ export default function ChatRoom(props){
     },[chatId]);
 
     useLayoutEffect(() => {
-        
+        const containerRect = scrollContainerRef.current?.getBoundingClientRect();
+
         if(targetScrollMsgId.current){
             const element = document.getElementById(`msg-${targetScrollMsgId.current.id}`);
-            if (element) element.scrollIntoView({behavior: "auto", block: targetScrollMsgId.current.align});
+            if (element){
+                const elementRect = element.getBoundingClientRect();
+                let offset;
+                if(targetScrollMsgId.current.align === "start")
+                    offset = elementRect.top - containerRect.top;
+                else if(targetScrollMsgId.current.align === "end")
+                    offset = elementRect.bottom - containerRect.bottom;
+                else if(targetScrollMsgId.current.align === "center"){
+                    offset = elementRect.top - containerRect.top;
+                    offset += (elementRect.height / 2) - (containerRect.height / 2);
+                }
+
+                scrollContainerRef.current?.scrollBy({top: offset, behavior: "auto"});
+                
+                //element.scrollIntoView({behavior: "auto", block: targetScrollMsgId.current.align});
+            } 
             targetScrollMsgId.current = null;
         }
         else if(!isSearching && latestLoad && !loading){
-            endRef.current?.scrollIntoView({behavior: "smooth", block: "end"});
+
+            //Replaced scrollIntoView with manual scroll for scrollable container.
+            
+            const endRect = endRef.current?.getBoundingClientRect();
+            const offset = endRect?.bottom - containerRect?.bottom;
+            scrollContainerRef.current?.scrollTo({top: scrollContainerRef.current.scrollTop + offset, behavior: "smooth"});
+            //endRef.current?.scrollIntoView({behavior: "smooth", block: "end"});
         }
     },[messages, isSearching, latestLoad, loading]);
 
@@ -307,7 +333,7 @@ export default function ChatRoom(props){
                   </>
                 }
                 />}
-        <div className="chat-messages-area">
+        <div className="chat-messages-area" ref={scrollContainerRef}>
             <div ref={startRef}/>
             <ul className="messages-list">
                 {(messages.length>0) && messages.map((message,_)=>(<Message key={message._id} message={message} isHighlighted={message._id === highlightedMsgId}/>))}
@@ -320,7 +346,7 @@ export default function ChatRoom(props){
                 onKeyDown={(e)=> e.key==="Enter" && sendMessage()}
                 styleClass="chat-input-field"
             />
-            <button className="send-button" onClick={sendMessage}>Send</button>
+            {!miniView && <button className="send-button" onClick={sendMessage}>Send</button>}
         </div>
 
         {showScrollLoadBtn  && (document.activeElement !== document.getElementById("chat-msg-input")) &&

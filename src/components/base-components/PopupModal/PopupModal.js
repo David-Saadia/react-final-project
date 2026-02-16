@@ -101,7 +101,7 @@ export default function PopupModal(props){
 export function StatisticsNewImageWindow(props){
     
     const [image, setImage] = useState(null);
-    const {groupId} = props;
+    const {groupId, updateUI} = props;
     const {user} = useContext(userContext);
     const [groupPostData, setGroupPostData] = useState([]);
     const [groupMessagesData, setGroupMessagesData] = useState([]);
@@ -130,7 +130,7 @@ export function StatisticsNewImageWindow(props){
             console.log("Fetching group post stats");
             axiosInstance.get(`/statistics/posts/${groupId}`, {adminId:user.uid, groupId:groupId}).then(response=>{
                 if(response.status===200){
-                    setGroupPostData(response.data);
+                    setGroupPostData(response.data.statsdata);
                 }
             }).catch(err=>console.log(err));
         }
@@ -139,7 +139,7 @@ export function StatisticsNewImageWindow(props){
             console.log("Fetching group messsages stats");
             axiosInstance.get(`/statistics/messages/${groupId}`, {adminId:user.uid, groupId:groupId}).then(response=>{
                 if(response.status===200){
-                    setGroupMessagesData(response.data);
+                    setGroupMessagesData(response.data.statsdata);
                 }
             }).catch(err=>console.log(err));
         }
@@ -157,8 +157,8 @@ export function StatisticsNewImageWindow(props){
         </div>
         <button onClick={changeGroupImage} className="submit-button">Change</button>
         <div className="settings-divider"/>
-        {/* <BarGraph title="Posts per month" data={groupPostData}/>
-        <LineGraph title="Messages per month" data={groupMessagesData}/> */}
+        <BarGraph title="Posts per month" data={groupPostData}/>
+        <LineGraph title="Messages per month" data={groupMessagesData}/>
 
 
     </>
@@ -176,6 +176,7 @@ export function StatisticsNewImageWindow(props){
 export function MessageWindow(props){
     
     const [message, setMessage] = useState("");
+    const [status, setStatus] = useState({statusType:"", message:""});
     const {receiver} = props;
     const {user} = useContext(userContext);
     const goTo = useGoTo();
@@ -189,7 +190,7 @@ export function MessageWindow(props){
 
     const createChat = async ()=>{
         try{
-            //FIX: if a chat is already open with this user, just send the message there.
+
             const payload= {content:message, author:user.uid, receiver:receiver};
             //DEBUG: console.log(payload);
             if(!payload.content || !payload.author || !payload.receiver) return;
@@ -198,7 +199,7 @@ export function MessageWindow(props){
             if(response.status===200){
                 const chatId = response.data.chat._id;
                 //DEBUG: console.log(response.data.message);
-                alert(response.data.message);
+                setStatus({statusType:"success", message:response.data.message});
                 setMessage("");
                 props.onClose();
                 goTo(`/chat/${chatId}`);
@@ -218,6 +219,14 @@ export function MessageWindow(props){
             onChange={(e)=>setMessage(e.target.value)}
             prompt="Message"/>
         <button className="submit-button" id="message-button" onClick={()=>createChat()}>Send</button>
+        <PopupModal>
+            <StatusWindowWrapper
+                isOpen={!!status.statusType}
+                onClose={()=> setStatus({statusType:"", message:""})}
+                statusType={status.statusType}
+                message={status.message}
+            />
+        </PopupModal>
     </>);
 }
 
@@ -300,8 +309,10 @@ export function ConfigureGroupWindow(props){
                     <div className="grouped" key={index} id="popup-member-item">
                         <img src={avatar} alt="member_avatar"/>
                         <ScreenTitle key={index} designId="popup-member-title" designClass="post-username" title={username}/>
-                        <button className="submit-button" id="accept-invite-button" onClick={(e) => props.onAcceptInvite(uid)}>Accept</button>
-                        <button className="submit-button" id="decline-invite-button" onClick={(e) => props.onDeclineInvite(uid)}>Decline</button>
+                        <div className="grouped-mashed">
+                            <button className="submit-button" id="accept-invite-button" onClick={() => props.onAcceptInvite(uid)}>Accept</button>
+                            <button className="submit-button" id="decline-invite-button" onClick={() => props.onDeclineInvite(uid)}>Decline</button>
+                        </div>
                     </div>
                 );
             })}
@@ -360,8 +371,8 @@ export function CommentsListWindow(props){
                 </div>
                 {comment.userId === user.uid &&
                     <div className="comment-controls">
-                        <button onClick={() => handleEdit(comment)}>Edit</button>
-                        <button onClick={() => handleDelete(comment._id)}>Remove</button>
+                        <button className="edit-comment-btn" onClick={() => handleEdit(comment)}>Edit</button>
+                        <button className="delete-comment-btn" onClick={() => handleDelete(comment._id)}>Remove</button>
                     </div>
                 }
                 

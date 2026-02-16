@@ -9,6 +9,7 @@ import axiosInstance from "../../axiosInstance";
 //Components and styles
 import "./ChatList.css"
 import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle";
+import ChatRoom from "../ChatRoom/ChatRoom";
 
 
 export default function ChatList(props){
@@ -17,10 +18,11 @@ export default function ChatList(props){
     const [chatThumbnails, setChatThumbnails] = useState([]);
     const {user, loading, fetchImage} = useContext(userContext);
     const [chatList, setChatList] = useState([]);
+    const [selectedChat, setSelectedChat] = useState(props.preSelectedChat || null);
     
     useEffect(()=>{
         const fetchChatList = async () => {
-            const limit = 20;
+            const limit = 50;
             try{
                 const response = await axiosInstance.get(`/chats/?userId=${user.uid}&limit=${limit}`);
                 if (response.status===200){
@@ -93,22 +95,39 @@ export default function ChatList(props){
         fetchChatThumbnails();
     }, [chatList,user, fetchImage]);
 
-    const openChat =(chatIndex)=>{
-        //DEBUG: console.log("opening chat", chatIndex);
-        props.setChatSelected(chatIndex);
+    const openChat =(chatId)=>{
+        if(props.handleChatSelected) {
+            props.handleChatSelected(chatId);
+            return;
+        }
+        if(selectedChat === chatId ){
+            setSelectedChat(null);
+        } else {
+            setSelectedChat(chatId);
+        }
     }
     
     if(loading) return <div>Loading...</div>;
     
     return(
-    <div className="docked-container" id="chat-list-container">
+    <div className={`docked-container ${props.className || ""}`} id="chat-list-container">
         <ul className="chat-list">
-            {chatThumbnails.map((thumbnail, index) => (
-                <li onClick={(e)=>openChat(chatList[index]._id)} className="grouped chat-item" id="chat-i" key={index}>
-                    <img id="chat-avatar" src={thumbnail.avatar} alt={thumbnail.label} />
-                    <ScreenTitle title={thumbnail.label} designClass="chat-title"/>
-                </li>
-            ))}
+            {chatThumbnails.map((thumbnail, index) =>{ 
+            
+            const isExpanded = selectedChat === chatList[index]._id;
+            return (
+                <li className={`chat-item ${isExpanded? "expanded":""}`} id="chat-i" key={index}>
+                    <div className="chat-item-header" onClick={(e)=>openChat(chatList[index]._id)}>
+                        <img id="chat-avatar" src={thumbnail.avatar} alt={thumbnail.label} />
+                        <ScreenTitle title={thumbnail.label} designClass="chat-title"/>
+                    </div>
+                    {isExpanded &&
+                        <div className="chat-room-mini-view">
+                            <ChatRoom chatId={chatList[index]._id} miniView={true}/>
+                        </div>
+                    }
+                </li>)
+            })}
             
         </ul>    
     </div>

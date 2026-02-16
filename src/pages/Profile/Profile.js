@@ -8,10 +8,10 @@ import { useRequireAuth } from "../../hooks/useRequireAuth";
 // Components
 import NavigationBar from "../../components/base-components/NavigationBar/NavigationBar";
 import BackgroundWrapper from "../../components/base-components/BackgroundWrapper";
-import SideMenu from "../../components/SideMenu/SideMenu";
 import PostFeed from "../../components/PostFeed/PostFeed";
 import bg from "../../assets/images/background-postfeed-light.png";
-import Chat from "../Chat/Chat";
+import MobileBaseLayout from "../../components/base-components/MobileBaseLayout/MobileBaseLayout";
+
 
 import "./Profile.css";
 
@@ -29,12 +29,9 @@ export default function Profile() {
 
             <div className ="profile">
                 <NavigationBar/>
-                <div className="page-container" id="profile-page-container">
-                    <SideMenu/>
+                <MobileBaseLayout pageContainerId="profile-page-container">
                     <PostFeed type="profile" uid={uid}/>
-                    <Chat miniView={true}/>
-
-                </div>
+                </MobileBaseLayout>
             </div>
         </BackgroundWrapper>
     )

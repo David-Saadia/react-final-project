@@ -224,6 +224,22 @@
     height: 2.25rem;
 }
 
+.comment-controls{
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+}
+
+.edit-comment-btn, .delete-comment-btn{
+    background: none;
+	color: var(--text-link);
+	border: none;
+	padding: 0.2em;
+	font-size: 0.8em;
+	cursor: pointer;
+}
+
+
 #post-preview{
     width:100%;
     height:auto;

@@ -9,12 +9,11 @@ import { findUIDbyUsername } from "../../firebase/ReadWriteDB";
 // Components and styling
 import bg from "../../assets/images/background-postfeed-light.png";
 import BackgroundWrapper from "../../components/base-components/BackgroundWrapper";
+import MobileBaseLayout from "../../components/base-components/MobileBaseLayout/MobileBaseLayout";
 import NavigationBar from "../../components/base-components/NavigationBar/NavigationBar";
-import SideMenu from "../../components/SideMenu/SideMenu";
 import Field from "../../components/base-components/Field/Field";
-import PopupModal, { InviteWindow } from "../../components/base-components/PopupModal/PopupModal";
+import PopupModal, { InviteWindow, StatusWindowWrapper } from "../../components/base-components/PopupModal/PopupModal";
 import GroupCard from "../../components/GroupCard/GroupCard";
-import Chat from "../Chat/Chat";
 import "./Groups.css"
 
 export default function Groups(props) {
@@ -29,6 +28,8 @@ export default function Groups(props) {
 
     //Pop up
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [statusPopup, setStatusPopup] = useState({title:"", statusType:"", message:"", onConfirm:null, onCancel:null})
+
 
     useEffect(()=>{
         const fetchGroups = async ()=>{
@@ -67,22 +68,37 @@ export default function Groups(props) {
     const createGroup = async ()=> {
         const payload = {creator:user.uid, name: newGroupName};
         try{
-            const response = await axiosInstance.post("/groups", payload);
-            const {group, message} = response.data;
-            if(response.status===201){
-                console.log(message);
-                console.log(group);
-                setGroups((prev)=>[...prev, group]);
-                openPopup(group._id);
-            }
-            else{
-                console.log(response.data?.message);
-            }
+            setStatusPopup({
+                title:"Create Group",
+                statusType:"warning",
+                message:"Are you sure you want to create this group?",
+                onConfirm: async () => {
+                    setStatusPopup({title:"", statusType:"", message:"", onConfirm: null, onCancel: null});
+                    const response = await axiosInstance.post("/groups", payload);
+                    const {group, message} = response.data;
+                    if(response.status===201){
+                        setStatusPopup({title:"Created", statusType:"success", message:message});
+                        //DEBUG: console.log(message);
+                        //DEBUG: console.log(group);
+                        setGroups((prev)=>[...prev, group]);
+                        openPopup(group._id);
+                    }
+                    else{
+                        console.log(response.data?.message);
+                    }
+                },
+                onCancel: () =>{
+                    setStatusPopup({title:"", statusType:"", message:"", onConfirm: null, onCancel: null});
+                    return;
+                }
+            });
+          
 
         }
         catch(err){
             console.log(err);
             console.log(err.response?.data?.message);
+            setStatusPopup({title:"Error", statusType:"error", message:err.response?.data?.message});
         }
     }
     const inviteFriend = async (e, userName="" , groupId, updateUI=null)=>{
@@ -103,7 +119,8 @@ export default function Groups(props) {
             if(response.status===200){
                 console.log(response.data.message);
                 setGroups((prev)=>prev.map((group)=> group._id===payloadGroupID? response.data.group: group ));
-                alert(`Invited ${userName} to the group successfully.`);
+                setStatusPopup({title:"Invited", statusType:"success", message:response.data.message});
+                //DEBUG: alert(`Invited ${userName} to the group successfully.`);
                 if(updateUI) updateUI(response.data.group.members);
             }
         }
@@ -130,8 +147,7 @@ export default function Groups(props) {
                 
             <div className="groups">
                 <NavigationBar/>
-                <div className="page-container" id="groups-page-container">
-                    <SideMenu />
+                <MobileBaseLayout pageContainerId="groups-page-container">
                     <div id="group-list-wrapper" className="center-container">
                         <div id="new-group-form">
                             <Field
@@ -141,11 +157,7 @@ export default function Groups(props) {
                                 onChange={(e)=>setNewGroupName(e.target.value)}
                                 prompt="New group name.."/>
                             <button className="submit-button" id="create-group-button" 
-                                    onClick={()=>{
-                                        if(window.confirm(`Are you sure you want to create the group ${newGroupName}?`)){
-                                            createGroup();
-                                        }
-                                        }}>
+                                    onClick={createGroup}>
                                 Create
                             </button>
                         </div>
@@ -171,11 +183,21 @@ export default function Groups(props) {
                             />))}
                         </div>
                     </div>
-                    <Chat miniView={true}/>
-                    
-                </div>
+                </MobileBaseLayout>
+                
                 <PopupModal styleId="invite-popup" onClose={closePopup} isOpen={isPopupOpen}>
                     <InviteWindow onInviteFriend={inviteFriend}/>
+                </PopupModal>
+
+                <PopupModal isOpen={!!statusPopup.statusType} onClose={()=> setStatusPopup({title:"", statusType:"", message:"", onConfirm:null, onCancel:null})}>
+                    <StatusWindowWrapper 
+                        statusType={statusPopup.statusType} 
+                        title={statusPopup.title}
+                        message={statusPopup.message}
+                        onClose={()=>setStatusPopup({title:"", statusType:"", message:"", onConfirm:null, onCancel:null})}
+                        onConfirm={statusPopup.onConfirm}
+                        onCancel={statusPopup.onCancel}
+                        />
                 </PopupModal>
             </div>
 

@@ -36,6 +36,10 @@ const pendingRequests = new Map(); // Map to store pending requests
 //       minutes * seconds * milliseconds, Time to live
 const CACHE_TTL = 10 * 60 * 1000; 
 
+const CACHE_BLACKLIST = [
+    // Exclude getMessages (/chats/:chatId) but allow /chats/ (list) or /chats/:id/search
+    /\/chats\/[^/?]+(\?.*)?$/
+];
 
 /**
  * Returns a cache key based on the user, request method, full URL including params, and response type.
@@ -49,6 +53,12 @@ const getCacheKey = (config) => {
     
     //Use getUri (full URL + params) to handle baseURL and params serialization consistently
     const url = axiosInstance.getUri(config);
+
+    // Check if URL matches any blacklist pattern
+    if (CACHE_BLACKLIST.some(regex => regex.test(url))) {
+        return null;
+    }
+
     const method = config.method ? config.method.toLowerCase() : 'get';
     const responseType = config.responseType || '';
 

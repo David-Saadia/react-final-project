@@ -13,7 +13,7 @@ export default function DropRadioButton(props){
 
     return(
         <div className="dropdown" id={props.styleId}>
-            <button className="dropdown-toggle submit-button" onClick={()=>setIsOpen(!isOpen)}>{props.value || "Select"}
+            <button className="dropdown-toggle" onClick={()=>{ if(props.options.length>0) setIsOpen(!isOpen)}}>{props.value || "Select"}
             <span className={`arrow ${isOpen ? "open" : ""}`}>▾</span>
             </button>
 

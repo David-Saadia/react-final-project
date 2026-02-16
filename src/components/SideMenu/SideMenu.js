@@ -6,7 +6,7 @@ export default function SideMenu(props){
 
     const goTo = useGoTo();
 
-    return(<div className="docked-container" id="side-menu">
+    return(<div className={`docked-container ${props.className || ""}`} id="side-menu">
         <button className="menu-item" onClick={() => goTo('/') }>Home</button>
         <button className="menu-item" onClick={() => goTo('/profile') }>Profile</button>    
         <button className="menu-item" onClick={() => goTo('/groups') }>Groups</button>

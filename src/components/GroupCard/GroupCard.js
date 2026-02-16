@@ -8,7 +8,7 @@ import useGoTo from "../../hooks/useGoTo";
 
 //Components and styles
 import ScreenTitle from "../base-components/ScreenTitle/ScreenTitle"; //StatisticsNewImageWindow down here \/
-import PopupModal, { ConfigureGroupWindow, InviteWindow, MembersListWindow, StatisticsNewImageWindow  } from "../base-components/PopupModal/PopupModal";
+import PopupModal, { ConfigureGroupWindow, InviteWindow, MembersListWindow, StatisticsNewImageWindow, StatusWindowWrapper  } from "../base-components/PopupModal/PopupModal";
 import TabbedContent from "../base-components/TabbedContent/TabbedContent";
 import "./GroupCard.css"
 import defaultGroupImage from "../../assets/images/icons/groups-icon.png";
@@ -30,18 +30,27 @@ import { ManageGroupIcon, JoinGroupIcon, DeleteIcon, GroupChatIcon, ExplorePosts
 export default function GroupCard(props){
 
     const {user, fetchImage} = useContext(userContext);
-    const {creator,  groupID, chatID} = props //Don't change - no need for useState.
+    const {creator, groupID, chatID} = props //Don't change - no need for useState.
     const [groupName, setGroupName] = useState(props.groupName);
     const [groupImage, setGroupImage] = useState(null);
     const [members, setMembers] = useState(props.members);
     const [membersAvatars, setMembersAvatars] = useState([]);
     const [membersUsernames, setMembersUsernames] = useState([]);
+    const [joinRequests, setJoinRequests] = useState(props.joinRequests);
     const [admins, setAdmins] = useState(props.admins);
+
+    //Popups
+    const [statusPopup, setStatusPopup] = useState({title:"", statusType:"", message:"", onConfirm: null, onCancel: null})
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [isActionsPopupOpen, setIsActionsPopupOpen] = useState(false);
-    const [joinRequests, setJoinRequests] = useState(null);
     const goTo = useGoTo();
     
+    //DEBUG: console.log(joinRequests);
+    //DEBUG: console.log(props.joinRequests);
+
+    useEffect(() => {
+        setJoinRequests(props.joinRequests);
+    }, [props.joinRequests]);
 
     useEffect(()=>{
         const fetchGroupImage = async ()=>{
@@ -103,10 +112,12 @@ export default function GroupCard(props){
 
     useEffect(()=>{
         const fetchJoinRequestsData = async ()=>{
-            if(!props.joinRequests || props.joinRequests.length===0) return;
+            if(!joinRequests || joinRequests.length===0) return;
 
-            const data = await Promise.all(props.joinRequests.map(async (member)=>{
-                if(typeof member !== "string") return;
+            if(!joinRequests.some((member)=>typeof member === "string")) return;
+
+            const data = await Promise.all(joinRequests.map(async (member)=>{
+                if(typeof member !== "string") return member;
                 const username = await findUserNameDB(member);
                 let avatar = await findAvatarDB(member);
                 if(!avatar.includes("static")){
@@ -126,7 +137,7 @@ export default function GroupCard(props){
         }
         fetchJoinRequestsData();
 
-    },[props.joinRequests, fetchImage])
+    },[ joinRequests , fetchImage])
 
     const isJoined = ()=>{
         return members && members.includes(user.uid);
@@ -136,14 +147,28 @@ export default function GroupCard(props){
         return admins && admins.includes(user.uid);
     }
 
-    const deleteGroup = async ()=>{
+    const deleteGroup = ()=>{
         try{
-            const response = await axiosInstance.delete(`/groups/${groupID}`); 
-            if (response.status===200){
-                console.log(response.data.message);
-                alert(response.data.message);
-                props.onDelete();
-            }
+            setStatusPopup({
+                title:"Delete Group",
+                statusType:"warning",
+                message:"Are you sure you want to delete this group?",
+                onConfirm: async () => {
+                    setStatusPopup({title:"", statusType:"", message:"", onConfirm: null, onCancel: null});
+                    const response = await axiosInstance.delete(`/groups/${groupID}`); 
+                    if (response.status===200){
+                        console.log(response.data.message);
+                        setStatusPopup({title:"Deleted", statusType:"success", message:response.data.message});
+                        //alert(response.data.message);
+                        props.onDelete();
+                    }
+                },
+                onCancel: () =>{
+                    setStatusPopup({title:"", statusType:"", message:"", onConfirm: null, onCancel: null});
+                    return;
+                }
+            });
+            
         }
         catch(err){
             console.log(err);
@@ -166,7 +191,8 @@ export default function GroupCard(props){
             const response = await axiosInstance.delete(`/groups/kick/${kickedUID}?groupId=${groupID}`); 
             if (response.status===200){
                 console.log(response.data?.message);
-                alert(response.data?.message);
+                setStatusPopup({title:"Kicked", statusType:"success", message:response.data?.message});
+                //alert(response.data?.message);
                 setMembers(response.data?.group?.members);
             }
         }
@@ -180,15 +206,18 @@ export default function GroupCard(props){
     const renameGroup = async (newName) =>{
         try{
             console.log(`New group name: ${newName}`);
+            console.log("Group ID: ", groupID);
             const response = await axiosInstance.put(`/groups/${groupID}`, {name:newName, admin:user.uid}); 
             if (response.status===200){
                 console.log(response.data.message);
-                alert(response.data.message);
+                setStatusPopup({title:"Renamed", statusType:"success", message:response.data.message});
+                //alert(response.data.message);
                 setGroupName(newName);
             }
         }
         catch(err){
             console.log(err);
+            setStatusPopup({title:"Error", statusType:"error", message:err.response?.data?.message});
             console.log(err.response?.data?.message);
         }
     }
@@ -199,12 +228,14 @@ export default function GroupCard(props){
             const response = await axiosInstance.post(`/groups/join/${user.uid}`, payload); 
             if (response.status===200){
                 console.log(response.data.message);
-                alert(response.data.message);
+                setStatusPopup({title:"Joined", statusType:"success", message:response.data.message});
+                //alert(response.data.message);
             }
         }
         catch(err){
             if(err.response?.status===400){
-                alert(err.response?.data?.message);
+                setStatusPopup({title:"Error", statusType:"error", message:err.response?.data?.message});
+                //alert(err.response?.data?.message);
             }
             console.log(err);
             console.log(err.response?.data?.message);
@@ -220,7 +251,8 @@ export default function GroupCard(props){
             const response = await axiosInstance.delete(`/groups/leave/${user.uid}?groupId=${groupID}`); 
             if (response.status===200){
                 console.log(response.data.message);
-                alert(response.data.message);
+                setStatusPopup({title:"", statusType:"alert", message: "Left the group successfully."});
+                //alert(response.data.message);
                 setMembers(response.data?.group?.members);
             }
         }
@@ -237,7 +269,8 @@ export default function GroupCard(props){
             const response = await axiosInstance.put(`/groups/accept/${memberUID}`, payload); 
             if (response.status===200){
                 console.log(response.data.message);
-                alert(response.data.message);
+                setStatusPopup({title:"Accepted", statusType:"success", message:response.data.message});
+                //alert(response.data.message);
                 setMembers(response.data?.group?.members);
                 setJoinRequests(response.data?.group?.joinRequests);
             }
@@ -255,9 +288,11 @@ export default function GroupCard(props){
             const response = await axiosInstance.put(`/groups/decline/${memberUID}`, payload); 
             if (response.status===200){
                 console.log(response.data.message);
-                alert(response.data.message);
-                setMembers(response.data?.group?.members);
-                setJoinRequests(response.data?.group?.joinRequests);
+                console.log(response.data.group);
+                setStatusPopup({title:"Declined", statusType:"success", message:response.data.message});
+                //alert(response.data.message);
+                //setMembers(response.data.group?.members);
+                setJoinRequests(response.data.group?.joinRequests);
             }
         }
         catch(err){
@@ -273,7 +308,8 @@ export default function GroupCard(props){
             const response = await axiosInstance.put(`/groups/promote/${memberUID}`, payload); 
             if (response.status===200){
                 console.log(response.data.message);
-                alert(response.data.message);
+                setStatusPopup({title:"Promoted", statusType:"success", message:response.data.message});
+                //alert(response.data.message);
                 setMembers(response.data?.group?.members);
                 setAdmins(response.data?.group?.admins);
             }
@@ -316,7 +352,7 @@ export default function GroupCard(props){
                 <button className="mobile-actions-btn" onClick={joinGroup}>Join Group</button>
                </>)
             :(<>
-                <button title="Explore" className="explore-btn desktop-only" onClick={(e)=>goTo(`/groups/feed/${groupID}`)}><ExplorePostsIcon size="28"/></button>
+                <button title="Explore" className="explore-btn desktop-only" onClick={(e)=>goTo(`/groups/feed/${groupID}?cid=${chatID}`)}><ExplorePostsIcon size="28"/></button>
                 <button title="Chat"className="chat-btn desktop-only" onClick={(e)=>goTo(`/chat/${chatID}`)}><GroupChatIcon size="30"/></button>
                 {isAdmin() && (<div className="grouped desktop-only">
                     <button title="Manage" className="manage-btn" onClick={() => openPopup()}><ManageGroupIcon size="30"/></button>
@@ -345,7 +381,7 @@ export default function GroupCard(props){
           <PopupModal isOpen={isActionsPopupOpen} onClose={() => setIsActionsPopupOpen(false)} styleId="mobile-actions-modal">
             <div className="mobile-actions-list">
                 <ScreenTitle title="Group Options"/>
-                <button className="action-item" onClick={() => {goTo(`/groups/feed/${groupID}`); setIsActionsPopupOpen(false);}}>Explore</button>
+                <button className="action-item" onClick={() => {goTo(`/groups/feed/${groupID}?cid=${chatID}`); setIsActionsPopupOpen(false);}}>Explore</button>
                 <button className="action-item" onClick={() => {goTo(`/chat/${chatID}`); setIsActionsPopupOpen(false);}}>Chat</button>
                 <button className="action-item" onClick={() => {leaveGroup(); setIsActionsPopupOpen(false);}}>Leave Group</button>
                 {isAdmin() && (
@@ -355,6 +391,17 @@ export default function GroupCard(props){
                     </>
                 )}
             </div>
+          </PopupModal>
+
+          <PopupModal isOpen={!!statusPopup.statusType} onClose={ ()=> setStatusPopup({ title:"", statusType:"", message:""})}>
+                <StatusWindowWrapper 
+                    statusType={statusPopup.statusType} 
+                    title={statusPopup.title}
+                    message={statusPopup.message}
+                    onConfirm={statusPopup.onConfirm}
+                    onCancel={statusPopup.onCancel} 
+                    onClose={() => setStatusPopup({ title:"", statusType:"", message:""})} 
+                    />
           </PopupModal>
         </div>
     );

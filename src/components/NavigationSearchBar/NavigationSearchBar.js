@@ -7,10 +7,11 @@
  * for messages, the user will have collapsable search results with a shortened version of the match.
  */
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { useDebounce } from "../../hooks/useDebounce";
 import useGoTo from "../../hooks/useGoTo";
+import { userContext } from "../../UserProvider";
 import { getAllUsernames } from "../../firebase/ReadWriteDB";
 import axiosInstance from "../../axiosInstance";
 
@@ -22,6 +23,8 @@ import "./NavigationSearchBar.css"
 export default function NavigationSearchBar(props){
 
     const [isSearching, setIsSearching] = useState(false);
+    const {user} = useContext(userContext);
+    const userId = user?.uid;
 
     const goTo = useGoTo();
 
@@ -59,7 +62,9 @@ export default function NavigationSearchBar(props){
                 let newResults = [];
 
                 if (groupsRes.status === "fulfilled" && groupsRes.value.status === 200) {
-                    newResults.push(...groupsRes.value.data.groups.map((group) => ({ name: group.name, groupId: group._id, type: "group" })));
+                    //DEBUG: console.log(groupsRes.value.data.groups);
+                    newResults.push(...groupsRes.value.data.groups.map((group) => 
+                        ({ name: group.name, groupId: group._id, type: "group" , chatId: group.chatId, isMember: group.members.includes(userId)})));
                 }
 
                 if (usersRes.status === "fulfilled") {
@@ -81,7 +86,7 @@ export default function NavigationSearchBar(props){
         fetchAllResults();
         
         return () => { isMounted = false; };
-    },[debouncedKeywordQuery])
+    },[debouncedKeywordQuery, userId]);
 
     const  handleSearchPost = async () =>{
           try{
@@ -130,7 +135,7 @@ export default function NavigationSearchBar(props){
             goTo(`/profile/${metaData.uid}`);
 
         else if (metaData.type === "group") 
-            goTo(`/groups/feed/${metaData.groupId}`);
+            goTo(`/groups/feed/${metaData.groupId}${metaData.isMember? `?cid=${metaData.chatId}`:""}`);
         
     }
     return(
@@ -181,7 +186,14 @@ export default function NavigationSearchBar(props){
 
             controlContainer={
                 <ToggleSlider  
-                labelClass="sort-toggle" sliderText="Posts | Groups" name="posts-groups"
+                labelClass="sort-toggle" 
+                sliderText={
+                    <>
+                        <span className="toggle-text-desktop">Posts | Groups</span>
+                        <span className="toggle-text-mobile">P | G</span>
+                    </>
+                } 
+                name="posts-groups"
                 buttonId="change-sort-options-btn" onChange={()=>setSearchType(prev=>!prev)}/>
             }
 

@@ -10,10 +10,9 @@ import "./SearchResults.css";
 import BackgroundWrapper from "../../components/base-components/BackgroundWrapper";
 import NavigationBar from "../../components/base-components/NavigationBar/NavigationBar";
 import PostFeed from "../../components/PostFeed/PostFeed";
-import SideMenu from "../../components/SideMenu/SideMenu"; 
-import Chat from "../Chat/Chat";
 import bg from "../../assets/images/background-postfeed-light.png";
 import Groups from "../Groups/Groups";
+import MobileBaseLayout from "../../components/base-components/MobileBaseLayout/MobileBaseLayout";
 
 
 export default function SearchResults() {
@@ -40,14 +39,13 @@ export default function SearchResults() {
 
                     <div className="search-results">
                         <NavigationBar/>
-                        <div className="page-container" id="search-results-container">
-                            <SideMenu />
-                            {(results.length===0)
+                        <MobileBaseLayout pageContainerId="search-results-container">
+                             {(results.length===0)
                                 ? (<div className="no-results" onClick={() => window.history.back()}>No results found.</div>)
                                 : (<PostFeed type="results" results={results}/>)
                             }
-                            <Chat miniView={true}/>
-                        </div>
+                        </MobileBaseLayout>
+                       
                     </div>
                 </BackgroundWrapper>
             :

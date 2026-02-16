@@ -84,6 +84,10 @@
     pointer-events: none;
 }
 
+#popup-member-item .grouped-mashed{
+    gap: 0.5em;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;

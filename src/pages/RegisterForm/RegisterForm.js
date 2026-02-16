@@ -12,7 +12,7 @@ import {pickRandom, splitAndCapitalizeEmail} from "../../utils";
 import ScreenTitle from "../../components/base-components/ScreenTitle/ScreenTitle";
 import FormField from "../../components/base-components/FormField/FormField";
 import BackgroundWrapper from '../../components/base-components/BackgroundWrapper';
-import bg from"../../assets/images/Fox_in_forest_background.png";
+import bg from"../../assets/images/background-login-light.jpg";
 import "./RegisterForm.css";
 import "../../utils.css";
 
@@ -55,6 +55,7 @@ export default function RegisterForm() {
             transition="background-image 0.5s ease-in-out"
             className="center-container">
             <div className="sign-up auth-form-container">
+                <button className="register-back-btn" alt="Back" title="Go Back" onClick={() => navigation("/")}>‹</button>
                 <ScreenTitle title="Join our ranks!"/>
                 <FormField type="email" value={email} prompt="Email" onChange={(e) => setEmail(e.target.value)}/>
                 <FormField type="password" value={password} prompt="Password" onChange={(e) => setPassword(e.target.value)}/>

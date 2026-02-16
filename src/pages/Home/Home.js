@@ -1,5 +1,4 @@
 
-
 // Context and tools
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import "../../utils.css";
@@ -12,8 +11,7 @@ import BackgroundWrapper from "../../components/base-components/BackgroundWrappe
 import bg from "../../assets/images/background-postfeed-light.png";
 import NavigationBar from "../../components/base-components/NavigationBar/NavigationBar";
 import PostFeed from "../../components/PostFeed/PostFeed";
-import SideMenu from "../../components/SideMenu/SideMenu"; 
-import Chat from "../Chat/Chat";
+import MobileBaseLayout from "../../components/base-components/MobileBaseLayout/MobileBaseLayout";
 
 /**
  * A component that renders the main page of the application. The page is
@@ -44,11 +42,9 @@ export default function Home() {
 
             <div className="home">
                 <NavigationBar/>
-                <div className="page-container" id="home-container">
-                    <SideMenu />
+                <MobileBaseLayout pageContainerId="home-container">
                     <PostFeed type="all"/>
-                    <Chat miniView={true}/>
-                </div>
+                </MobileBaseLayout>
             </div>
         </BackgroundWrapper>
     );

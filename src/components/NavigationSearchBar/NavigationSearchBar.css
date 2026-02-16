@@ -143,6 +143,7 @@ input.check-box-btn {
     border: 1px solid var(--grey-200);
     border-radius: 8px;
     transition: all 0.4s ease;
+    flex-shrink: 0;
 }
 
 #search-toggle-button:hover {
@@ -163,4 +164,30 @@ input.check-box-btn {
 #nav-search.active {
     width: 100%;
     opacity: 1;
+}
+
+.toggle-text-mobile {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    .sort-toggle {
+        padding: 0.2em;
+        font-size: 0.75em;
+        min-width: 1.5rem;
+        white-space: nowrap;
+    }
+
+    #search-toggle-button {
+        width: 2.5em;
+        height: 2.5em;
+    }
+
+    .toggle-text-desktop {
+        display: none;
+    }
+
+    .toggle-text-mobile {
+        display: inline;
+    }
 }

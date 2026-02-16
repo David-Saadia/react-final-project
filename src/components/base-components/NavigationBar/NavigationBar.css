@@ -8,7 +8,7 @@
     background-color: rgba(245, 241, 234, 0.8); /* Fallback */
     background: var(--bg-glass);
     box-shadow: var(--dropshadow-md);
-
+    z-index: 2;
     backdrop-filter: var(--blur-effect);
 }
 
@@ -89,4 +89,48 @@
 #navigation-docker #home-button {
     background-size: 60%;
     background-image: url(../../../assets/images/icons/home-icon.png);
+}
+
+@media screen and (max-width: 768px) {
+    #navigation-docker {
+        padding: 0.5em 0.2em;
+        gap: 0.2em;
+    }
+
+    #logo {
+        flex: 0 0 20%;
+        width: auto;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    #home-search {
+        flex: 1 1 auto;
+        width: auto;
+    }
+
+    #home-search #home-button {
+        display: none;
+    }
+
+    #home-search .search-bar-container .search-sorting-container{
+        display: flex;
+        flex-direction: column;
+    }
+
+    #settings-menu {
+        flex: 0 0 auto;
+        width: auto;
+        margin-right: 0;
+        padding-left: 0.2rem;
+        gap: 2px;
+        justify-content: flex-end;
+        padding-right: 2px;
+    }
+
+    #navigation-docker .nav-button, #profile-picture {
+        width: 2rem;
+        height: 2rem;
+        margin-inline: 0;
+    }
 }

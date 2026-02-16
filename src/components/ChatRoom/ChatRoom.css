@@ -3,7 +3,7 @@
     flex-direction: column;
     position: relative;
     flex: 1;
-    min-height: 30rem;
+    min-height: 20rem;
     background-color: var(--bg-primary);
     border-radius: 8px;
     overflow: hidden;

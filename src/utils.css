@@ -26,15 +26,18 @@ html, body, #root {
 }
 
 .auth-form-container {
+    display: flex;
+    flex-direction: column;
     width: 35vw;
+    min-width: 20rem;    
     text-align: center;
-    padding: 60px 40px;
+    padding: 3rem 3rem;
     border-radius: 10px;
     background: var(--bg-glass);
     box-shadow: var(--dropshadow-md);
     border: 1px solid var(--grey-300);
     backdrop-filter: var(--blur-effect) var(--burn-effect);
-    -webkit-backdrop-filter: var(--blur-effect) var(--burn-effect);
+    
 }
 
 .page-container {
@@ -75,7 +78,8 @@ html, body, #root {
 
 @media only screen and (max-width: 768px) {
     .auth-form-container {
-        width: 50vw;
+        height: 80%;
+        width: 40vw;
     }
 }
 
